@@ -1,6 +1,6 @@
 {
-  "name": "Convertisseur de cotes",
-  "short_name": "Cotes",
+  "name": "Convertisseur et outils CNC",
+  "short_name": "Cotes CNC",
   "lang": "fr",
   "start_url": "./",
   "scope": "./",

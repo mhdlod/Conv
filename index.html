@@ -4,30 +4,31 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-title" content="Cotes">
-<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Cotes CNC">
 <meta name="theme-color" content="#18202B">
 <link rel="manifest" href="manifest.json">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<title>Convertisseur de cotes</title>
-<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px);color-scheme:light}body{margin:0}[hidden]{display:none!important}.dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
-.dl:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
-.dl:active{background:var(--accent-soft)}
-</style>
+<title>Convertisseur et outils CNC</title>
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
 <style>
 /* Layout: single-column shop tool — input block on top, three tool-choice rows below, reference table last */
 :root{
   --bg:#EEF1F4; --panel:#FFFFFF; --fg:#18202B; --muted:#5D6877; --line:#D3D9E0;
-  --accent:#C9531A; --accent-soft:#FBE7DC; --ok:#2F7D4F;
+  --accent:#1F5A99; --accent-soft:#E3ECF6; --ok:#1E7B45;
+  --good:#1E7B45; --good-soft:#E3F3E9; --warn:#9A5B00; --warn-soft:#FBF0DA; --bad:#B42318; --bad-soft:#FBE3E0;
   --sans:"Barlow",system-ui,-apple-system,"Segoe UI",sans-serif;
   --mono:"JetBrains Mono",ui-monospace,"SF Mono",Menlo,Consolas,monospace;
 }
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
   --bg:#11161C; --panel:#1A212A; --fg:#E7ECF1; --muted:#97A3B1; --line:#2C3642;
-  --accent:#F07B3F; --accent-soft:#3A2418; --ok:#5DBB84; color-scheme:dark }}
+  --accent:#7AB0EA; --accent-soft:#1A2A3D; --ok:#5CC48A;
+  --good:#5CC48A; --good-soft:#14301F; --warn:#E8B04A; --warn-soft:#33270F; --bad:#F2766B; --bad-soft:#3A1714; color-scheme:dark }}
 :root[data-theme="dark"]{
   --bg:#11161C; --panel:#1A212A; --fg:#E7ECF1; --muted:#97A3B1; --line:#2C3642;
-  --accent:#F07B3F; --accent-soft:#3A2418; --ok:#5DBB84; color-scheme:dark }
+  --accent:#7AB0EA; --accent-soft:#1A2A3D; --ok:#5CC48A;
+  --good:#5CC48A; --good-soft:#14301F; --warn:#E8B04A; --warn-soft:#33270F; --bad:#F2766B; --bad-soft:#3A1714; color-scheme:dark }
 *{box-sizing:border-box}
 body{background:var(--bg);color:var(--fg);font-family:var(--sans);font-size:16px;line-height:1.45;
   padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 40px}
@@ -71,9 +72,9 @@ h1{font-size:1.5rem;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.
 .kv span{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .kv b{font-family:var(--mono);font-size:1.05rem;font-weight:600;font-variant-numeric:tabular-nums}
 .status{margin-top:12px;font-size:.92rem;font-weight:600;padding:8px 12px;border-radius:6px}
-.status.ok{color:var(--ok);background:color-mix(in srgb,var(--ok) 12%,transparent)}
-.status.warn{color:var(--accent);background:var(--accent-soft)}
-.status.err{color:var(--accent);background:var(--accent-soft)}
+.status.ok{color:var(--good);background:var(--good-soft)}
+.status.warn{color:var(--warn);background:var(--warn-soft)}
+.status.err{color:var(--bad);background:var(--bad-soft)}
 .choices{display:flex;flex-direction:column;gap:10px}
 .choice{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:4px 16px;align-items:center}
 .choice.main{border:2px solid var(--accent)}
@@ -97,6 +98,167 @@ td:first-child,th:first-child{text-align:left;font-weight:700}
 tr.hl td{background:var(--accent-soft)}
 @media (max-width:440px){.choice{grid-template-columns:1fr}.frac{font-size:2rem}}
 @media (prefers-reduced-motion:no-preference){.choice{transition:border-color .15s}}
+
+[hidden]{display:none!important}
+.tabs{display:flex;gap:6px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:5px}
+.tabs button{flex:1;font-family:var(--sans);font-size:1.02rem;font-weight:700;padding:11px 10px;border:0;border-radius:7px;background:transparent;color:var(--muted);cursor:pointer}
+.tabs button[aria-selected="true"]{background:var(--fg);color:var(--bg)}
+.tabs button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.views{display:flex;flex-direction:column;gap:18px}
+.match{grid-column:1/-1;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
+.match .mh{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.match .none{font-size:.85rem;color:var(--muted)}
+.trow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px 6px 6px;cursor:pointer;color:var(--fg);font-family:var(--sans)}
+.trow:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.thumb{width:48px;height:48px;border-radius:6px;background:#fff;object-fit:contain;border:1px solid var(--line)}
+.thumb.ph{display:grid;place-items:center;font-family:var(--mono);font-size:.62rem;color:var(--muted);background:var(--panel)}
+.tmain{min-width:0}
+.tmain b{font-family:var(--mono);font-size:.95rem;font-weight:700}
+.tmain .t1{display:block;font-size:.84rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tside{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.pill{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
+.pill.stock{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
+.pill.zero{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
+.pill.use{color:var(--fg);background:var(--accent-soft);border-color:transparent}
+.loc{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.search{width:100%;font-family:var(--sans);font-size:1.1rem;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.search:focus{outline:none;border-color:var(--accent)}
+.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:thin}
+.filters button{flex:0 0 auto;font-family:var(--sans);font-size:.9rem;font-weight:600;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
+.filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
+.filters button span{opacity:.7;font-weight:500;margin-left:4px}
+.opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:10px;font-size:.92rem}
+.opts label{display:flex;gap:6px;align-items:center;cursor:pointer}
+.opts input{width:20px;height:20px;accent-color:var(--accent)}
+.opts select{font-family:var(--sans);font-size:.92rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
+.count{font-size:.9rem;color:var(--muted);margin:0}
+.tlist{display:flex;flex-direction:column;gap:8px}
+.tlist .trow{background:var(--panel);grid-template-columns:64px minmax(0,1fr) auto;padding:8px 12px 8px 8px}
+.tlist .thumb{width:64px;height:64px}
+.sheet{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,#000 45%,transparent);display:flex;align-items:flex-end;justify-content:center}
+.sheet[hidden]{display:none!important}
+.sheet .card{background:var(--panel);color:var(--fg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;border-radius:14px 14px 0 0;
+  padding-block:0 calc(24px + env(safe-area-inset-bottom,0px));padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.sheet .bar{position:sticky;top:0;background:var(--panel);display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 0 10px;border-bottom:1px solid var(--line);z-index:1}
+.sheet .bar h3{margin:0;font-family:var(--mono);font-size:1.3rem}
+.sheet .bar .ty{display:block;font-family:var(--sans);font-size:.85rem;color:var(--muted);font-weight:600}
+.close{font-family:var(--sans);font-size:1rem;font-weight:700;padding:10px 16px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);cursor:pointer}
+.photo{display:block;width:100%;max-height:260px;object-fit:contain;background:#fff;border-radius:10px;border:1px solid var(--line);margin-top:14px}
+.badges{display:flex;flex-wrap:wrap;gap:6px;margin-top:12px}
+.big{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:12px}
+.big .kv b{font-size:1.15rem}
+.big .kv small{display:block;font-family:var(--mono);font-size:.82rem;color:var(--muted)}
+dl.all{display:grid;grid-template-columns:minmax(0,42%) minmax(0,1fr);margin:14px 0 0;border-top:1px solid var(--line)}
+dl.all dt,dl.all dd{margin:0;padding:8px 0;border-bottom:1px solid var(--line);font-size:.92rem;min-width:0;overflow-wrap:anywhere}
+dl.all dt{color:var(--muted);padding-right:10px}
+dl.all dt small{display:block;font-size:.7rem;opacity:.8}
+dl.all dd{font-weight:600}
+dl.all dd .mm{display:block;font-family:var(--mono);font-weight:400;font-size:.82rem;color:var(--muted)}
+.ext{display:flex;justify-content:center;align-items:center;gap:8px;margin-top:14px;font-weight:700;color:#fff;background:var(--accent);border-radius:8px;padding:12px;text-decoration:none}
+.rel{margin-top:16px;display:flex;flex-direction:column;gap:6px}
+.rel h4{margin:0;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.warnbox{font-size:.85rem;background:var(--accent-soft);color:var(--fg);border-radius:8px;padding:8px 12px;margin-top:12px}
+.dim{display:block;font-family:var(--mono);font-size:.8rem;color:var(--fg);line-height:1.35;overflow-wrap:anywhere}
+.dim i{font-style:normal;font-weight:700;color:var(--accent);display:inline-block;min-width:3.2ch}
+
+.seg{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#ops{grid-template-columns:repeat(3,minmax(0,1fr))}
+.seg button{font-family:var(--sans);font-size:.95rem;font-weight:600;padding:9px 12px;border:1px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);cursor:pointer;text-align:left}
+.seg button small{display:block;font-weight:400;font-size:.74rem;color:var(--muted)}
+.seg button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft);box-shadow:inset 0 0 0 1px var(--accent)}
+.seg button:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.field{display:flex;flex-direction:column;gap:6px;margin-top:14px}
+.field:first-child{margin-top:0}
+.numin{font-family:var(--mono);font-size:1.5rem;font-weight:600;padding:8px 12px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg);width:100%;min-width:0}
+.numin:focus{outline:none;border-color:var(--accent)}
+.minichips{display:flex;flex-wrap:wrap;gap:6px}
+.minichips button{font-family:var(--mono);font-size:.88rem;padding:6px 10px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);cursor:pointer}
+.minichips button[aria-pressed="true"]{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.reco{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.reco div{background:var(--bg);border-radius:8px;padding:10px 12px;min-width:0}
+.reco h4{margin:0 0 6px;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.reco p{margin:0;font-size:.9rem;font-family:var(--mono);line-height:1.6}
+.reco p span{font-family:var(--sans);font-size:.75rem;color:var(--muted);display:inline-block;min-width:6.5ch}
+.note{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.alert{font-size:.88rem;border-radius:8px;padding:9px 12px 9px 14px;background:var(--warn-soft);color:var(--fg);margin-top:8px;border-left:4px solid var(--warn)}
+.alert b{color:var(--warn)}
+.alert.info{background:var(--accent-soft);border-left-color:var(--accent)}
+.alert.info b{color:var(--accent)}
+.alert.bad{background:var(--bad-soft);border-left-color:var(--bad)}
+.alert.bad b{color:var(--bad)}
+.lvl{display:inline-flex;align-items:center;gap:6px;font-size:.74rem;font-weight:700;padding:3px 10px;border-radius:999px;white-space:nowrap}
+.lvl::before{content:"";width:8px;height:8px;border-radius:50%;background:currentColor}
+.lvl.good{color:var(--good);background:var(--good-soft)}
+.lvl.warn{color:var(--warn);background:var(--warn-soft)}
+.lvl.bad{color:var(--bad);background:var(--bad-soft)}
+.rankrow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
+.rankrow .rank{margin:0}
+.feedcard{border-left-width:5px!important}
+.feedcard.lv-good{border-left-color:var(--good)!important}
+.feedcard.lv-warn{border-left-color:var(--warn)!important}
+.feedcard.lv-bad{border-left-color:var(--bad)!important}
+.feedcard{display:block;width:100%;text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px;cursor:pointer;color:var(--fg);font-family:var(--sans)}
+.feedcard.bad{opacity:.62}
+.feedcard:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.fhead{display:grid;grid-template-columns:52px minmax(0,1fr);gap:10px;align-items:center}
+.fhead .thumb{width:52px;height:52px}
+.fhead b{font-family:var(--mono);font-size:1rem}
+.fhead .t1{display:block;font-size:.84rem;color:var(--muted)}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.tag2{font-size:.72rem;font-weight:700;padding:3px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.tag2.ok{color:var(--good);border-color:color-mix(in srgb,var(--good) 45%,transparent)}
+.tag2.no{color:var(--bad);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}
+.tag2.best{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.feedgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin-top:10px}
+.feedgrid div{min-width:0}
+.feedgrid span{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.feedgrid b{font-family:var(--mono);font-size:1.02rem;font-variant-numeric:tabular-nums}
+.feedgrid b.hi{color:var(--accent);font-size:1.2rem}
+.feedgrid small{display:block;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.flist{display:flex;flex-direction:column;gap:8px}
+.sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.set{border-radius:8px;padding:10px;background:var(--bg);min-width:0;display:flex;flex-direction:column}
+.set.smax{background:var(--accent-soft)}
+.set .st{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);margin-bottom:4px}
+.set.smax .st{color:var(--accent)}
+.set .k{font-size:.66rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-top:6px}
+.set b{font-family:var(--mono);font-size:1.12rem;font-variant-numeric:tabular-nums}
+.set.smax b{color:var(--accent)}
+.set small{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
+.u3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:2px solid var(--line);border-radius:8px;overflow:hidden;margin-top:6px}
+.u3 button{font-family:var(--sans);font-size:.85rem;font-weight:700;padding:8px 4px;border:0;background:var(--bg);color:var(--muted);cursor:pointer;min-height:40px}
+.u3 button + button{border-left:1px solid var(--line)}
+.u3 button[aria-pressed="true"]{background:var(--accent);color:#fff}
+.u3 button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.toprow{display:flex;gap:12px;align-items:stretch;margin-bottom:14px}
+.toprow .mode{margin-bottom:0;flex:0 0 auto;flex-direction:column;width:auto}
+.toprow .mode button{padding:8px 14px;flex:1}
+:root{--hl:#6B3FA0;--hl-soft:#F1E9FB}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--hl:#C4A1FF;--hl-soft:#2B2140}}
+:root[data-theme="dark"]{--hl:#C4A1FF;--hl-soft:#2B2140}
+.conv.mini{flex:1 1 0;min-width:0;margin-top:0;gap:6px 10px;align-content:center;background:var(--hl-soft);border:1px solid color-mix(in srgb,var(--hl) 40%,transparent);border-radius:8px;padding:8px 10px}
+.conv.mini .kv span{color:var(--hl);opacity:.85}
+.conv.mini .kv b{color:var(--hl);font-weight:700}
+.conv.mini .kv{padding-top:0;border-top:0;min-width:0}
+.conv.mini .kv span{font-size:.62rem}
+.conv.mini .kv b{font-size:.84rem;white-space:nowrap}
+.dimbox{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--bg)}
+.dimbox .dim{font-size:.92rem}
+.dimbox .dim i{min-width:3.6ch}
+.rank{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.feedcard.top{border:2px solid var(--line)}
+.feedcard.top1{border-color:var(--accent)}
+.feedcard.top1 .rank{color:var(--accent)}
+details.more{margin-top:4px}
+details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--accent)}
+.src{font-size:.78rem;color:var(--muted);margin:0}
+.src a{color:var(--muted)}
+.selrow{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.selrow label{display:flex;flex-direction:column;gap:4px;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:0}
+.selrow select{font-family:var(--mono);font-size:1rem;padding:8px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:0;width:100%}
+@media (max-width:440px){.selrow{grid-template-columns:1fr 1fr}.selrow label:first-child{grid-column:1/-1}}
+.empty-state{text-align:center;color:var(--muted);padding:24px 8px}
+.dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
 <body>
@@ -104,15 +266,30 @@ tr.hl td{background:var(--accent-soft)}
 
 <div class="wrap">
   <header>
-    <h1>Convertisseur de cotes</h1>
+    <h1 id="h1">Convertisseur de cotes</h1>
     <p class="sub" id="sub">Valeur correcte + 2 crans en dessous, par pas de 1/16 po, avec le rayon.</p>
-    <a class="dl" href="Convertisseur_cotes.xlsx" download>⬇ Télécharger la version Excel</a>
+    <a class="dl" href="Convertisseur_et_outils_CNC.xlsx" download>⬇ Télécharger la version Excel</a>
   </header>
 
+  <nav class="tabs" role="tablist" aria-label="Sections">
+    <button type="button" role="tab" id="tab-conv" aria-selected="true" aria-controls="view-conv">Convertisseur</button>
+    <button type="button" role="tab" id="tab-feed" aria-selected="false" aria-controls="view-feed">Avances</button>
+    <button type="button" role="tab" id="tab-tools" aria-selected="false" aria-controls="view-tools">Outils</button>
+  </nav>
+
+  <div class="views" id="view-conv" role="tabpanel" aria-labelledby="tab-conv">
   <section class="panel" aria-label="Cote à convertir">
+    <div class="toprow">
     <div class="mode" role="group" aria-label="Mode de saisie">
       <button type="button" id="m-dec" aria-pressed="true">Décimal</button>
       <button type="button" id="m-frac" aria-pressed="false">Fraction</button>
+    </div>
+    <div class="conv mini">
+      <div class="kv"><span>Cote po</span><b id="c-in">–</b></div>
+      <div class="kv"><span>Cote mm</span><b id="c-mm">–</b></div>
+      <div class="kv"><span>Rayon po</span><b id="r-in">–</b></div>
+      <div class="kv"><span>Rayon mm</span><b id="r-mm">–</b></div>
+    </div>
     </div>
     <span class="lbl">Table (pas des outils)</span>
     <div class="mode" id="steps" role="group" aria-label="Table">
@@ -149,12 +326,6 @@ tr.hl td{background:var(--accent-soft)}
     </div>
     <p class="hint" id="hint">Accepte 0.3125 ou 0,3125. Pour une fraction, touche « Fraction » en haut.</p>
     </div>
-    <div class="conv">
-      <div class="kv"><span>Cote en po</span><b id="c-in">–</b></div>
-      <div class="kv"><span>Cote en mm</span><b id="c-mm">–</b></div>
-      <div class="kv"><span>Rayon po</span><b id="r-in">–</b></div>
-      <div class="kv"><span>Rayon mm</span><b id="r-mm">–</b></div>
-    </div>
     <div class="status" id="status" role="status"></div>
   </section>
 
@@ -172,8 +343,85 @@ tr.hl td{background:var(--accent-soft)}
       <tbody id="tbody"></tbody>
     </table></div>
   </section>
+  </div>
+
+  <div class="views" id="view-feed" role="tabpanel" aria-labelledby="tab-feed" hidden>
+    <section class="panel" aria-label="Paramètres de coupe">
+      <div class="field"><span class="lbl">1. Matériau</span><div class="seg" id="mats"></div></div>
+      <div class="field"><span class="lbl">2. Type de travail</span><div class="seg" id="kinds"></div></div>
+      <div class="field" id="dirField"><span class="lbl">Direction préférée</span><div class="seg" id="dirs"></div></div>
+      <div class="field">
+        <label class="lbl" for="thk" id="thkLbl">3. Épaisseur à couper (profondeur)</label>
+        <div class="inrow">
+          <input id="thk" class="numin" type="text" inputmode="text" autocomplete="off" value="1/2" style="flex:1 1 140px">
+        </div>
+        <div class="u3" id="thk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        <div class="minichips" id="thkchips"></div>
+        <p class="note" id="thkout"></p>
+      </div>
+    </section>
+
+    <section aria-label="Les 5 meilleurs outils">
+      <h2>Les 5 meilleurs outils de ta liste</h2>
+      <p class="note" id="t3note"></p>
+      <div class="flist" id="top3"></div>
+    </section>
+
+    <section class="panel" aria-label="Conseils pour ce matériau">
+      <span class="lbl">Conseils pour ce matériau</span>
+      <div id="matwarn"></div>
+      <span class="lbl" style="margin-top:14px">Séries recommandées par Onsrud (si tu dois en commander)</span>
+      <div id="reco"></div>
+    </section>
+
+    <section aria-label="Autres outils">
+      <details class="more" id="allBox"><summary id="allSum"></summary>
+      <p class="note" id="fcount"></p>
+      <div class="flist" id="flist"></div></details>
+      <details class="more" id="moreBox"><summary id="moreSum"></summary><div class="flist" id="flist2"></div></details>
+    </section>
+
+    <section class="panel" aria-label="Calcul manuel">
+      <span class="lbl">Calcul manuel (n'importe quelle série Onsrud)</span>
+      <div class="selrow">
+        <label>Série<select id="m-series"></select></label>
+        <label>Diamètre<select id="m-dia"></select></label>
+        <label>Flûtes<select id="m-fl"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+      </div>
+      <div id="m-out"></div>
+    </section>
+
+    <p class="src">Chiploads : tableaux LMT Onsrud, repris du site <a href="https://maurojob23-ux.github.io/CNC-Router-Speeds/" target="_blank" rel="noopener">CNC Router Speeds</a>. Avance = RPM × flûtes × chipload. Ce sont des valeurs de départ : ajuste selon le son, les copeaux et le fini.</p>
+  </div>
+
+  <div class="views" id="view-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
+    <section class="panel" aria-label="Rechercher un outil">
+      <label class="lbl" for="q">Rechercher</label>
+      <input id="q" class="search" type="search" autocomplete="off" placeholder="N° outil, n° fabricant, emplacement, note…">
+      <div class="filters" id="types" role="group" aria-label="Type d'outil"></div>
+      <div class="field" style="margin-top:14px">
+        <div class="inrow">
+          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre (facultatif)</label>
+          <input id="t-dia" class="numin" type="text" inputmode="text" autocomplete="off" placeholder="ex. 1/4">
+          <div class="u3" id="tdia-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
+          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-thk">Épaisseur (facultatif)</label>
+          <input id="t-thk" class="numin" type="text" inputmode="text" autocomplete="off" placeholder="ex. 1/2">
+          <div class="u3" id="tthk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
+        </div>
+        <p class="note" id="t-thkout">Laisse vide pour voir tous les outils. Triés par diamètre.</p>
+      </div>
+    </section>
+    <p class="count" id="tcount" role="status"></p>
+    <div class="tlist" id="tlist"></div>
+  </div>
 </div>
 
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="d-title">
+  <div class="card" id="sheet-card"></div>
+</div>
+
+<script src="tools.js"></script>
+<script src="speeds.js"></script>
 <script>
 (function(){
   var unit = 'po', mode = 'dec', D = 16;
@@ -187,7 +435,7 @@ tr.hl td{background:var(--accent-soft)}
     var g = gcd(rest,D), f = (rest/g) + '/' + (D/g);
     return whole ? whole + ' ' + f : f;
   }
-  function fmt(x,d){ return x.toFixed(d).replace(/\.?0+$/,'') || '0'; }
+  function fmt(x,d){ var t = x.toFixed(d); return d > 0 ? (t.replace(/\.?0+$/,'') || '0') : t; }
   function parse(s){
     s = String(s).trim().replace(/,/g,'.').replace(/\s+/g,' ');
     if (!s) return NaN;
@@ -213,6 +461,7 @@ tr.hl td{background:var(--accent-soft)}
         cell('Rayon po', n > 0 ? fmt(d/2,5) : '—', true) +
         cell('Rayon mm', n > 0 ? fmt(d*25.4/2,3) : '—', true) +
       '</div>';
+    if (n > 0) el.appendChild(matchBlock(d));
     return el;
   }
   function cell(k,v,r){ return '<div' + (r ? ' class="r"' : '') + '><span>' + k + '</span><b>' + v + '</b></div>'; }
@@ -264,6 +513,532 @@ tr.hl td{background:var(--accent-soft)}
     try { localStorage.setItem('cote-unit', u); } catch(e){}
     update();
   }
+
+
+  // ================= Outils =================
+  var TOOLS = (window.TOOLS || []).slice();
+  var INCH = {dia:1, loc:1, shank:1, radius:1, sjMeas:1};
+  var FIELDS = [
+    ['id','N° interne','Internal Part Number'],['type','Type','Tooling Type'],
+    ['dia','Diamètre (po)','Diameter (in)'],['loc','Longueur de coupe (po)','Length of Cut'],
+    ['dir','Direction de coupe','Cut Direction'],['angle','Angle de coupe (°)','Cut Angle'],
+    ['flutes','Nombre de flûtes','Number of Flutes'],['shank','Queue (po)','Shank'],
+    ['radius','Rayon (po)','Radius'],['sjTeeth','Mors doux : dents (#)','SJ Teeth (#)'],
+    ['sjMeas','Mors doux : mesure (po)','SJ Measurement (in)'],
+    ['screw1','Vis #1','Screw #1'],['screw2','Vis #2','Screw #2'],['shim','Cale','Shim'],['clamp','Bride','Clamp'],
+    ['compat','Compatibilité plaquette','Insert Compatibility'],['mpn','N° pièce fabricant','Manufacturer Part Number'],
+    ['mfr','Fabricant','Manufacturer'],['grade','Nuance','Grade'],['chip','Brise-copeaux','Chip Breaker'],
+    ['supplier','Fournisseur','Supplier'],
+    ['lead','Délai','Lead Time'],['app','Application','Application'],['location','Emplacement','Location'],
+    ['note','Note','Note']
+  ];
+  function esc(v){ return String(v).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
+  function key(t){ return 'r' + t.row; }
+  function byKey(k){ for (var i=0;i<TOOLS.length;i++) if (key(TOOLS[i]) === k) return TOOLS[i]; return null; }
+  function fracIn(x){
+    if (typeof x !== 'number' || !(x > 0)) return '';
+    var n = Math.round(x*64);
+    if (Math.abs(x*64 - n) > 0.0005 || n === 0) return '';
+    var w = Math.floor(n/64), r = n % 64;
+    if (!r) return w + '"';
+    var g = gcd(r,64), f = (r/g) + '/' + (64/g);
+    return (w ? w + ' ' : '') + f + '"';
+  }
+  // fraction exacte au 1/64, sinon la plus proche avec « ≈ »
+  function fracAny(x){
+    if (typeof x !== 'number' || !(x > 0)) return '';
+    var f = fracIn(x); if (f) return f;
+    var n = Math.round(x*64); if (n < 1) return '';
+    var w = Math.floor(n/64), r = n % 64, s;
+    if (!r) s = w + '"'; else { var g = gcd(r,64); s = (w ? w + ' ' : '') + (r/g) + '/' + (64/g) + '"'; }
+    return '≈ ' + s;
+  }
+  function tri(x){ var f = fracAny(x); return (f ? f + ' · ' : '') + fmt(x,4) + ' po · ' + fmt(x*25.4,3) + ' mm'; }
+  function inchHtml(x){
+    if (typeof x !== 'number') return esc(x);
+    var f = fracAny(x);
+    return (f ? esc(f) + '<span class="mm">' + fmt(x,4) + ' po</span>' : fmt(x,4) + ' po') + '<span class="mm">' + fmt(x*25.4,3) + ' mm</span>';
+  }
+  function valHtml(k, v){
+    if (k === 'inUse') return v ? 'Oui' : 'Non';
+    if (INCH[k]) return inchHtml(v);
+    return esc(v);
+  }
+  function qtyPill(t){
+    if (typeof t.qty !== 'number') return '<span class="pill">Qté —</span>';
+    return '<span class="pill ' + (t.qty > 0 ? 'stock' : 'zero') + '">Qté ' + t.qty + '</span>';
+  }
+  function thumb(t){
+    return t.img ? '<img class="thumb" loading="lazy" alt="" src="' + esc(t.img) + '">'
+                 : '<span class="thumb ph" aria-hidden="true">' + esc((t.type || '?').slice(0,3)) + '</span>';
+  }
+  function summary(t){
+    var bits = [t.type];
+    if (t.dir) bits.push(t.dir);
+    if (t.mpn != null) bits.push(String(t.mpn));
+    return bits.join(' · ');
+  }
+  function toolRow(t, hideDia){
+    var b = document.createElement('button'); b.type = 'button'; b.className = 'trow';
+    b.setAttribute('data-k', key(t));
+    b.innerHTML = thumb(t) +
+      '<span class="tmain"><b>' + esc(t.id || '—') + '</b><span class="t1">' + esc(summary(t)) + '</span>' +
+      (typeof t.dia === 'number' && !hideDia ? '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' : '') +
+      (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' : '') + '</span>' +
+      '<span class="tside">' + (t.location ? '<span class="loc">' + esc(t.location) + '</span>' : '') + '</span>';
+    b.addEventListener('click', function(){ openTool(key(t)); });
+    return b;
+  }
+  function matchBlock(d){
+    var box = document.createElement('div'); box.className = 'match';
+    var m = TOOLS.filter(function(t){ return typeof t.dia === 'number' && Math.abs(t.dia - d) < 0.0005; });
+    m.sort(function(a,b){ return String(a.id).localeCompare(String(b.id)); });
+    box.innerHTML = '<span class="mh">Dans l\'inventaire : ' + (m.length ? m.length + ' outil' + (m.length>1?'s':'') : 'aucun') + '</span>';
+    if (!m.length) { var p = document.createElement('span'); p.className = 'none'; p.textContent = 'Aucun outil de ce diamètre dans la liste.'; box.appendChild(p); }
+    m.forEach(function(t){ box.appendChild(toolRow(t, true)); });
+    return box;
+  }
+
+  // détail
+  var lastFocus = null;
+  function openTool(k, noHash){
+    var t = byKey(k); if (!t) return;
+    lastFocus = document.activeElement;
+    var h = '<div class="bar"><div><h3 id="d-title">' + esc(t.id || '—') + '</h3><span class="ty">' + esc(t.type || '') + '</span></div>' +
+            '<button type="button" class="close" id="d-close">Fermer</button></div>';
+    if (t.img) h += '<img class="photo" alt="Photo ' + esc(t.id) + '" src="' + esc(t.img) + '">';
+    h += '<div class="badges">' +
+         (t.location ? '<span class="pill">Emplacement ' + esc(t.location) + '</span>' : '') + '</div>';
+    var dupes = TOOLS.filter(function(o){ return o.id && o.id === t.id; });
+    if (dupes.length > 1) h += '<div class="warnbox">Attention : le n° ' + esc(t.id) + ' est utilisé pour ' + dupes.length + ' outils différents dans la liste.</div>';
+    var bigs = ['dia','loc','shank','radius'].filter(function(f){ return typeof t[f] === 'number'; });
+    if (bigs.length){
+      h += '<div class="big">' + bigs.map(function(f){
+        var lab = {dia:'Diamètre',loc:'Longueur de coupe',shank:'Queue',radius:'Rayon'}[f], fr = fracAny(t[f]);
+        return '<div class="kv"><span>' + lab + '</span><b>' + (fr || fmt(t[f],4) + '"') + '</b><small>' + fmt(t[f],4) + ' po · ' + fmt(t[f]*25.4,3) + ' mm</small></div>';
+      }).join('') + '</div>';
+    }
+    h += '<dl class="all">';
+    FIELDS.forEach(function(f){
+      var v = t[f[0]]; if (v === undefined || v === null || v === '') return;
+      if (f[0] === 'id' || f[0] === 'type' || f[0] === 'location') return;
+      if (bigs.indexOf(f[0]) >= 0) return;
+      h += '<dt>' + f[1] + '<small>' + f[2] + '</small></dt><dd>' + valHtml(f[0], v) + '</dd>';
+    });
+    h += '</dl>';
+    if (t.link) h += '<a class="ext" href="' + esc(t.link) + '" target="_blank" rel="noopener">Fiche du fabricant ↗</a>';
+    // liens plaquettes <-> porte-outils
+    var ids = String(t.compat || '').match(/I\d{4}/g) || [];
+    var compat = TOOLS.filter(function(o){ return ids.indexOf(o.id) >= 0; });
+    var usedBy = t.id ? TOOLS.filter(function(o){ return o !== t && (String(o.compat || '').match(/I\d{4}/g) || []).indexOf(t.id) >= 0; }) : [];
+    h += '<div class="rel" id="rel-a"></div><div class="rel" id="rel-b"></div>';
+    var card = $('sheet-card'); card.innerHTML = h; card.scrollTop = 0;
+    function fill(id, title, list){ if (!list.length) return; var el = $(id); el.innerHTML = '<h4>' + title + '</h4>'; list.forEach(function(o){ el.appendChild(toolRow(o)); }); }
+    fill('rel-a', 'Plaquettes compatibles', compat);
+    fill('rel-b', 'Utilisée dans', usedBy);
+    $('d-close').addEventListener('click', closeTool);
+    $('sheet').hidden = false; document.body.style.overflow = 'hidden';
+    $('d-close').focus();
+    if (!noHash) try { history.replaceState(null, '', '#' + k); } catch(e){}
+  }
+  function closeTool(){
+    $('sheet').hidden = true; document.body.style.overflow = '';
+    try { history.replaceState(null, '', '#' + ({conv:'convertisseur', feed:'avances', tools:'outils'})[view]); } catch(e){}
+    if (lastFocus && lastFocus.focus) lastFocus.focus();
+  }
+  $('sheet').addEventListener('click', function(e){ if (e.target === this) closeTool(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('sheet').hidden) closeTool(); });
+
+  // liste
+  var fType = '', TYPES = [];
+  TOOLS.forEach(function(t){ if (t.type && TYPES.indexOf(t.type) < 0) TYPES.push(t.type); });
+  function renderTypes(){
+    var box = $('types'), all = [['', 'Tous', TOOLS.length]].concat(TYPES.map(function(ty){ return [ty, ty, TOOLS.filter(function(t){ return t.type === ty; }).length]; }));
+    box.innerHTML = '';
+    all.forEach(function(a){
+      var b = document.createElement('button'); b.type = 'button';
+      b.setAttribute('aria-pressed', a[0] === fType); b.innerHTML = esc(a[1]) + '<span>' + a[2] + '</span>';
+      b.addEventListener('click', function(){ fType = a[0]; renderTypes(); renderList(); });
+      box.appendChild(b);
+    });
+  }
+  function hay(t){ return FIELDS.map(function(f){ var v = t[f[0]]; return v == null ? '' : String(v); }).join(' ').toLowerCase(); }
+  function renderList(){
+    var q = $('q').value.trim().toLowerCase(), words = q ? q.split(/\s+/) : [];
+    var tth = u3val('t-thk','tthk-u'), tdi = u3val('t-dia','tdia-u');
+    var msg = [];
+    if (tdi > 0) msg.push('Diamètre : ' + tri(tdi));
+    if (tth > 0) msg.push('Épaisseur : ' + tri(tth) + ' (LOC qui la couvre)');
+    $('t-thkout').textContent = msg.length ? msg.join(' · ') + '. Triés par diamètre.' : 'Laisse vide pour voir tous les outils. Triés par diamètre.';
+    var list = TOOLS.filter(function(t){
+      if (fType && t.type !== fType) return false;
+      if (tth > 0 && !(typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) return false;
+      if (tdi > 0 && !(typeof t.dia === 'number' && Math.abs(t.dia - tdi) < 0.002)) return false;
+      var h = hay(t); return words.every(function(w){ return h.indexOf(w) >= 0; });
+    });
+    list.sort(function(a,b){
+      var x = typeof a.dia === 'number' ? a.dia : 1e9, y = typeof b.dia === 'number' ? b.dia : 1e9; if (x !== y) return x - y;
+      if (tth > 0){ var la = typeof a.loc === 'number' ? a.loc : 1e9, lb = typeof b.loc === 'number' ? b.loc : 1e9; if (la !== lb) return la - lb; }
+      return a.row - b.row;
+    });
+    $('tcount').textContent = list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length;
+    var box = $('tlist'); box.innerHTML = '';
+    if (!list.length){
+      var near = '';
+      if (tdi > 0){
+        var ds = []; TOOLS.forEach(function(t){ if (typeof t.dia === 'number' && (!(tth > 0) || (typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) && ds.indexOf(t.dia) < 0) ds.push(t.dia); });
+        ds.sort(function(a,b){ return Math.abs(a - tdi) - Math.abs(b - tdi); });
+        if (ds.length) near = ' Diamètres les plus proches dans ta liste : ' + ds.slice(0,3).sort(function(a,b){ return a-b; }).map(function(d){ return esc(fracAny(d) || fmt(d,4) + '"'); }).join(', ') + '.';
+      }
+      box.innerHTML = '<p class="empty-state">Aucun outil ne correspond.' + near + '</p>'; return;
+    }
+    var frag = document.createDocumentFragment(); list.forEach(function(t){ frag.appendChild(toolRow(t)); }); box.appendChild(frag);
+  }
+  $('q').addEventListener('input', renderList);
+  // sélecteur d'unité indépendant par champ : Fraction / Décimal po / mm
+  var PH = {frac:'ex. 1/2', dec:'ex. 0.5', mm:'ex. 12.7'};
+  function u3set(segId, inputId, u){
+    var seg = $(segId); seg.setAttribute('data-u', u);
+    [].forEach.call(seg.children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-u') === u); });
+    var inp = $(inputId); inp.setAttribute('inputmode', u === 'frac' ? 'text' : 'decimal');
+    if (inp.hasAttribute('placeholder')) inp.setAttribute('placeholder', PH[u]);
+  }
+  function u3init(segId, inputId, cb){
+    [].forEach.call($(segId).children, function(b){ b.addEventListener('click', function(){ u3set(segId, inputId, b.getAttribute('data-u')); cb(); }); });
+    u3set(segId, inputId, 'frac');
+  }
+  function u3val(inputId, segId){ var v = parse($(inputId).value); if ($(segId).getAttribute('data-u') === 'mm' && v > 0) v = v/25.4; return v; }
+  u3init('tdia-u', 't-dia', renderList);
+  u3init('tthk-u', 't-thk', renderList);
+  $('t-thk').addEventListener('input', renderList);
+  $('t-dia').addEventListener('input', renderList);
+
+
+  // ================= Avances (Onsrud) =================
+  var SP = window.SPEEDS || {MATERIALS:[],DIAMETERS:[]};
+  var MATFR = {
+    hard_plastic:['Plastique dur','Acrylique, polycarbonate, acétal, PVC, phénolique, HDPE',/hard plastic|(^|,)\s*plastics?\s*(,|$)/i],
+    soft_plastic:['Plastique mou','UHMW, polypropylène, polyéthylène, PVC flexible, nylon, styrène',/soft plastic|(^|,)\s*plastics?\s*(,|$)/i],
+    mdf:['MDF et bois composite','MDF, panneau de particules, panneaux laminés, HDF',/wood composite|laminated|mdf|particle/i],
+    aluminum:['Aluminium et non-ferreux','Aluminium 6061/7075, laiton, cuivre, bronze',/alumin|non-ferrous/i],
+    composite:['Composites','Fibre de carbone, fibre de verre, phénolique, Kevlar',/composite|carbon|fiberglass/i],
+    hardwood_softwood:['Bois franc et bois mou','Chêne, érable, noyer, pin, cèdre, merisier russe',/hard wood|soft wood|hardwood|softwood|(^|,)\s*wood\s*(,|$)/i]
+  };
+  // choix de matière : matières de l'atelier d'abord, chacune reliée à la catégorie Onsrud correspondante.
+  // shop = avance réelle de l'atelier (po/min), appliquée à toutes les fraises pour cette matière.
+  var CHOICES = [
+    {id:'poly', name:'Polycarbonate', desc:'Lexan, Makrolon', on:'hard_plastic', shop:{dia:0.25, feed:[160,180]}},
+    {id:'acry', name:'Acrylique', desc:'Plexiglas, PMMA', on:'hard_plastic'},
+    {id:'hdpe', name:'HDPE', desc:'Polyéthylène haute densité', on:'hard_plastic', shop:{dia:0.25, feed:[250,250]}},
+    {id:'uhmw', name:'UHMW', desc:'Polyéthylène UHMW', on:'soft_plastic', shop:{dia:0.25, feed:[250,250]}},
+    {id:'hard_plastic', name:'Autre plastique dur', desc:'Acétal, PVC, phénolique', on:'hard_plastic'},
+    {id:'soft_plastic', name:'Autre plastique mou', desc:'Polypropylène, PVC flexible, nylon, styrène', on:'soft_plastic'},
+    {id:'mdf', on:'mdf', hidden:true}, {id:'aluminum', on:'aluminum', hidden:true}, {id:'composite', on:'composite', hidden:true}, {id:'hardwood_softwood', on:'hardwood_softwood', hidden:true}
+  ];
+  CHOICES.forEach(function(c){ var f = MATFR[c.on]; if (!c.name){ c.name = f[0]; c.desc = f[1]; } c.kw = f[2]; });
+  function choice(){ for (var i=0;i<CHOICES.length;i++) if (CHOICES[i].id === fMat) return CHOICES[i]; return CHOICES[0]; }
+  function shopRpm(dia){
+    var ch = choice(), half = typeof dia === 'number' && Math.abs(dia - 0.5) < 0.0005;
+    if (half) return fKind === 'pocket' ? {rpm:18000, why:'trous 1/2" (atelier)'} : {rpm:20000, why:'détourage 1/2" (atelier)'};
+    return ch.shop && fKind === 'pocket' ? {rpm:17000, why:'trous / poches (atelier)'} : {rpm:23000, why: fKind === 'pocket' ? 'RPM atelier' : 'détourage (atelier)'};
+  }
+  var WARNFR = {
+    'When chip rewelding occurs while cutting plastic, increase feed rate or switch to a single edge tool.':'Si les copeaux se ressoudent, augmente l\'avance ou passe à un outil à une flûte.',
+    'Incorrect chip loads can result in cratering, melting, or poor surface finish.':'Un mauvais chipload cause des cratères, de la fonte ou un mauvais fini.',
+    'To eliminate rewelding, increase the feed rate or change to a single edge tool.':'Pour éliminer le ressoudage, augmente l\'avance ou passe à un outil à une flûte.',
+    'If using a downcut spiral and chip rewelding occurs, cut a slot in your spoilboard to allow chips a place to expand.':'Avec une fraise downcut, si les copeaux se ressoudent, fais une rainure dans la table martyre pour que les copeaux aient de la place.',
+    'Incorrect chip loads can lead to knife marks or burrs.':'Un mauvais chipload laisse des marques de couteau ou des bavures.',
+    'Ensure proper dust collection due to fine abrasive wood particles.':'Assure une bonne aspiration : les fines particules de bois sont abrasives.',
+    'Compression spiral bits produce clean top and bottom edge cuts on laminated panels.':'Les fraises à compression donnent des arêtes propres dessus et dessous sur les panneaux laminés.',
+    'Use single-flute O-flute endmills to clear soft gummy aluminum chips efficiently.':'Utilise des fraises O-flute à une flûte pour bien évacuer les copeaux d\'aluminium collants.',
+    'Apply air blast or mist lubricant (MQL) to prevent chip welding on the tool.':'Utilise un jet d\'air ou une micro-lubrification (MQL) pour éviter que les copeaux se soudent sur l\'outil.',
+    'Abrasive materials cause fast tool wear. Use diamond-coated or PCD tools when possible.':'Matériaux abrasifs : usure rapide. Utilise des outils diamantés ou PCD si possible.',
+    'Spindle RPMs generally range from 12,000-16,000 for PCD tools.':'Les outils PCD tournent en général entre 12 000 et 16 000 RPM.',
+    'Use upcut endmills for deep slotting and fast chip clearance.':'Fraise upcut pour les rainures profondes et une évacuation rapide des copeaux.',
+    'Use downcut or compression endmills for tearout-free top surface finishes.':'Fraise downcut ou à compression pour une surface du dessus sans arrachement.'
+  };
+  var OPS = [['single_pass','Une passe','Pleine profondeur'],['roughing','Ébauche','Enlever la matière'],['finishing','Finition','Passe finale']];
+  var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = 'upcut';
+  var KINDS = [['profile','Détourage / profil','Fraises droites'],['pocket','Trous / poches','Fraises droites'],['chamfer','Chanfrein / V / gravure','V, chanfrein, countersink'],['ball','3D / bout rond','Ball nose']];
+  var DIRS = [['upcut','Upcut','Évacue les copeaux'],['downcut','Downcut','Dessus propre']];
+  // genre d'outil d'après la direction et la note de ta liste
+  function kindOf(t){
+    var n = String(t.note || '').toLowerCase();
+    if (/ball/.test(n)) return 'ball';
+    if (/chamfer|countersink|engrav|v groov|bevel/.test(n)) return 'chamfer';
+    if (/keyseat|thread|radius/.test(n)) return 'other';
+    return 'straight';
+  }
+  function needKind(){ return fKind === 'chamfer' ? 'chamfer' : fKind === 'ball' ? 'ball' : 'straight'; }
+  function dirOk(t){ return String(t.dir || '').toLowerCase().indexOf(fDir) >= 0; }
+  // RPM Onsrud : les tableaux de charge par dent d'Onsrud sont donnés pour environ 18 000 RPM (référence Onsrud),
+  // sauf les séries 37-50 et 37-60 notées à 12 500 RPM. Onsrud ne donne pas de plage de RPM.
+  function idealRpm(series){
+    var ons = series ? (/^37-[56]0/.test(String(series.series)) ? 12500 : 18000) : null;
+    return {rpm:23000, why:'RPM de l\'atelier', ons:ons, onsWhy: ons === 12500 ? 'Onsrud, série 37-50/37-60' : 'référence Onsrud'};
+  }
+  // deux réglages au chipload max : Max atelier (23 000 RPM) et Max Onsrud (RPM de référence Onsrud)
+  // chipload visé : milieu de la plage Onsrud ; RPM atelier et RPM de référence Onsrud
+  function setTable(ir, fl, cmin, cmax){
+    var c = (cmin + cmax)/2;
+    function col(cls, title, rpm, why, extra){
+      var f = rpm*fl*c;
+      return '<div class="set ' + cls + '"><span class="st">' + title + '</span>' +
+        '<span class="k">RPM</span><b>' + rpm.toLocaleString('fr-CA') + '</b><small>' + why + '</small>' +
+        '<span class="k">Avance</span><b>' + fmt(f,0) + ' po/min</b><small>' + mmTxt(f) + '</small><small>= ' + rpm.toLocaleString('fr-CA') + ' × ' + fl + ' × ' + fmt(c,4) + '"</small>' + (extra || '') +
+        '<span class="k">Chipload</span><b>' + fmt(c,4) + '"</b><small>' + fmt(c*25.4,3) + ' mm · milieu Onsrud</small><small>plage ' + fmt(cmin,4) + '–' + fmt(cmax,4) + '" · ' + fl + ' flûte' + (fl > 1 ? 's' : '') + '</small></div>';
+    }
+    var hab = ir.shop ? '<small>habitude atelier : ' + (ir.shop.fmin !== ir.shop.fmax ? ir.shop.fmin + '–' + ir.shop.fmax : ir.shop.fmax) + ' po/min</small>' : '';
+    var ons = ir.ons ? col('smid', 'Onsrud', ir.ons, ir.onsWhy)
+      : '<div class="set smid"><span class="st">Onsrud</span><small style="font-family:var(--sans);font-size:.85rem;margin-top:6px">Pas de données Onsrud pour cet outil.</small></div>';
+    return '<div class="sets">' + col('smax', 'Atelier', ir.rpm, ir.why, hab) + ons + '</div>';
+  }
+  function mat(){ var on = choice().on; for (var i=0;i<SP.MATERIALS.length;i++) if (SP.MATERIALS[i].id === on) return SP.MATERIALS[i]; return SP.MATERIALS[0]; }
+  function diaKey(x){ for (var i=0;i<SP.DIAMETERS.length;i++) if (Math.abs(SP.DIAMETERS[i].decimal - x) < 0.0005) return SP.DIAMETERS[i].fraction; return null; }
+  function diaDec(k){ for (var i=0;i<SP.DIAMETERS.length;i++) if (SP.DIAMETERS[i].fraction === k) return SP.DIAMETERS[i].decimal; return null; }
+  function depthMult(ratio){ return ratio <= 1.0001 ? 1 : ratio <= 2.0001 ? 0.75 : 0.5; }
+  function depthLabel(ratio){ return ratio <= 1.0001 ? '1×D' : ratio <= 2.0001 ? '2×D' : ratio <= 3.0001 ? '3×D' : 'plus de 3×D'; }
+  // même logique que le site : valeur du tableau, sinon diamètre le plus proche de la série mis à l'échelle
+  function chip(series, dia){
+    var cl = series.chipLoads, k = diaKey(dia);
+    if (k && cl[k]) return {min:cl[k][0], max:cl[k][1], exact:true};
+    var best = null, bd = 1e9;
+    Object.keys(cl).forEach(function(kk){ var d = diaDec(kk); if (d != null && Math.abs(d - dia) < bd){ bd = Math.abs(d - dia); best = kk; } });
+    if (!best) return null;
+    var sc = dia / diaDec(best);
+    return {min:cl[best][0]*sc, max:cl[best][1]*sc, exact:false, from:best};
+  }
+  function parseNum(s){ s = String(s).trim().replace(/,/g,'.'); var v = parse(s); return v; }
+  function seriesFor(t, m){
+    if (!/onsrud/i.test(t.mfr || '') || t.mpn == null) return null;
+    var p = String(t.mpn).match(/^(\d{2})-(\d)(\d{2})([A-Z]*)/i); if (!p) return null;
+    var fam = p[1], hund = p[2], num = +(p[2]+p[3]), suf = (p[4]||'').toUpperCase();
+    var cands = [];
+    m.seriesList.forEach(function(sr){
+      String(sr.series).split(/[\/ ]+/).forEach(function(tok){
+        var q = tok.match(/^(\d{2})-(\d)(\d{2})([A-Z]*)/i);
+        if (q && q[1] === fam && q[2] === hund && +(q[2]+q[3]) <= num) cands.push({s:sr, n:+(q[2]+q[3]), suf:(q[4]||'').toUpperCase()});
+      });
+    });
+    if (!cands.length) return null;
+    var top = Math.max.apply(null, cands.map(function(c){ return c.n; }));
+    cands = cands.filter(function(c){ return c.n === top; });
+    if (suf){ var ws = cands.filter(function(c){ return c.suf === suf; }); return ws.length ? ws[0].s : null; }
+    var plain = cands.filter(function(c){ return !c.suf; });
+    return (plain[0] || cands[0]).s;
+  }
+  function recoFor(m, dia){
+    if (!m.recommendations) return {};
+    var g = dia >= 0.5 ? m.recommendations.halfInchAndAbove : m.recommendations.underHalfInch;
+    var key = fOp === 'single_pass' ? 'singlePass' : fOp;
+    return (g && g[key]) || {};
+  }
+  function recoLevel(series, dia, m){
+    if (!series) return '';
+    var r = recoFor(m, dia), toks = String(series.series).split(/[\/ ]+/);
+    var lv = '';
+    ['good','better','best'].forEach(function(l){ if (r[l] && String(r[l]).split(/[\/ ]+/).some(function(x){ return toks.indexOf(x) >= 0; })) lv = l; });
+    return lv;
+  }
+  var LV = {good:'Bon choix', better:'Meilleur choix', best:'Choix idéal'};
+  function feedTxt(ipm){ return fmt(ipm,1) + ' po/min'; }
+  function mmTxt(ipm){ return Math.round(ipm*25.4).toLocaleString('fr-CA') + ' mm/min'; }
+
+  function renderFeed(){
+    var ch = choice(), m = mat(), info = [ch.name, ch.desc, ch.kw];
+    var th = parseNum($('thk').value); if (tUnit === 'mm' && th > 0) th = th/25.4;
+    var rpm = 0;
+    $('thkout').textContent = th > 0 ? 'Épaisseur : ' + tri(th) : 'Entre une épaisseur, par exemple 1/2, 0.75 ou 12 (mm).';
+    // recommandations
+    var rec = m.recommendations, key = fOp === 'single_pass' ? 'singlePass' : fOp;
+    function recBox(title, g){
+      var r = g && g[key];
+      if (!r || !(r.good || r.better || r.best)) return '<div><h4>' + title + '</h4><p>Pas de recommandation</p></div>';
+      return '<div><h4>' + title + '</h4><p>' + (r.best ? '<span>Idéal</span>' + esc(r.best) + '<br>' : '') + (r.better ? '<span>Meilleur</span>' + esc(r.better) + '<br>' : '') + (r.good ? '<span>Bon</span>' + esc(r.good) : '') + '</p></div>';
+    }
+    $('reco').innerHTML = rec ? '<div class="reco">' + recBox('Outil < 1/2"', rec.underHalfInch) + recBox('Outil 1/2" et +', rec.halfInchAndAbove) + '</div>' : '<p class="note">Onsrud ne donne pas de recommandation de série pour ce matériau.</p>';
+    var w = (m.warnings || []).map(function(x){ return '<div class="alert info">' + esc(WARNFR[x] || x) + '</div>'; }).join('');
+    if (m.id === 'hard_plastic' || m.id === 'soft_plastic') w += '<div class="alert"><b>23 000 RPM dans le plastique :</b> avec un outil à plus d\'une flûte, risque de fonte. Surveille les copeaux ; si ça fond, augmente l\'avance ou prends un outil à une flûte.</div>';
+    $('matwarn').innerHTML = w;
+    // outils
+    var kw = info[2];
+    var rows = TOOLS.filter(function(t){ return (t.type === 'End Mill' || /^EM/i.test(String(t.id || ''))) && typeof t.dia === 'number' && kindOf(t) === needKind(); }).map(function(t){
+      var sr = seriesFor(t, m), app = String(t.app || '').toLowerCase();
+      var appOk = kw ? kw.test(String(t.app || '')) : false;
+      var fl = typeof t.flutes === 'number' ? t.flutes : null;
+      var c = sr ? chip(sr, t.dia) : null, generic = false;
+      if (!c){ var b = m.defaultChipLoad || 0.005; c = {min:b*(t.dia/0.25)*0.8, max:b*(t.dia/0.25)*1.2}; generic = true; }
+      var passes = th > 0 ? Math.max(1, Math.ceil(th/(dMax*t.dia) - 1e-9)) : 1;
+      var per = th > 0 ? th/passes : 0, ratio = th > 0 ? per / t.dia : 1, mult = depthMult(ratio);
+      var cmin = c.min*mult, cmax = c.max*mult, cmid = (cmin+cmax)/2;
+      var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc + 1e-6 >= th;
+      var lv = recoLevel(sr, t.dia, m);
+      var ir = idealRpm(sr), sp = shopRpm(t.dia); ir.rpm = sp.rpm; ir.why = sp.why;
+      if (ch.shop) ir.shop = {fmin:ch.shop.feed[0], fmax:ch.shop.feed[1]};
+      var prod = fl ? ir.rpm*fl*cmid/passes : 0;
+      return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
+    });
+    var main = rows.filter(function(r){ return r.sr || r.appOk; });
+    var other = rows.filter(function(r){ return !(r.sr || r.appOk); });
+    var lvRank = {best:3, better:2, good:1, '':0};
+    function sorter(a,b){
+      var la = a.locOk === false ? 0 : 1, lb = b.locOk === false ? 0 : 1; if (la !== lb) return lb - la;
+      if (needKind() === 'straight'){ var da = dirOk(a.t) ? 1 : 0, db = dirOk(b.t) ? 1 : 0; if (da !== db) return db - da; }
+      if (!!a.sr !== !!b.sr) return a.sr ? -1 : 1;
+      if (a.appOk !== b.appOk) return a.appOk ? -1 : 1;
+      if (a.passes !== b.passes) return a.passes - b.passes;
+      if (lvRank[a.lv] !== lvRank[b.lv]) return lvRank[b.lv] - lvRank[a.lv];
+      if (Math.abs(a.prod - b.prod) > 0.5) return b.prod - a.prod;
+      if (a.t.dia !== b.t.dia) return b.t.dia - a.t.dia;
+      var ea = typeof a.t.loc === 'number' ? a.t.loc : 99, eb = typeof b.t.loc === 'number' ? b.t.loc : 99;
+      return ea - eb;
+    }
+    main.sort(sorter); other.sort(sorter);
+    function card(r, rank){
+      var t = r.t, b = document.createElement('button'); b.type = 'button';
+      b.className = 'feedcard' + (rank ? ' top' + (rank === 1 ? ' top1' : '') : '') + (r.locOk === false ? ' bad' : '');
+      var tags = '';
+      if (r.lv) tags += '<span class="tag2 best">' + LV[r.lv] + ' Onsrud</span>';
+      if (r.sr) tags += '<span class="tag2">Série ' + esc(r.sr.series) + '</span>';
+      if (r.appOk && !rank) tags += '<span class="tag2 ok">Prévu pour ce matériau</span>';
+      var fAt = r.fl ? r.ir.rpm*r.fl*r.cmid : 0;
+      if (r.ir.shop && r.fl && Math.abs(fAt/r.ir.shop.fmax - 1) > 0.05) tags += '<span class="tag2">Avance ' + (fAt > r.ir.shop.fmax ? '+' : '−') + Math.abs(Math.round((fAt/r.ir.shop.fmax - 1)*100)) + ' % vs habitude atelier</span>';
+      if (t.note) tags += '<span class="tag2">' + esc(String(t.note).trim()) + '</span>';
+      if (r.locOk === true && !rank) tags += '<span class="tag2 ok">LOC suffisante</span>';
+      var RK = ['', '1er choix · idéal', '2e choix', '3e choix', '4e choix', '5e choix'];
+      var lvl = 'good', lvTxt = 'Conforme Onsrud';
+      if (r.locOk === false || r.ratio > 3.0001){ lvl = 'bad'; lvTxt = r.locOk === false ? 'LOC trop courte' : 'Trop profond'; }
+      else if (r.generic){ lvl = 'warn'; lvTxt = 'Estimation, à vérifier'; }
+      b.className += ' lv-' + lvl;
+      var head = '<div class="rankrow">' + (rank ? '<div class="rank">' + RK[rank] + '</div>' : '<span></span>') + '<span class="lvl ' + lvl + '">' + lvTxt + '</span></div>' + '<div class="fhead">' + thumb(t) + '<div><b>' + esc(t.id) + '</b><span class="t1">' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div></div>';
+      var dims = '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' + (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' + (th > 0 && t.loc >= th - 1e-6 ? '<span class="dim" style="color:var(--muted)"><i></i> ' + (t.loc - th < 0.0005 ? 'pile l\'épaisseur' : esc(tri(t.loc - th)) + ' de plus que l\'épaisseur') + '</span>' : '') : '');
+      var fg, rpm = r.ir.rpm;
+      if (r.fl && rpm > 0){
+        var fmin = rpm*r.fl*r.cmin, fmax = rpm*r.fl*r.cmax, fmid = rpm*r.fl*r.cmid;
+        fg = '<div class="feedgrid">' +
+          (th > 0 ? '<div><span>Passes</span><b class="hi">' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b><small>' + esc(fracAny(r.per) || fmt(r.per,4) + '"') + ' · ' + fmt(r.per,4) + ' po · ' + fmt(r.per*25.4,2) + ' mm par passe (' + depthLabel(r.ratio) + (r.mult < 1 ? ', chipload × ' + r.mult : '') + ')</small></div>' : '') +
+        '</div>' + setTable(r.ir, r.fl, r.cmin, r.cmax);
+      } else fg = '<p class="note">Nombre de flûtes inconnu dans ta liste : impossible de calculer l\'avance.</p>';
+      var al = '';
+      if (th > 0 && t.dia < 0.375 && /plastic/.test(m.id)) al += '<div class="alert info"><b>Passe de finition conseillée :</b> petit outil, laisse 0.015" à 0.030" (0.4 à 0.8 mm) pour une dernière passe sur toute l\'épaisseur.</div>';
+      if (r.locOk === false) al += '<div class="alert bad"><b>Pas en une passe :</b> la LOC (' + esc(fracAny(t.loc) || fmt(t.loc,4)+'"') + ') est plus courte que l\'épaisseur. Fais plusieurs passes ou prends une fraise plus longue.</div>';
+      else if (r.ratio > 3.0001) al += '<div class="alert bad"><b>Plus de 3×D :</b> trop profond pour ce diamètre en une passe selon Onsrud. Fais plusieurs passes ou prends un outil plus gros.</div>';
+      if (r.generic) al += '<div class="alert">Pas de série Onsrud reconnue pour cet outil : avance estimée à partir de la valeur moyenne du matériau. Vérifie avec la fiche du fabricant.</div>';
+      b.innerHTML = head + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al;
+      b.addEventListener('click', function(){ openTool(key(t)); });
+      return b;
+    }
+    var ok = main.filter(function(r){ return r.fl && (th > 0 ? (needKind() === 'straight' ? r.locOk === true : r.locOk !== false) : true); });
+    // 3 choix de diamètres différents : le meilleur outil de chaque diamètre
+    var top = [], seenD = {};
+    // priorité aux end mills (n° EM…), puis des diamètres variés, puis on complète jusqu'à 5
+    ok.sort(function(a,b){ var ea = /^EM/i.test(String(a.t.id)) ? 0 : 1, eb = /^EM/i.test(String(b.t.id)) ? 0 : 1; return ea - eb; });
+    // un outil par diamètre : parmi ceux de même direction, la LOC la plus proche de l'épaisseur (plus court = plus rigide)
+    function exc(r){ return th > 0 && typeof r.t.loc === 'number' ? r.t.loc - th : 99; }
+    ok.forEach(function(r){
+      var k = r.t.dia.toFixed(4); if (top.length >= 5 || seenD[k]) return; seenD[k] = 1;
+      var best = r;
+      ok.forEach(function(x){ if (x.t.dia.toFixed(4) === k && dirOk(x.t) === dirOk(r.t) && exc(x) < exc(best) - 0.0005) best = x; });
+      top.push(best);
+    });
+    ok.forEach(function(r){ if (top.length < 5 && top.indexOf(r) < 0) top.push(r); });
+    var tb = $('top3'); tb.innerHTML = '';
+    top.forEach(function(r,i){ tb.appendChild(card(r, i+1)); });
+    $('t3note').textContent = !(th > 0) ? 'Entre l\'épaisseur pour vérifier la LOC et calculer les passes.' :
+      top.length && needKind() !== 'straight' ? 'Outils de ce type dans ta liste, classés de l\'idéal au ' + (top.length > 1 ? top.length + 'e' : '1er') + ' choix.' + (top.length < 5 ? ' Ta liste n\'en contient pas plus pour ce matériau.' : '') :
+      top.length ? 'Fraises dont la LOC couvre ' + (fracAny(th) || fmt(th,4) + '"') + ', classées de l\'idéal au ' + (top.length > 1 ? top.length + 'e' : '1er') + ' choix' + (needKind() === 'straight' ? ', les ' + ({upcut:'Upcut',downcut:'Downcut',compression:'Compression'})[fDir] + ' en premier' : '') + '. Passes calculées selon la règle de l\'atelier : jamais plus profond que le diamètre de l\'outil par passe.' :
+      'Aucune fraise de ta liste n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + ' dans ce matériau.';
+    main = main.filter(function(r){ return top.indexOf(r) < 0; });
+    $('allSum').textContent = 'Voir les ' + main.length + ' autres outils de ce type pour ce matériau';
+    $('allBox').hidden = !main.length;
+    var box = $('flist'); box.innerHTML = '';
+    $('fcount').textContent = 'Classées de la meilleure à la moins bonne. Les fraises à LOC trop courte sont grisées. Touche une fraise pour voir sa fiche.';
+    main.forEach(function(r){ box.appendChild(card(r)); });
+    var b2 = $('flist2'); b2.innerHTML = '';
+    other.forEach(function(r){ b2.appendChild(card(r)); });
+    $('moreBox').hidden = !other.length;
+    $('moreSum').textContent = 'Voir les ' + other.length + ' autres outils de ce type (pas prévus pour ce matériau)';
+    renderManual();
+  }
+  function renderManual(){
+    var m = mat(), sel = $('m-series'), cur = sel.value;
+    if (sel.getAttribute('data-mat') !== m.id){
+      sel.innerHTML = m.seriesList.map(function(sr){ return '<option>' + esc(sr.series) + '</option>'; }).join('');
+      sel.setAttribute('data-mat', m.id);
+      if (m.seriesList.some(function(sr){ return sr.series === cur; })) sel.value = cur;
+    }
+    var sr = m.seriesList.filter(function(x){ return x.series === sel.value; })[0] || m.seriesList[0];
+    var ds = $('m-dia'), dcur = ds.value, keys = Object.keys(sr.chipLoads);
+    keys.sort(function(a,b){ return diaDec(a) - diaDec(b); });
+    ds.innerHTML = keys.map(function(k){ return '<option value="' + k + '">' + k + '"</option>'; }).join('');
+    if (keys.indexOf(dcur) >= 0) ds.value = dcur;
+    var d = diaDec(ds.value), fl = +$('m-fl').value;
+    var th = parseNum($('thk').value); if (tUnit === 'mm' && th > 0) th = th/25.4;
+    var irm = idealRpm(sr), spm = shopRpm(d); irm.rpm = spm.rpm; irm.why = spm.why; var rpm = irm.rpm;
+    var mp = th > 0 ? Math.max(1, Math.ceil(th/(dMax*d) - 1e-9)) : 1, ratio = th > 0 ? (th/mp)/d : 1, mult = depthMult(ratio);
+    var c = sr.chipLoads[ds.value], cmin = c[0]*mult, cmax = c[1]*mult, cmid = (cmin+cmax)/2;
+    $('m-out').innerHTML = '<div class="feedgrid">' +
+      '<div><span>Passes</span><b>' + (th > 0 ? mp + ' passe' + (mp > 1 ? 's' : '') : '—') + '</b><small>' + (th > 0 ? fmt(th/mp,4) + ' po · ' + fmt(th/mp*25.4,2) + ' mm par passe (' + depthLabel(ratio) + ')' : 'Ø ' + tri(d)) + '</small></div></div>' + setTable(irm, fl, cmin, cmax) +
+      (ratio > 3.0001 ? '<div class="alert bad"><b>Plus de 3×D :</b> trop profond pour ce diamètre en une passe.</div>' : '');
+  }
+  // contrôles
+  (function(){
+    var mb = $('mats');
+    CHOICES.forEach(function(m){
+      if (m.hidden) return;
+      var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-id', m.id);
+      b.innerHTML = esc(m.name) + (m.shop ? ' <span class="tag2 ok" style="font-size:.62rem;padding:1px 6px">atelier</span>' : '') + '<small>' + esc(m.desc) + '</small>';
+      b.addEventListener('click', function(){ fMat = m.id; syncSeg(); try { localStorage.setItem('feed-mat', m.id); } catch(e){} renderFeed(); });
+      mb.appendChild(b);
+    });
+    ['1/8','1/4','3/8','1/2','5/8','3/4','1','1 1/2'].forEach(function(f){
+      var b = document.createElement('button'); b.type = 'button'; b.textContent = f + '"';
+      b.addEventListener('click', function(){ $('thk').value = f; setTU('frac'); });
+      $('thkchips').appendChild(b);
+    });
+  })();
+  function syncSeg(){
+    [].forEach.call($('kinds').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fKind); });
+    [].forEach.call($('dirs').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fDir); });
+    $('dirField').hidden = needKind() !== 'straight';
+    $('thkLbl').textContent = fKind === 'pocket' ? '3. Profondeur du trou / de la poche' : fKind === 'chamfer' ? '3. Profondeur du chanfrein / de la gravure' : fKind === 'ball' ? '3. Profondeur à usiner' : '3. Épaisseur à couper (profondeur)';
+    [].forEach.call($('mats').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fMat); });
+  }
+  function setTU(u){ tUnit = u; u3set('thk-u', 'thk', u); renderFeed(); }
+  [].forEach.call($('thk-u').children, function(b){ b.addEventListener('click', function(){ setTU(b.getAttribute('data-u')); }); });
+  u3set('thk-u', 'thk', 'frac');
+  $('thk').addEventListener('input', renderFeed);
+  $('m-series').addEventListener('change', renderManual);
+  $('m-dia').addEventListener('change', renderManual);
+  $('m-fl').addEventListener('change', renderManual);
+  try { var sm2 = localStorage.getItem('feed-mat'); if (sm2 && CHOICES.some(function(c){ return c.id === sm2 && !c.hidden; })) fMat = sm2; } catch(e){}
+  KINDS.forEach(function(k){
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-id', k[0]);
+    b.innerHTML = esc(k[1]) + '<small>' + esc(k[2]) + '</small>';
+    b.addEventListener('click', function(){ fKind = k[0]; syncSeg(); renderFeed(); });
+    $('kinds').appendChild(b);
+  });
+  DIRS.forEach(function(k){
+    var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-id', k[0]);
+    b.innerHTML = esc(k[1]) + '<small>' + esc(k[2]) + '</small>';
+    b.addEventListener('click', function(){ fDir = k[0]; syncSeg(); renderFeed(); });
+    $('dirs').appendChild(b);
+  });
+  syncSeg(); renderFeed();
+
+  var view = 'conv';
+  function setView(v, noHash){
+    view = v;
+    ['conv','feed','tools'].forEach(function(x){ $('tab-' + x).setAttribute('aria-selected', v === x); $('view-' + x).hidden = v !== x; });
+    $('h1').textContent = ({conv:'Convertisseur de cotes', feed:'Vitesses et avances', tools:'Liste d\'outils'})[v];
+    $('sub').hidden = v !== 'conv';
+    if (!noHash) try { history.replaceState(null, '', '#' + ({conv:'convertisseur', feed:'avances', tools:'outils'})[v]); } catch(e){}
+    window.scrollTo(0,0);
+  }
+  $('tab-conv').addEventListener('click', function(){ setView('conv'); });
+  $('tab-tools').addEventListener('click', function(){ setView('tools'); });
+  $('tab-feed').addEventListener('click', function(){ setView('feed'); });
+  renderTypes(); renderList();
 
   // table
   function buildTable(){
@@ -334,6 +1109,10 @@ tr.hl td{background:var(--accent-soft)}
   $('u2-mm').addEventListener('click', function(){ setUnit('mm'); });
   try { var s = localStorage.getItem('cote-unit'); if (s === 'mm' || s === 'po') unit = s; } catch(e){}
   setUnit(unit);
+  var hsh = (location.hash || '').slice(1);
+  if (hsh === 'outils') setView('tools', true);
+  else if (hsh === 'avances') setView('feed', true);
+  else if (/^r\d+$/.test(hsh) && byKey(hsh)) { setView('tools', true); openTool(hsh, true); }
 })();
 </script>
 
