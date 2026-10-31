@@ -11,7 +11,7 @@
 <title>Convertisseur et outils CNC</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}</style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=JetBrains+Mono:wght@400;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
 <style>
 /* Layout: single-column shop tool — input block on top, three tool-choice rows below, reference table last */
 :root{
@@ -67,6 +67,7 @@ h1{font-size:1.5rem;font-weight:700;margin:0;text-wrap:balance;letter-spacing:-.
 .fracrow .u{font-size:1.15rem;font-weight:700;color:var(--muted)}
 .fracrow small{display:block;font-size:.68rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:center;margin-top:2px}
 .hint{font-size:.85rem;color:var(--muted);margin:8px 0 0}
+.note:empty{display:none}
 .conv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:14px}
 .kv{border-top:1px solid var(--line);padding-top:8px}
 .kv span{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
@@ -96,7 +97,8 @@ th,td{padding:7px 10px;text-align:right;white-space:nowrap;border-bottom:1px sol
 th{font-family:var(--sans);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);position:sticky;top:0;background:var(--panel)}
 td:first-child,th:first-child{text-align:left;font-weight:700}
 tr.hl td{background:var(--accent-soft)}
-@media (max-width:440px){.choice{grid-template-columns:1fr}.frac{font-size:2rem}}
+@media (max-width:440px){.choice{grid-template-columns:1fr}.frac{font-size:2rem}
+  table{font-size:.74rem}th,td{padding:6px 4px}th{font-size:.58rem;letter-spacing:.02em;white-space:normal;line-height:1.2;vertical-align:bottom}td:first-child,th:first-child{padding-left:8px}td:last-child,th:last-child{padding-right:8px}}
 @media (prefers-reduced-motion:no-preference){.choice{transition:border-color .15s}}
 
 [hidden]{display:none!important}
@@ -108,23 +110,25 @@ tr.hl td{background:var(--accent-soft)}
 .match{grid-column:1/-1;border-top:1px dashed var(--line);margin-top:8px;padding-top:8px;display:flex;flex-direction:column;gap:6px;min-width:0}
 .match .mh{font-size:.7rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 .match .none{font-size:.85rem;color:var(--muted)}
-.trow{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:10px;align-items:center;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px 6px 6px;cursor:pointer;color:var(--fg);font-family:var(--sans)}
+.trow{display:grid;grid-template-columns:48px minmax(0,1fr);gap:10px;align-items:center;width:100%;text-align:left;background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:6px 10px 6px 6px;cursor:pointer;color:var(--fg);font-family:var(--sans)}
 .trow:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
 .thumb{width:48px;height:48px;border-radius:6px;background:#fff;object-fit:contain;border:1px solid var(--line)}
 .thumb.ph{display:grid;place-items:center;font-family:var(--mono);font-size:.62rem;color:var(--muted);background:var(--panel)}
 .tmain{min-width:0}
+.thd{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.trow .dim{font-size:.76rem}
 .tmain b{font-family:var(--mono);font-size:.95rem;font-weight:700}
-.tmain .t1{display:block;font-size:.84rem;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tside{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.tmain .t1{display:block;font-size:.84rem;color:var(--muted);overflow-wrap:anywhere}
 .pill{font-size:.72rem;font-weight:700;padding:2px 8px;border-radius:999px;white-space:nowrap;background:var(--bg);border:1px solid var(--line);color:var(--muted)}
 .pill.stock{color:var(--ok);border-color:color-mix(in srgb,var(--ok) 45%,transparent)}
 .pill.zero{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 45%,transparent)}
 .pill.use{color:var(--fg);background:var(--accent-soft);border-color:transparent}
 .loc{font-family:var(--mono);font-size:.78rem;color:var(--muted)}
-.search{width:100%;font-family:var(--sans);font-size:1.1rem;padding:12px 14px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
+.search{width:100%;font-family:var(--sans);font-size:1rem;padding:12px 12px;border:2px solid var(--line);border-radius:8px;background:var(--bg);color:var(--fg)}
 .search:focus{outline:none;border-color:var(--accent)}
-.filters{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;margin-top:10px;scrollbar-width:thin}
-.filters button{flex:0 0 auto;font-family:var(--sans);font-size:.9rem;font-weight:600;padding:7px 12px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
+.search::placeholder{font-size:.86rem}
+.filters{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.filters button{flex:0 0 auto;font-family:var(--sans);font-size:.82rem;font-weight:600;padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:var(--bg);color:var(--fg);cursor:pointer;white-space:nowrap}
 .filters button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:#fff}
 .filters button span{opacity:.7;font-weight:500;margin-left:4px}
 .opts{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;margin-top:10px;font-size:.92rem}
@@ -133,7 +137,7 @@ tr.hl td{background:var(--accent-soft)}
 .opts select{font-family:var(--sans);font-size:.92rem;padding:6px 8px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg)}
 .count{font-size:.9rem;color:var(--muted);margin:0}
 .tlist{display:flex;flex-direction:column;gap:8px}
-.tlist .trow{background:var(--panel);grid-template-columns:64px minmax(0,1fr) auto;padding:8px 12px 8px 8px}
+.tlist .trow{background:var(--panel);grid-template-columns:64px minmax(0,1fr);padding:8px 12px 8px 8px}
 .tlist .thumb{width:64px;height:64px}
 .sheet{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,#000 45%,transparent);display:flex;align-items:flex-end;justify-content:center}
 .sheet[hidden]{display:none!important}
@@ -194,6 +198,8 @@ dl.all dd .mm{display:block;font-family:var(--mono);font-weight:400;font-size:.8
 .rankrow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:8px}
 .rankrow .rank{margin:0}
 .feedcard{border-left-width:5px!important}
+.lvcol{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex:none}
+.locdec{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--fg);white-space:nowrap}
 .feedcard.lv-good{border-left-color:var(--good)!important}
 .feedcard.lv-warn{border-left-color:var(--warn)!important}
 .feedcard.lv-bad{border-left-color:var(--bad)!important}
@@ -217,6 +223,27 @@ dl.all dd .mm{display:block;font-family:var(--mono);font-weight:400;font-size:.8
 .feedgrid small{display:block;font-family:var(--mono);font-size:.78rem;color:var(--muted)}
 .flist{display:flex;flex-direction:column;gap:8px}
 .sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.sets.one{grid-template-columns:1fr}
+.tunehead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.reset{font-family:var(--sans);font-size:.72rem;font-weight:700;color:var(--muted);border:1px solid var(--line);border-radius:999px;padding:3px 9px;cursor:pointer;background:var(--panel);visibility:hidden}
+.tune.changed .reset{visibility:visible;color:var(--accent);border-color:var(--accent)}
+.tunebody{display:flex;gap:10px;align-items:stretch}
+.tunebody .vals{flex:1;min-width:0;display:flex;flex-direction:column}
+.sliders{display:flex;gap:10px;flex:none;align-items:stretch}
+.vs{display:flex;flex-direction:column;align-items:center;gap:6px;width:54px;touch-action:none;cursor:ns-resize}
+.vs .vl{font-size:.6rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.vs .vv{font-family:var(--mono);font-size:.74rem;font-weight:700;color:var(--accent);white-space:nowrap}
+.vsl{position:relative;width:18px;flex:1;min-height:200px;border-radius:9px;background:var(--panel);box-shadow:inset 0 0 0 1px var(--line),inset 0 2px 6px rgba(0,0,0,.08);overflow:hidden;touch-action:none;cursor:ns-resize;outline:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+.vsl:focus-visible{box-shadow:0 0 0 3px var(--accent)}
+.vsl .fill{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(180deg,#4F8FD0,var(--accent));border-radius:0 0 9px 9px;transition:background .2s}
+.vsl .fill::before{content:"";position:absolute;top:4px;left:50%;width:8px;height:3px;margin-left:-4px;border-radius:2px;background:rgba(255,255,255,.9)}
+.vsl.out .fill{background:linear-gradient(180deg,#E0A23A,var(--warn))}
+.vsl .band{position:absolute;right:2px;width:3px;border-radius:3px;background:var(--good);opacity:.9;z-index:2}
+.vsl .tick{position:absolute;left:0;width:6px;height:3px;margin-top:-1.5px;border-radius:0 2px 2px 0;background:var(--good);z-index:2}
+.vs .vv.out{color:var(--warn)}
+.vsl.dragging .fill{transition:none}
+@media (prefers-reduced-motion:no-preference){.vsl .fill{transition:height .12s ease-out,background .2s}.vsl.dragging .fill{transition:background .2s}}
+.set b.out,.set small.out{color:var(--warn)!important}
 .set{border-radius:8px;padding:10px;background:var(--bg);min-width:0;display:flex;flex-direction:column}
 .set.smax{background:var(--accent-soft)}
 .set .st{font-size:.75rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--fg);margin-bottom:4px}
@@ -242,9 +269,45 @@ dl.all dd .mm{display:block;font-family:var(--mono);font-weight:400;font-size:.8
 .conv.mini .kv{padding-top:0;border-top:0;min-width:0}
 .conv.mini .kv span{font-size:.62rem}
 .conv.mini .kv b{font-size:.84rem;white-space:nowrap}
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:15;gap:0;border:0;border-top:1px solid var(--line);border-radius:0;
+  background:color-mix(in srgb,var(--panel) 92%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(14px);backdrop-filter:saturate(1.6) blur(14px);
+  padding:6px max(6px,env(safe-area-inset-right,0px)) calc(6px + env(safe-area-inset-bottom,0px)) max(6px,env(safe-area-inset-left,0px))}
+.tabs button{flex:1 1 0;min-width:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:7px 2px 5px;font-size:.68rem;font-weight:600;letter-spacing:.01em;border-radius:10px;color:var(--muted);background:transparent}
+.tabs button svg{width:26px;height:26px}
+.tabs button[aria-selected="true"]{background:transparent;color:var(--accent)}
+.tabs button[aria-selected="true"] svg{stroke-width:2.3}
+.tabs button:active{background:var(--line)}
+@media (min-width:700px){.tabs{left:50%;right:auto;transform:translateX(-50%);width:min(640px,100%);bottom:12px;border:1px solid var(--line);border-radius:16px;padding:6px;box-shadow:0 8px 24px rgba(0,0,0,.12)}}
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom,0px))!important}
+:root{--kgap:12px}
+.kgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px var(--kgap);align-items:stretch}
+.kcell{display:flex;flex-direction:column;min-width:0}
+.kcell .lbl{min-height:1.2em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kcell .numin{font-size:1.35rem;height:56px}
+.kcell .u3 button{font-size:.8rem;padding:8px 2px}
+.kcell .u3{margin-top:auto}
+.kcell .numin{margin-bottom:6px}
+.kbox{flex:1 1 auto;min-width:0;display:flex;flex-direction:column;justify-content:space-between;gap:4px;background:var(--hl-soft);border:1px solid color-mix(in srgb,var(--hl) 40%,transparent);border-radius:8px;padding:6px 8px}
+.kl{display:grid;grid-template-columns:auto 1fr;grid-template-areas:"t b" "s s";align-items:baseline;column-gap:8px;min-width:0;overflow:hidden}
+.kl .kt{grid-area:t;font-size:.62rem;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--hl)}
+.kl b{grid-area:b;font-family:var(--mono);font-size:1rem;color:var(--hl);text-align:right;white-space:nowrap}
+.kl small{grid-area:s;font-family:var(--mono);font-size:.62rem;letter-spacing:-.02em;color:var(--fg);text-align:right;white-space:nowrap}
+.kl.kmoy{border-top:1px dashed color-mix(in srgb,var(--hl) 40%,transparent);padding-top:4px}
+.kl.kmoy .kt,.kl.kmoy b{color:var(--good)}
+.kverd{flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;gap:3px;border-radius:8px;padding:8px 10px;background:var(--bg);border:1px solid var(--line);min-width:0}
+.kverd b{font-size:.92rem;line-height:1.2}
+.kverd small{font-size:.74rem;line-height:1.3}
+.kverd span{font-family:var(--mono);font-size:.66rem;color:var(--muted)}
+.kverd.good{background:var(--good-soft);border-color:color-mix(in srgb,var(--good) 45%,transparent)}.kverd.good b,.kverd.good small{color:var(--good)}
+.kverd.warn{background:var(--warn-soft);border-color:color-mix(in srgb,var(--warn) 45%,transparent)}.kverd.warn b,.kverd.warn small{color:var(--warn)}
+.kverd.bad{background:var(--bad-soft);border-color:color-mix(in srgb,var(--bad) 45%,transparent)}.kverd.bad b,.kverd.bad small{color:var(--bad)}
+.kl.kmoy small{color:var(--good);font-weight:700}
+.kempty{margin:0;font-size:.85rem;color:var(--muted)}
+.numin.ksel{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 25%,transparent)}
+#k-pad{margin-top:12px}
 .dimbox{margin-top:10px;padding:8px 10px;border-radius:8px;background:var(--bg)}
-.dimbox .dim{font-size:.92rem}
-.dimbox .dim i{min-width:3.6ch}
+.dimbox .dim{font-size:.84rem}
+.dimbox .dim i{min-width:5.6ch}
 .rank{font-size:.75rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
 .feedcard.top{border:2px solid var(--line)}
 .feedcard.top1{border-color:var(--accent)}
@@ -258,27 +321,253 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
 .selrow select{font-family:var(--mono);font-size:1rem;padding:8px 6px;border:1px solid var(--line);border-radius:6px;background:var(--bg);color:var(--fg);min-width:0;width:100%}
 @media (max-width:440px){.selrow{grid-template-columns:1fr 1fr}.selrow label:first-child{grid-column:1/-1}}
 .empty-state{text-align:center;color:var(--muted);padding:24px 8px}
+.convpanel{display:grid;grid-template-columns:minmax(0,1fr) 108px;column-gap:10px;align-content:start}
+.convpanel > *{grid-column:1;min-width:0}
+#status.ok,#status.round{display:none}
+.convpanel > .mtbl{grid-column:2;grid-row:1 / span 12;align-self:stretch}
+.convpanel .toprow{flex-direction:column;align-items:stretch;gap:8px}
+.convpanel .toprow .mode{width:auto;margin-bottom:0;display:grid;grid-template-columns:1fr 1fr}
+.convpanel #steps{width:auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.convpanel #steps button{padding:10px 0}
+.convpanel #cote,.convpanel .ftxt{flex:1 1 0;font-size:1.2rem;min-width:0;padding:10px 8px;letter-spacing:-.02em}
+.convpanel .inrow{flex-wrap:nowrap}
+.convpanel .unit button{padding:0 9px;font-size:1rem}
+.padrow{display:block;margin-top:12px}
+.padrow .pad{margin-top:0;gap:6px}
+.padrow .pad button{font-size:1.3rem;min-height:52px;padding:0 2px}
+.padrow .pad button.op{font-size:.74rem}
+.mtbl{display:flex;flex-direction:column;min-height:0;border:2px solid var(--line);border-radius:12px;background:var(--panel);overflow:hidden}
+.mth{font-family:var(--cond,var(--sans));font-size:.72rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;text-align:center;padding:5px 4px;border-bottom:2px solid var(--line);background:var(--hl-soft,var(--accent-soft))}
+.mtb{flex:1 1 0;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain;position:relative}
+.mr{display:flex;flex-direction:column;padding:4px 8px;border-bottom:1px solid color-mix(in srgb,var(--line) 25%,transparent);font-family:var(--mono);line-height:1.2}
+.mr b{font-size:.92rem}
+.mr span{font-size:.7rem;color:var(--muted)}
+.mr{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:pan-y}
+.mr:active{background:var(--line);color:var(--bg)}
+.mr:active span{color:var(--bg)}
+.mr:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+.mr.hl{background:var(--hl-soft,var(--accent-soft))}
+.mr.hl span{color:var(--fg)}
+.mtb.all .mr.k8{background:color-mix(in srgb,var(--hl-soft,#FFE45C) 55%,transparent)}
+.mtb.all .mr.k8 b{font-size:1.02rem;font-weight:800}
+.mtb.all .mr.k16 b{font-weight:800}
+.mtb.all .mr.k32 b{font-weight:600}
+.mtb.all .mr.k64 b{font-weight:400;color:var(--muted)}
+.mtb.all .mr.k64 span{opacity:.75}
+.mtb.all .mr.hl{background:var(--hl-soft,var(--accent-soft));box-shadow:inset 4px 0 0 var(--fg)}
+#tbody.all tr.k8 td{font-weight:800;background:color-mix(in srgb,var(--hl-soft,#FFE45C) 45%,transparent)}
+#tbody.all tr.k16 td:first-child{font-weight:800}
+#tbody.all tr.k64 td{color:var(--muted)}
+/* Design « Signalétique sécurité » : noir franc, jaune sécurité, contours épais. Un seul thème clair, volontaire (lisible sous tout éclairage). */
+:root:root:not([data-theme="zz"]){--bg:#F4F2EC;--panel:#FFFFFF;--fg:#111111;--muted:#55534C;--line:#1A1A1A;--accent:#111111;--accent-soft:#FFF4C2;--hl:#111111;--hl-soft:#FFE45C;
+ --ink:#111111;--key:#FFFFFF;--sand:#F4F2EC;--blk:#111111;--bar:#111111;--good:#0F7A3A;--good-soft:#DDF3E4;--warn:#9A5800;--warn-soft:#FFF0CC;--bad:#C21A0E;--bad-soft:#FDE1DE;
+ --sans:"Barlow",sans-serif;--mono:"JetBrains Mono",monospace;--cond:"Barlow Condensed","Barlow",sans-serif;color-scheme:light}
+h1{font-family:var(--cond);font-weight:800;text-transform:uppercase;font-size:2rem;letter-spacing:.01em}
+.lbl,.kv span,.feedgrid span,.set .k,.set .st,.rank,.kl .kt,.reco h4{font-family:var(--cond)!important;font-weight:700;letter-spacing:.06em;color:var(--fg)!important}
+.panel,.choice,.tlist .trow{border:2px solid var(--ink)!important;border-radius:14px!important}
+.feedcard{border-top:2px solid var(--ink)!important;border-right:2px solid var(--ink)!important;border-bottom:2px solid var(--ink)!important;border-left-width:10px!important;border-radius:14px!important}
+.feedcard.top1{box-shadow:0 0 0 3px #FFC400}
+.unit,.mode,.u3{border:2px solid var(--ink)!important;border-radius:12px!important}
+.unit button,.mode button,.u3 button{background:var(--key)!important;color:var(--fg)!important;font-weight:700}
+.unit button[aria-pressed="true"],.mode button[aria-pressed="true"],.u3 button[aria-pressed="true"],.minichips button[aria-pressed="true"],.filters button[aria-pressed="true"]{background:#FFC400!important;color:#111!important;border-color:var(--ink)!important}
+.seg button,.minichips button,.filters button{border:2px solid var(--ink);border-radius:12px;background:var(--key);color:var(--fg)}
+.seg button[aria-pressed="true"]{background:#FFC400;box-shadow:none;color:#111}
+.seg button[aria-pressed="true"] small{color:#3A3000}
+.pad button{border:2px solid var(--ink);border-radius:12px;background:var(--key);box-shadow:0 3px 0 var(--ink);font-weight:700}
+.pad button.op{color:var(--fg)}
+#cote,.ftxt,.numin,.fracrow input,.search,.kcell input{border:2px solid var(--ink)!important;border-radius:12px!important;background:var(--key)!important;color:var(--fg)!important}
+.conv.mini,.kbox{background:#FFE45C;border:2px solid var(--ink);border-radius:12px}
+.conv.mini .kv span,.conv.mini .kv b,.kl b,.kl .kt{color:#111!important}
+.dimbox,.reco div,.set,.set.smax{border-radius:10px;background:var(--sand)!important}
+.set b,.feedgrid b.hi{color:var(--fg)!important}
+.tabs{background:var(--bar)!important;border-top:0!important}
+.tabs button{color:#BDBAB0!important}
+.tabs button[aria-selected="true"]{color:#FFC400!important}
+.vsl .fill{background:linear-gradient(180deg,#FFD84D,#FFC400)!important}
+
+body{background:var(--bg)}
+
+/* Ajusté pour iPhone : le premier box de chaque onglet tient dans l'écran (Safari, Claude ou icône d'accueil) */
+@media (max-width:520px){
+  body{padding-block:8px calc(84px + env(safe-area-inset-bottom,0px))!important}
+  .wrap{gap:6px}
+  .views{gap:12px}
+  h1{font-size:1.45rem;line-height:1.1}
+  .panel{padding:12px}
+  .lbl{font-size:.68rem;margin-bottom:3px}
+  .pad{gap:6px}
+  .pad button{min-height:clamp(38px,6.2vh,54px);font-size:1.25rem}
+  /* Convertisseur */
+  .toprow{margin-bottom:8px}
+  .convpanel .toprow{gap:6px}
+  .convpanel .toprow .mode button{padding:7px 0}
+  .conv.mini{padding:6px 10px;gap:4px 10px}
+  .convpanel #steps{margin-bottom:8px}
+  .convpanel #steps button{padding:7px 0}
+  .convpanel #cote,.convpanel .ftxt{padding:7px 8px}
+  .convpanel .unit button{min-height:44px}
+  .padrow{margin-top:8px}
+  /* Tolérance */
+  .kgrid{gap:8px var(--kgap)}
+  .kcell .numin{height:clamp(40px,6vh,52px);font-size:1.2rem;margin-bottom:4px}
+  .kcell .u3 button{min-height:30px;padding:4px 2px}
+  .kverd{padding:6px 8px}
+  #k-pad{margin-top:8px}
+  /* Avances */
+  .seg{gap:6px}
+  .seg button{padding:5px 9px;font-size:.88rem;line-height:1.2}
+  .seg button small{font-size:.66rem;line-height:1.15}
+  .field{margin-top:8px;gap:4px}
+  .numin{font-size:1.25rem;padding:6px 10px}
+  #thk{height:44px}
+  .u3{margin-top:4px}
+  .u3 button{min-height:32px;padding:4px 2px}
+  .minichips{gap:4px}
+  .minichips button{padding:3px 8px;font-size:.8rem}
+  /* Outils */
+  .search{padding:8px 10px}
+  .filters{gap:4px;margin-top:8px}
+  .filters button{font-size:.76rem;padding:3px 8px}
+  #t-dia,#t-thk{height:44px}
+  .thkfield{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:6px 8px;align-items:stretch}
+  .thkfield > *{grid-column:1 / -1}
+  .thkfield .inrow{grid-column:1}
+  .thkfield .u3{grid-column:2;margin-top:0}
+  .thkfield #thk{height:auto;min-height:40px}
+  .seg button{padding:4px 9px}
+  #dirs button small{display:inline;margin-left:4px}
+  #dirs button{padding:6px 9px}
+  .kl b{font-size:.92rem}
+  .kl small{font-size:.58rem}
+  .kbox{padding:5px 8px;gap:2px}
+  .kverd b{font-size:.84rem}
+  .kverd small{font-size:.68rem;line-height:1.2}
+  .kverd span{font-size:.6rem}
+  .kcell .numin{height:clamp(38px,5.6vh,52px)}
+  .kcell .u3 button{min-height:28px}
+  .kl{line-height:1.1}
+  .kl b{font-size:.86rem}
+  .kl small{font-size:.56rem}
+  .kl.kmoy{padding-top:2px}
+  .kbox{justify-content:flex-start;gap:3px}
+  .kverd{gap:1px}
+  #k-pad button{min-height:clamp(34px,5.4vh,52px)}
+  .seg button{font-size:.84rem;line-height:1.15}
+  .seg button small{line-height:1.08;font-size:.62rem}
+  #mats button,#kinds button{padding:3px 8px}
+  #mats button b,#mats button{line-height:1.1}
+  .field{margin-top:6px}
+  .minichips button{padding:2px 7px;font-size:.76rem}
+}
+
+
+
+/* Filtres de type : grille de 3 boutons identiques */
+.filters{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-rows:1fr;gap:5px!important}
+.filters button{width:100%;min-height:32px;display:flex;align-items:center;justify-content:center;gap:3px;text-align:center;white-space:nowrap!important;line-height:1.1;padding:3px 2px!important;font-family:"Barlow Condensed","Avenir Next Condensed","Arial Narrow",sans-serif-condensed,sans-serif!important;font-stretch:condensed;font-size:.8rem!important;letter-spacing:-.01em;font-weight:700;border-radius:9px!important;overflow:hidden}
+.filters button span{margin-left:0!important;font-size:.74rem;font-weight:600}
+
+/* Clavier de l'app (Avances, Outils) */
+.kb{position:fixed;left:0;right:0;bottom:0;z-index:18;background:var(--panel);border-top:2px solid var(--fg);box-shadow:0 -8px 24px rgba(0,0,0,.18);
+  padding:8px max(12px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(12px,env(safe-area-inset-left,0px))}
+.kbh{display:flex;justify-content:space-between;align-items:center;max-width:520px;margin:0 auto 6px}
+.kbh span{font-family:var(--cond,var(--sans));font-weight:700;font-size:.8rem;letter-spacing:.06em;text-transform:uppercase}
+.kbok{font-family:var(--sans);font-weight:800;font-size:1rem;padding:6px 18px;border:2px solid var(--fg);border-radius:10px;background:var(--hl-soft,#FFC400);color:var(--fg);cursor:pointer}
+.kbpad{max-width:520px;margin:0 auto!important}
+.kbpad button{min-height:46px!important}
+body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
+.numin.kbon{box-shadow:0 0 0 3px #FFC400!important}
+
+.kbalpha{max-width:560px;margin:0 -6px;display:flex;flex-direction:column;gap:7px}
+.kbalpha .kr{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:4px}
+.kbalpha .kr9{padding:0 5%;grid-template-columns:repeat(9,minmax(0,1fr))}
+.kbalpha .kr7{grid-template-columns:repeat(7,minmax(0,1fr)) minmax(0,1.6fr)}
+.kbalpha .krb{grid-template-columns:1fr 1fr 1fr 4fr 2fr}
+.kbalpha button{min-height:54px;padding:0;font-family:var(--sans);font-size:1.4rem;font-weight:700;border:2px solid var(--fg);border-radius:8px;background:var(--panel);color:var(--fg);box-shadow:0 2px 0 var(--fg);cursor:pointer;touch-action:manipulation}
+.kbalpha button.op{font-size:1rem}
+.kbalpha button:active{background:#FFC400}
+.search.kbon{box-shadow:0 0 0 3px #FFC400!important}
+
+.nokb{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;caret-color:transparent}
+
+/* Clavier recherche — version 4 « Chiffres jaunes » */
+.kb.alpha{background:var(--bg)}
+.kb.alpha .kbok{background:var(--blk);color:#FFC400;border-color:var(--ink)}
+.kbalpha button{border-radius:10px;box-shadow:0 3px 0 var(--ink)}
+.kbalpha .kr:first-child button{background:#FFC400;color:#111;font-weight:800}
+.kbalpha button.op,.kbalpha .krb button{background:var(--blk);color:#fff}
+.kbalpha .kr:first-child button:active{background:#FFE45C}
+.kbalpha button.op:active,.kbalpha .krb button:active{background:#333}
+.kbalpha button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--fg)}
+
+/* Tous les claviers — style version 4 « Chiffres jaunes » */
+.kb{background:var(--bg)}
+.kbok{background:var(--blk)!important;color:#FFC400!important;border-color:var(--ink)!important}
+.pad button{border:2px solid var(--ink)!important;border-radius:10px!important;box-shadow:0 3px 0 var(--ink)!important;background:#FFC400!important;color:#111!important;font-weight:800}
+.pad button.op,.pad button[data-k="."],.pad button[data-k="/"]{background:var(--blk)!important;color:#fff!important}
+.pad button:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)!important;background:#FFE45C!important}
+.pad button.op:active,.pad button[data-k="."]:active,.pad button[data-k="/"]:active{background:#333!important}
+
+/* ===== Mode sombre (bouton ☾ en haut à droite) ===== */
+:root:root:root[data-mode="dark"]{--bg:#0F0F0F;--panel:#1A1A1A;--fg:#F2F0EA;--muted:#A9A69C;--line:#D6D2C6;--accent:#F2F0EA;--accent-soft:#3A3115;
+ --ink:#D6D2C6;--key:#262626;--sand:#232323;--blk:#000000;--bar:#000000;
+ --good:#5CD08E;--good-soft:#12291C;--warn:#FFB13B;--warn-soft:#2E2412;--bad:#FF7A6E;--bad-soft:#331512;color-scheme:dark}
+[data-mode="dark"] body{background:var(--bg);color:var(--fg)}
+/* textes posés sur du jaune : toujours noirs */
+[data-mode="dark"] .conv.mini *,[data-mode="dark"] .kbox *,[data-mode="dark"] .mth,[data-mode="dark"] .mr.hl,[data-mode="dark"] .mr.hl *,
+[data-mode="dark"] .mtb.all .mr.k8,[data-mode="dark"] .mtb.all .mr.k8 *,[data-mode="dark"] #tbody tr.hl td,[data-mode="dark"] #tbody.all tr.k8 td,
+[data-mode="dark"] .filters button[aria-pressed="true"],[data-mode="dark"] .filters button[aria-pressed="true"] span,[data-mode="dark"] .minichips button[aria-pressed="true"],
+[data-mode="dark"] .seg button[aria-pressed="true"],[data-mode="dark"] .seg button[aria-pressed="true"] small{color:#111!important}
+[data-mode="dark"] .kl.kmoy .kt,[data-mode="dark"] .kl.kmoy b,[data-mode="dark"] .kl.kmoy small{color:#0F7A3A!important}
+[data-mode="dark"] .unit button[aria-pressed="true"],[data-mode="dark"] .mode button[aria-pressed="true"],[data-mode="dark"] .u3 button[aria-pressed="true"]{color:#111!important}
+[data-mode="dark"] .feedcard.lv-good{border-left-color:var(--good)!important}
+[data-mode="dark"] .thumb{background:#fff}
+[data-mode="dark"] .sheet{background:color-mix(in srgb,#000 65%,transparent)}
+[data-mode="dark"] .kb{box-shadow:0 -8px 24px rgba(0,0,0,.6)}
+[data-mode="dark"] .feedcard.bad{opacity:.7}
+
+.hdr{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.themebtn{flex:none;width:36px;height:36px;margin:-4px 0;border-radius:10px;font-size:1.1rem!important;border:2px solid var(--ink);background:var(--key);color:var(--fg);font-size:1.25rem;line-height:1;cursor:pointer;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center}
+.themebtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
+.themebtn:focus-visible{outline:3px solid #FFC400;outline-offset:2px}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
 <body>
 
+<script>try{if(localStorage.getItem('mode')==='dark')document.documentElement.setAttribute('data-mode','dark')}catch(e){}</script>
 
 <div class="wrap">
   <header>
-    <h1 id="h1">Convertisseur de cotes</h1>
-    <p class="sub" id="sub">Valeur correcte + 2 crans en dessous, par pas de 1/16 po, avec le rayon.</p>
-    <a class="dl" href="Convertisseur_et_outils_CNC.xlsx" download>⬇ Télécharger la version Excel</a>
+    <div class="hdr"><h1 id="h1">Convertisseur de cotes</h1><button type="button" class="themebtn" id="themeBtn" aria-label="Mode sombre">☾</button></div>
+    <p class="sub" id="sub" hidden>Valeur correcte + 2 crans en dessous, par pas de 1/16 po, avec le rayon.</p>
   </header>
 
+  <div class="kb" id="kb" hidden role="group" aria-label="Clavier">
+    <div class="kbh"><span id="kbl">Épaisseur</span><button type="button" class="kbok" data-k="ok">OK</button></div>
+    <div class="pad kbpad">
+      <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="/" class="op">/</button>
+      <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k=" " class="op">espace</button>
+      <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
+      <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op wide">Effacer tout</button>
+    </div>
+    <div class="kbalpha" hidden>
+      <div class="kr"><button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="0">0</button></div>
+      <div class="kr"><button type="button" data-k="Q">Q</button><button type="button" data-k="W">W</button><button type="button" data-k="E">E</button><button type="button" data-k="R">R</button><button type="button" data-k="T">T</button><button type="button" data-k="Y">Y</button><button type="button" data-k="U">U</button><button type="button" data-k="I">I</button><button type="button" data-k="O">O</button><button type="button" data-k="P">P</button></div>
+      <div class="kr kr9"><button type="button" data-k="A">A</button><button type="button" data-k="S">S</button><button type="button" data-k="D">D</button><button type="button" data-k="F">F</button><button type="button" data-k="G">G</button><button type="button" data-k="H">H</button><button type="button" data-k="J">J</button><button type="button" data-k="K">K</button><button type="button" data-k="L">L</button></div>
+      <div class="kr kr7"><button type="button" data-k="Z">Z</button><button type="button" data-k="X">X</button><button type="button" data-k="C">C</button><button type="button" data-k="V">V</button><button type="button" data-k="B">B</button><button type="button" data-k="N">N</button><button type="button" data-k="M">M</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button></div>
+      <div class="kr krb"><button type="button" data-k="-">-</button><button type="button" data-k=".">.</button><button type="button" data-k="/">/</button><button type="button" data-k=" " class="op sp">espace</button><button type="button" data-k="clear" class="op cl">Effacer</button></div>
+    </div>
+  </div>
   <nav class="tabs" role="tablist" aria-label="Sections">
-    <button type="button" role="tab" id="tab-conv" aria-selected="true" aria-controls="view-conv">Convertisseur</button>
-    <button type="button" role="tab" id="tab-feed" aria-selected="false" aria-controls="view-feed">Avances</button>
-    <button type="button" role="tab" id="tab-tools" aria-selected="false" aria-controls="view-tools">Outils</button>
+    <button type="button" role="tab" id="tab-conv" aria-selected="true" aria-controls="view-conv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h11M4 17h7"/><path d="M17 15l3 3-3 3"/></svg><span>Convertisseur</span></button>
+    <button type="button" role="tab" id="tab-cotes" aria-selected="false" aria-controls="view-cotes"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v18"/><path d="M8 7l4-4 4 4M8 17l4 4 4-4"/></svg><span>Tolérance</span></button>
+    <button type="button" role="tab" id="tab-feed" aria-selected="false" aria-controls="view-feed"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 16a8 8 0 1 1 15 0"/><path d="M12 13l4-4"/><circle cx="12" cy="13" r="1.4"/></svg><span>Avances</span></button>
+    <button type="button" role="tab" id="tab-tools" aria-selected="false" aria-controls="view-tools"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 3h6v4H9z"/><path d="M10 7v8l2 5 2-5V7"/></svg><span>Outils</span></button>
   </nav>
 
   <div class="views" id="view-conv" role="tabpanel" aria-labelledby="tab-conv">
-  <section class="panel" aria-label="Cote à convertir">
+  <section class="panel convpanel" aria-label="Cote à convertir">
     <div class="toprow">
     <div class="mode" role="group" aria-label="Mode de saisie">
       <button type="button" id="m-dec" aria-pressed="true">Décimal</button>
@@ -291,12 +580,13 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
       <div class="kv"><span>Rayon mm</span><b id="r-mm">–</b></div>
     </div>
     </div>
-    <span class="lbl">Table (pas des outils)</span>
+    <span class="lbl">Précision</span>
     <div class="mode" id="steps" role="group" aria-label="Table">
       <button type="button" data-d="8" aria-pressed="false">1/8</button>
       <button type="button" data-d="16" aria-pressed="true">1/16</button>
       <button type="button" data-d="32" aria-pressed="false">1/32</button>
       <button type="button" data-d="64" aria-pressed="false">1/64</button>
+      <button type="button" data-d="0" aria-pressed="false">Tous</button>
     </div>
     <div id="frac-box" hidden>
       <label class="lbl" for="f-txt">Cote en fraction</label>
@@ -307,25 +597,24 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
           <button type="button" id="u2-mm" aria-pressed="false">mm</button>
         </div>
       </div>
-      <div class="pad" id="pad">
-        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="/" class="op">/</button>
-        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k=" " class="op">espace</button>
-        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
-        <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op wide">Effacer tout</button>
-      </div>
-      <p class="hint">Écris n'importe quelle fraction : 5/16, 13/64, 7/32, 1 3/8 (espace entre l'entier et la fraction), 2 11/32…</p>
     </div>
     <div id="dec-box">
     <label class="lbl" for="cote">Cote à convertir</label>
     <div class="inrow">
-      <input id="cote" type="text" inputmode="decimal" autocomplete="off" value="0.3125" aria-describedby="hint">
+      <input id="cote" type="text" inputmode="none" autocomplete="off" value="0.3125" aria-describedby="hint">
       <div class="unit" role="group" aria-label="Unité">
         <button type="button" id="u-po" aria-pressed="true">po</button>
         <button type="button" id="u-mm" aria-pressed="false">mm</button>
       </div>
     </div>
-    <p class="hint" id="hint">Accepte 0.3125 ou 0,3125. Pour une fraction, touche « Fraction » en haut.</p>
     </div>
+    <div class="padrow"><div class="pad" id="pad">
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="/" class="op">/</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k=" " class="op">espace</button>
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
+        <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op wide">Effacer tout</button>
+      </div></div>
+    <div class="mtbl" aria-label="Table rapide"><div class="mth" id="mth">Table 1/16</div><div class="mtb" id="mtb"></div></div>
     <div class="status" id="status" role="status"></div>
   </section>
 
@@ -345,15 +634,57 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   </section>
   </div>
 
+  <div class="views" id="view-cotes" role="tabpanel" aria-labelledby="tab-cotes" hidden>
+    <section class="panel" aria-label="Cote et tolérance">
+      <div class="kgrid">
+        <div class="kcell">
+          <label class="lbl" for="k-nom">Cote nominale</label>
+          <input id="k-nom" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
+          <div class="u3" id="k-nom-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        </div>
+        <div class="kcell">
+          <span class="lbl">Résultats</span>
+          <div class="kbox" id="k-res" aria-live="polite"></div>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="k-plus">Tolérance + (max)</label>
+          <input id="k-plus" class="numin" type="text" inputmode="none" autocomplete="off" value="0.005">
+          <div class="u3" id="k-plus-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="k-minus">Tolérance − (min)</label>
+          <input id="k-minus" class="numin" type="text" inputmode="none" autocomplete="off" value="0.005">
+          <div class="u3" id="k-minus-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="k-mes">Cote mesurée</label>
+          <input id="k-mes" class="numin" type="text" inputmode="none" autocomplete="off" value="" placeholder="facultatif">
+          <div class="u3" id="k-mes-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        </div>
+        <div class="kcell">
+          <span class="lbl">Verdict</span>
+          <div class="kverd" id="k-verd"></div>
+        </div>
+      </div>
+      <div class="pad" id="k-pad">
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="/" class="op">/</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k=" " class="op">espace</button>
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
+        <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op wide">Effacer</button>
+      </div>
+      <p class="note" id="k-in" hidden></p>
+    </section>
+  </div>
+
   <div class="views" id="view-feed" role="tabpanel" aria-labelledby="tab-feed" hidden>
     <section class="panel" aria-label="Paramètres de coupe">
       <div class="field"><span class="lbl">1. Matériau</span><div class="seg" id="mats"></div></div>
       <div class="field"><span class="lbl">2. Type de travail</span><div class="seg" id="kinds"></div></div>
       <div class="field" id="dirField"><span class="lbl">Direction préférée</span><div class="seg" id="dirs"></div></div>
-      <div class="field">
+      <div class="field thkfield">
         <label class="lbl" for="thk" id="thkLbl">3. Épaisseur à couper (profondeur)</label>
         <div class="inrow">
-          <input id="thk" class="numin" type="text" inputmode="text" autocomplete="off" value="1/2" style="flex:1 1 140px">
+          <input id="thk" class="numin kbf" type="text" inputmode="none" autocomplete="off" value="1/2" style="flex:1 1 140px">
         </div>
         <div class="u3" id="thk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
         <div class="minichips" id="thkchips"></div>
@@ -376,7 +707,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
 
     <section aria-label="Autres outils">
       <details class="more" id="allBox"><summary id="allSum"></summary>
-      <p class="note" id="fcount"></p>
+      <p class="note" id="fcount" hidden></p>
       <div class="flist" id="flist"></div></details>
       <details class="more" id="moreBox"><summary id="moreSum"></summary><div class="flist" id="flist2"></div></details>
     </section>
@@ -391,24 +722,24 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
       <div id="m-out"></div>
     </section>
 
-    <p class="src">Chiploads : tableaux LMT Onsrud, repris du site <a href="https://maurojob23-ux.github.io/CNC-Router-Speeds/" target="_blank" rel="noopener">CNC Router Speeds</a>. Avance = RPM × flûtes × chipload. Ce sont des valeurs de départ : ajuste selon le son, les copeaux et le fini.</p>
+    <p class="src">Source : tableaux LMT Onsrud, via <a href="https://maurojob23-ux.github.io/CNC-Router-Speeds/" target="_blank" rel="noopener">CNC Router Speeds</a>.</p>
   </div>
 
   <div class="views" id="view-tools" role="tabpanel" aria-labelledby="tab-tools" hidden>
     <section class="panel" aria-label="Rechercher un outil">
       <label class="lbl" for="q">Rechercher</label>
-      <input id="q" class="search" type="search" autocomplete="off" placeholder="N° outil, n° fabricant, emplacement, note…">
+      <input id="q" class="search kbf" type="search" inputmode="none" autocomplete="off" placeholder="N° outil, n° fabricant, emplacement, note…">
       <div class="filters" id="types" role="group" aria-label="Type d'outil"></div>
       <div class="field" style="margin-top:14px">
         <div class="inrow">
-          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre (facultatif)</label>
-          <input id="t-dia" class="numin" type="text" inputmode="text" autocomplete="off" placeholder="ex. 1/4">
+          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre de l'outil (facultatif)</label>
+          <input id="t-dia" class="numin kbf" type="text" inputmode="none" autocomplete="off" placeholder="ex. 1/4">
           <div class="u3" id="tdia-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
-          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-thk">Épaisseur (facultatif)</label>
-          <input id="t-thk" class="numin" type="text" inputmode="text" autocomplete="off" placeholder="ex. 1/2">
+          <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-thk">Épaisseur à couper (facultatif)</label>
+          <input id="t-thk" class="numin kbf" type="text" inputmode="none" autocomplete="off" placeholder="ex. 1/2">
           <div class="u3" id="tthk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
         </div>
-        <p class="note" id="t-thkout">Laisse vide pour voir tous les outils. Triés par diamètre.</p>
+        <p class="note" id="t-thkout"></p>
       </div>
     </section>
     <p class="count" id="tcount" role="status"></p>
@@ -424,7 +755,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
 <script src="speeds.js"></script>
 <script>
 (function(){
-  var unit = 'po', mode = 'dec', D = 16;
+  var unit = 'po', mode = 'dec', D = 16, ALL = false;
   var $ = function(id){ return document.getElementById(id); };
   function gcd(a,b){ return b ? gcd(b, a % b) : a; }
   // n = nombre de crans de 1/D -> "1 1/4", "5/16", "2"
@@ -493,7 +824,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     } else if (exact){
       st.className = 'status ok'; st.textContent = 'Multiple exact de ' + S + ' : ' + frac(n) + ' po.';
     } else {
-      st.className = 'status warn'; st.textContent = 'Pas un multiple de ' + S + ' : outil arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
+      st.className = 'status warn round'; st.textContent = 'Pas un multiple de ' + S + ' : outil arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
     }
     box.appendChild(row('Valeur correcte', n, inch, true));
     box.appendChild(row('1 cran en dessous', n-1, inch, false));
@@ -502,7 +833,10 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   }
   function highlight(n){
     var rows = $('tbody').children;
-    for (var i=0;i<rows.length;i++) rows[i].className = (i+1 === n) ? 'hl' : '';
+    for (var i=0;i<rows.length;i++) rows[i].className = kOf(i+1) + ((i+1 === n) ? ' hl' : '');
+    var mb = $('mtb'), mr = mb.children, hit = null;
+    for (var j=0;j<mr.length;j++){ var on = j+1 === n; mr[j].className = 'mr ' + kOf(j+1) + (on ? ' hl' : ''); if (on) hit = mr[j]; }
+    if (hit) mb.scrollTop = hit.offsetTop - (mb.clientHeight - hit.offsetHeight)/2;
   }
   function setUnit(u){
     unit = u;
@@ -582,10 +916,9 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     var b = document.createElement('button'); b.type = 'button'; b.className = 'trow';
     b.setAttribute('data-k', key(t));
     b.innerHTML = thumb(t) +
-      '<span class="tmain"><b>' + esc(t.id || '—') + '</b><span class="t1">' + esc(summary(t)) + '</span>' +
+      '<span class="tmain"><span class="thd"><b>' + esc(t.id || '—') + '</b>' + (t.location ? '<span class="loc">' + esc(t.location) + '</span>' : '') + '</span><span class="t1">' + esc(summary(t)) + '</span>' +
       (typeof t.dia === 'number' && !hideDia ? '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' : '') +
-      (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' : '') + '</span>' +
-      '<span class="tside">' + (t.location ? '<span class="loc">' + esc(t.location) + '</span>' : '') + '</span>';
+      (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' : '') + '</span>';
     b.addEventListener('click', function(){ openTool(key(t)); });
     return b;
   }
@@ -643,7 +976,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   }
   function closeTool(){
     $('sheet').hidden = true; document.body.style.overflow = '';
-    try { history.replaceState(null, '', '#' + ({conv:'convertisseur', feed:'avances', tools:'outils'})[view]); } catch(e){}
+    try { history.replaceState(null, '', '#' + ({conv:'convertisseur', cotes:'cotes', feed:'avances', tools:'outils'})[view]); } catch(e){}
     if (lastFocus && lastFocus.focus) lastFocus.focus();
   }
   $('sheet').addEventListener('click', function(e){ if (e.target === this) closeTool(); });
@@ -669,7 +1002,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     var msg = [];
     if (tdi > 0) msg.push('Diamètre : ' + tri(tdi));
     if (tth > 0) msg.push('Épaisseur : ' + tri(tth) + ' (LOC qui la couvre)');
-    $('t-thkout').textContent = msg.length ? msg.join(' · ') + '. Triés par diamètre.' : 'Laisse vide pour voir tous les outils. Triés par diamètre.';
+    $('t-thkout').textContent = msg.length ? msg.join(' · ') : '';
     var list = TOOLS.filter(function(t){
       if (fType && t.type !== fType) return false;
       if (tth > 0 && !(typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) return false;
@@ -700,7 +1033,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   function u3set(segId, inputId, u){
     var seg = $(segId); seg.setAttribute('data-u', u);
     [].forEach.call(seg.children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-u') === u); });
-    var inp = $(inputId); inp.setAttribute('inputmode', u === 'frac' ? 'text' : 'decimal');
+    var inp = $(inputId); if (!/^k-/.test(inputId) && !inp.classList.contains('kbf')) inp.setAttribute('inputmode', u === 'frac' ? 'text' : 'decimal');
     if (inp.hasAttribute('placeholder')) inp.setAttribute('placeholder', PH[u]);
   }
   function u3init(segId, inputId, cb){
@@ -728,11 +1061,11 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   // shop = avance réelle de l'atelier (po/min), appliquée à toutes les fraises pour cette matière.
   var CHOICES = [
     {id:'poly', name:'Polycarbonate', desc:'Lexan, Makrolon', on:'hard_plastic', shop:{dia:0.25, feed:[160,180]}},
-    {id:'acry', name:'Acrylique', desc:'Plexiglas, PMMA', on:'hard_plastic'},
-    {id:'hdpe', name:'HDPE', desc:'Polyéthylène haute densité', on:'hard_plastic', shop:{dia:0.25, feed:[250,250]}},
-    {id:'uhmw', name:'UHMW', desc:'Polyéthylène UHMW', on:'soft_plastic', shop:{dia:0.25, feed:[250,250]}},
-    {id:'hard_plastic', name:'Autre plastique dur', desc:'Acétal, PVC, phénolique', on:'hard_plastic'},
-    {id:'soft_plastic', name:'Autre plastique mou', desc:'Polypropylène, PVC flexible, nylon, styrène', on:'soft_plastic'},
+    {id:'acry', name:'Acrylique', desc:'Plexiglas, PMMA (Polymethyl Methacrylate)', on:'hard_plastic'},
+    {id:'hdpe', name:'HDPE', desc:'High-Density Polyethylene', on:'hard_plastic', shop:{dia:0.25, feed:[250,250]}},
+    {id:'uhmw', name:'UHMW', desc:'Ultra-High Molecular Weight Polyethylene', on:'soft_plastic', shop:{dia:0.25, feed:[250,250]}},
+    {id:'hard_plastic', name:'Autre plastique dur', desc:'Acétal, PVC (Polyvinyl Chloride), phénolique', on:'hard_plastic'},
+    {id:'soft_plastic', name:'Autre plastique mou', desc:'Polypropylène, PVC flexible (Polyvinyl Chloride), nylon, styrène', on:'soft_plastic'},
     {id:'mdf', on:'mdf', hidden:true}, {id:'aluminum', on:'aluminum', hidden:true}, {id:'composite', on:'composite', hidden:true}, {id:'hardwood_softwood', on:'hardwood_softwood', hidden:true}
   ];
   CHOICES.forEach(function(c){ var f = MATFR[c.on]; if (!c.name){ c.name = f[0]; c.desc = f[1]; } c.kw = f[2]; });
@@ -743,19 +1076,19 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     return ch.shop && fKind === 'pocket' ? {rpm:17000, why:'trous / poches (atelier)'} : {rpm:23000, why: fKind === 'pocket' ? 'RPM atelier' : 'détourage (atelier)'};
   }
   var WARNFR = {
-    'When chip rewelding occurs while cutting plastic, increase feed rate or switch to a single edge tool.':'Si les copeaux se ressoudent, augmente l\'avance ou passe à un outil à une flûte.',
-    'Incorrect chip loads can result in cratering, melting, or poor surface finish.':'Un mauvais chipload cause des cratères, de la fonte ou un mauvais fini.',
-    'To eliminate rewelding, increase the feed rate or change to a single edge tool.':'Pour éliminer le ressoudage, augmente l\'avance ou passe à un outil à une flûte.',
-    'If using a downcut spiral and chip rewelding occurs, cut a slot in your spoilboard to allow chips a place to expand.':'Avec une fraise downcut, si les copeaux se ressoudent, fais une rainure dans la table martyre pour que les copeaux aient de la place.',
-    'Incorrect chip loads can lead to knife marks or burrs.':'Un mauvais chipload laisse des marques de couteau ou des bavures.',
-    'Ensure proper dust collection due to fine abrasive wood particles.':'Assure une bonne aspiration : les fines particules de bois sont abrasives.',
-    'Compression spiral bits produce clean top and bottom edge cuts on laminated panels.':'Les fraises à compression donnent des arêtes propres dessus et dessous sur les panneaux laminés.',
-    'Use single-flute O-flute endmills to clear soft gummy aluminum chips efficiently.':'Utilise des fraises O-flute à une flûte pour bien évacuer les copeaux d\'aluminium collants.',
-    'Apply air blast or mist lubricant (MQL) to prevent chip welding on the tool.':'Utilise un jet d\'air ou une micro-lubrification (MQL) pour éviter que les copeaux se soudent sur l\'outil.',
-    'Abrasive materials cause fast tool wear. Use diamond-coated or PCD tools when possible.':'Matériaux abrasifs : usure rapide. Utilise des outils diamantés ou PCD si possible.',
-    'Spindle RPMs generally range from 12,000-16,000 for PCD tools.':'Les outils PCD tournent en général entre 12 000 et 16 000 RPM.',
-    'Use upcut endmills for deep slotting and fast chip clearance.':'Fraise upcut pour les rainures profondes et une évacuation rapide des copeaux.',
-    'Use downcut or compression endmills for tearout-free top surface finishes.':'Fraise downcut ou à compression pour une surface du dessus sans arrachement.'
+    'When chip rewelding occurs while cutting plastic, increase feed rate or switch to a single edge tool.':'Copeaux ressoudés : + d\'avance ou 1 flûte.',
+    'Incorrect chip loads can result in cratering, melting, or poor surface finish.':'Mauvais chipload = fonte, cratères, mauvais fini.',
+    'To eliminate rewelding, increase the feed rate or change to a single edge tool.':'Ressoudage : + d\'avance ou 1 flûte.',
+    'If using a downcut spiral and chip rewelding occurs, cut a slot in your spoilboard to allow chips a place to expand.':'Downcut qui ressoude : rainure dans la martyre.',
+    'Incorrect chip loads can lead to knife marks or burrs.':'Mauvais chipload = marques et bavures.',
+    'Ensure proper dust collection due to fine abrasive wood particles.':'Bonne aspiration : poussière abrasive.',
+    'Compression spiral bits produce clean top and bottom edge cuts on laminated panels.':'Compression = arêtes propres dessus et dessous.',
+    'Use single-flute O-flute endmills to clear soft gummy aluminum chips efficiently.':'Alu : O-flute 1 flûte.',
+    'Apply air blast or mist lubricant (MQL) to prevent chip welding on the tool.':'Jet d\'air ou MQL contre le soudage.',
+    'Abrasive materials cause fast tool wear. Use diamond-coated or PCD tools when possible.':'Abrasif : outil diamanté ou PCD.',
+    'Spindle RPMs generally range from 12,000-16,000 for PCD tools.':'PCD : 12 000 à 16 000 RPM.',
+    'Use upcut endmills for deep slotting and fast chip clearance.':'Upcut : rainures profondes.',
+    'Use downcut or compression endmills for tearout-free top surface finishes.':'Downcut ou compression : dessus propre.'
   };
   var OPS = [['single_pass','Une passe','Pleine profondeur'],['roughing','Ébauche','Enlever la matière'],['finishing','Finition','Passe finale']];
   var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = 'upcut';
@@ -777,22 +1110,53 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     var ons = series ? (/^37-[56]0/.test(String(series.series)) ? 12500 : 18000) : null;
     return {rpm:23000, why:'RPM de l\'atelier', ons:ons, onsWhy: ons === 12500 ? 'Onsrud, série 37-50/37-60' : 'référence Onsrud'};
   }
-  // deux réglages au chipload max : Max atelier (23 000 RPM) et Max Onsrud (RPM de référence Onsrud)
-  // chipload visé : milieu de la plage Onsrud ; RPM atelier et RPM de référence Onsrud
+  // chipload visé : milieu de la plage Onsrud ; RPM de référence Onsrud
   function setTable(ir, fl, cmin, cmax){
-    var c = (cmin + cmax)/2;
-    function col(cls, title, rpm, why, extra){
-      var f = rpm*fl*c;
-      return '<div class="set ' + cls + '"><span class="st">' + title + '</span>' +
-        '<span class="k">RPM</span><b>' + rpm.toLocaleString('fr-CA') + '</b><small>' + why + '</small>' +
-        '<span class="k">Avance</span><b>' + fmt(f,0) + ' po/min</b><small>' + mmTxt(f) + '</small><small>= ' + rpm.toLocaleString('fr-CA') + ' × ' + fl + ' × ' + fmt(c,4) + '"</small>' + (extra || '') +
-        '<span class="k">Chipload</span><b>' + fmt(c,4) + '"</b><small>' + fmt(c*25.4,3) + ' mm · milieu Onsrud</small><small>plage ' + fmt(cmin,4) + '–' + fmt(cmax,4) + '" · ' + fl + ' flûte' + (fl > 1 ? 's' : '') + '</small></div>';
-    }
-    var hab = ir.shop ? '<small>habitude atelier : ' + (ir.shop.fmin !== ir.shop.fmax ? ir.shop.fmin + '–' + ir.shop.fmax : ir.shop.fmax) + ' po/min</small>' : '';
-    var ons = ir.ons ? col('smid', 'Onsrud', ir.ons, ir.onsWhy)
-      : '<div class="set smid"><span class="st">Onsrud</span><small style="font-family:var(--sans);font-size:.85rem;margin-top:6px">Pas de données Onsrud pour cet outil.</small></div>';
-    return '<div class="sets">' + col('smax', 'Atelier', ir.rpm, ir.why, hab) + ons + '</div>';
+    var c = (cmin + cmax)/2, rpm = ir.ons || 18000, why = ir.ons ? ir.onsWhy : 'référence Onsrud · estimation, outil sans série';
+    var lo = Math.max(0.0001, Math.floor(cmin*0.5*10000)/10000), hi = Math.ceil(cmax*1.5*10000)/10000;
+    return '<div class="sets one"><div class="set smax tune" data-fl="' + fl + '" data-cmin="' + cmin + '" data-cmax="' + cmax + '" data-c0="' + c + '" data-r0="' + rpm + '" data-why="' + esc(why) + '">' +
+      '<div class="tunehead"><span class="st">Onsrud</span><span class="reset" role="button" tabindex="0">↺ Valeurs Onsrud</span></div><div class="tunebody"><div class="vals">' +
+      '<span class="k">RPM</span><b class="v-r"></b><small class="v-why"></small>' +
+      '<span class="k">Avance</span><b class="v-f"></b><small class="v-fmm"></small><small class="v-eq"></small>' +
+      '<span class="k">Chipload</span><b class="v-c"></b><small class="v-cmm"></small><small>plage ' + fmt(cmin,4) + '–' + fmt(cmax,4) + '" · ' + fl + ' flûte' + (fl > 1 ? 's' : '') + '</small></div>' +
+      '<div class="sliders">' +
+        '<div class="vs"><span class="vl">Chipload</span><div class="vsl s-c" role="slider" tabindex="0" aria-label="Chipload" data-min="' + lo + '" data-max="' + hi + '" data-step="0.0001" data-value="' + c + '">' +
+          '<div class="fill"></div><div class="band" style="bottom:' + ((cmin-lo)/(hi-lo)*100) + '%;height:' + ((cmax-cmin)/(hi-lo)*100) + '%"></div></div><span class="vv sv-c"></span></div>' +
+        '<div class="vs"><span class="vl">RPM</span><div class="vsl s-r" role="slider" tabindex="0" aria-label="RPM" data-min="6000" data-max="24000" data-step="500" data-value="' + rpm + '">' +
+          '<div class="fill"></div><div class="tick" style="top:' + ((1-(rpm-6000)/18000)*100) + '%"></div></div><span class="vv sv-r"></span></div>' +
+      '</div></div></div></div>';
   }
+  function tuneUpdate(box){
+    var q = function(c){ return box.querySelector(c); }, d = box.dataset;
+    var fl = +d.fl, c = +q('.s-c').dataset.value, rpm = +q('.s-r').dataset.value, cmin = +d.cmin, cmax = +d.cmax, f = rpm*fl*c;
+    var cs = Math.abs(c - +d.c0) < 0.00005 ? 'milieu Onsrud' : c < cmin - 1e-7 ? 'sous la plage Onsrud' : c > cmax + 1e-7 ? 'au-dessus de la plage Onsrud' : 'dans la plage Onsrud';
+    var out = c < cmin - 1e-7 || c > cmax + 1e-7;
+    q('.v-r').textContent = rpm.toLocaleString('fr-CA');
+    q('.v-why').textContent = rpm === +d.r0 ? d.why : 'ajusté · réf. Onsrud ' + (+d.r0).toLocaleString('fr-CA');
+    q('.v-f').textContent = fmt(f,0) + ' po/min'; q('.v-fmm').textContent = mmTxt(f);
+    q('.v-eq').textContent = '= ' + rpm.toLocaleString('fr-CA') + ' × ' + fl + ' × ' + fmt(c,4) + '"';
+    q('.v-c').textContent = fmt(c,4) + '"'; q('.v-cmm').textContent = fmt(c*25.4,3) + ' mm · ' + cs;
+    q('.v-c').classList.toggle('out', out); q('.v-cmm').classList.toggle('out', out);
+    q('.sv-c').textContent = fmt(c,4) + '"'; q('.sv-r').textContent = (rpm/1000).toLocaleString('fr-CA') + ' k';
+    [q('.s-c'), q('.s-r')].forEach(function(el){ var v = +el.dataset.value, mn = +el.dataset.min, mx = +el.dataset.max; el.querySelector('.fill').style.height = ((v-mn)/(mx-mn)*100) + '%'; el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuemin', mn); el.setAttribute('aria-valuemax', mx); });
+    q('.s-c').classList.toggle('out', out); q('.sv-c').classList.toggle('out', out); q('.s-c').setAttribute('aria-valuetext', fmt(c,4) + ' po'); q('.s-r').setAttribute('aria-valuetext', rpm + ' RPM');
+    box.classList.toggle('changed', Math.abs(c - +d.c0) >= 0.00005 || rpm !== +d.r0);
+  }
+  function tuneAll(root){ [].forEach.call(root.querySelectorAll('.tune'), tuneUpdate); }
+  function vslSet(el, v){ var mn = +el.dataset.min, mx = +el.dataset.max, st = +el.dataset.step; v = Math.min(mx, Math.max(mn, Math.round((v - mn)/st)*st + mn)); el.dataset.value = +v.toFixed(6); tuneUpdate(el.closest('.tune')); }
+  function vslAt(el, y){ var r = el.getBoundingClientRect(), k = 1 - (y - r.top)/r.height; vslSet(el, +el.dataset.min + Math.min(1, Math.max(0, k))*(+el.dataset.max - +el.dataset.min)); }
+  document.addEventListener('pointerdown', function(e){ var vs = e.target.closest && e.target.closest('.vs'), el = vs && vs.querySelector('.vsl'); if (!el) return;
+    e.preventDefault(); el.classList.add('dragging'); try { el.setPointerCapture(e.pointerId); } catch(_){}
+    vslAt(el, e.clientY);
+    function mv(ev){ vslAt(el, ev.clientY); }
+    function up(){ el.classList.remove('dragging'); el.removeEventListener('pointermove', mv); el.removeEventListener('pointerup', up); el.removeEventListener('pointercancel', up); }
+    el.addEventListener('pointermove', mv); el.addEventListener('pointerup', up); el.addEventListener('pointercancel', up); });
+  document.addEventListener('keydown', function(e){ var el = e.target; if (!el.classList || !el.classList.contains('vsl')) return;
+    var st = +el.dataset.step, big = (+el.dataset.max - +el.dataset.min)/10, v = +el.dataset.value, d = {ArrowUp:st, ArrowRight:st, ArrowDown:-st, ArrowLeft:-st, PageUp:big, PageDown:-big}[e.key];
+    if (d){ e.preventDefault(); e.stopPropagation(); vslSet(el, v + d); } });
+  function tuneReset(e){ var r = e.target.closest && e.target.closest('.reset'); if (!r) return; if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault(); e.stopPropagation(); var box = r.closest('.tune'); box.querySelector('.s-c').dataset.value = box.dataset.c0; box.querySelector('.s-r').dataset.value = box.dataset.r0; tuneUpdate(box); }
+  document.addEventListener('click', tuneReset, true); document.addEventListener('keydown', tuneReset, true);
   function mat(){ var on = choice().on; for (var i=0;i<SP.MATERIALS.length;i++) if (SP.MATERIALS[i].id === on) return SP.MATERIALS[i]; return SP.MATERIALS[0]; }
   function diaKey(x){ for (var i=0;i<SP.DIAMETERS.length;i++) if (Math.abs(SP.DIAMETERS[i].decimal - x) < 0.0005) return SP.DIAMETERS[i].fraction; return null; }
   function diaDec(k){ for (var i=0;i<SP.DIAMETERS.length;i++) if (SP.DIAMETERS[i].fraction === k) return SP.DIAMETERS[i].decimal; return null; }
@@ -856,9 +1220,8 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
       if (!r || !(r.good || r.better || r.best)) return '<div><h4>' + title + '</h4><p>Pas de recommandation</p></div>';
       return '<div><h4>' + title + '</h4><p>' + (r.best ? '<span>Idéal</span>' + esc(r.best) + '<br>' : '') + (r.better ? '<span>Meilleur</span>' + esc(r.better) + '<br>' : '') + (r.good ? '<span>Bon</span>' + esc(r.good) : '') + '</p></div>';
     }
-    $('reco').innerHTML = rec ? '<div class="reco">' + recBox('Outil < 1/2"', rec.underHalfInch) + recBox('Outil 1/2" et +', rec.halfInchAndAbove) + '</div>' : '<p class="note">Onsrud ne donne pas de recommandation de série pour ce matériau.</p>';
+    $('reco').innerHTML = rec ? '<div class="reco">' + recBox('Outil < 1/2"', rec.underHalfInch) + recBox('Outil 1/2" et +', rec.halfInchAndAbove) + '</div>' : '<p class="note">Pas de série recommandée par Onsrud.</p>';
     var w = (m.warnings || []).map(function(x){ return '<div class="alert info">' + esc(WARNFR[x] || x) + '</div>'; }).join('');
-    if (m.id === 'hard_plastic' || m.id === 'soft_plastic') w += '<div class="alert"><b>23 000 RPM dans le plastique :</b> avec un outil à plus d\'une flûte, risque de fonte. Surveille les copeaux ; si ça fond, augmente l\'avance ou prends un outil à une flûte.</div>';
     $('matwarn').innerHTML = w;
     // outils
     var kw = info[2];
@@ -873,9 +1236,8 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
       var cmin = c.min*mult, cmax = c.max*mult, cmid = (cmin+cmax)/2;
       var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc + 1e-6 >= th;
       var lv = recoLevel(sr, t.dia, m);
-      var ir = idealRpm(sr), sp = shopRpm(t.dia); ir.rpm = sp.rpm; ir.why = sp.why;
-      if (ch.shop) ir.shop = {fmin:ch.shop.feed[0], fmax:ch.shop.feed[1]};
-      var prod = fl ? ir.rpm*fl*cmid/passes : 0;
+      var ir = idealRpm(sr);
+      var prod = fl ? (ir.ons || 18000)*fl*cmid/passes : 0;
       return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
     });
     var main = rows.filter(function(r){ return r.sr || r.appOk; });
@@ -895,37 +1257,38 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     }
     main.sort(sorter); other.sort(sorter);
     function card(r, rank){
-      var t = r.t, b = document.createElement('button'); b.type = 'button';
+      var t = r.t, b = document.createElement('div'); b.setAttribute('role','button'); b.tabIndex = 0;
       b.className = 'feedcard' + (rank ? ' top' + (rank === 1 ? ' top1' : '') : '') + (r.locOk === false ? ' bad' : '');
       var tags = '';
       if (r.lv) tags += '<span class="tag2 best">' + LV[r.lv] + ' Onsrud</span>';
       if (r.sr) tags += '<span class="tag2">Série ' + esc(r.sr.series) + '</span>';
       if (r.appOk && !rank) tags += '<span class="tag2 ok">Prévu pour ce matériau</span>';
-      var fAt = r.fl ? r.ir.rpm*r.fl*r.cmid : 0;
-      if (r.ir.shop && r.fl && Math.abs(fAt/r.ir.shop.fmax - 1) > 0.05) tags += '<span class="tag2">Avance ' + (fAt > r.ir.shop.fmax ? '+' : '−') + Math.abs(Math.round((fAt/r.ir.shop.fmax - 1)*100)) + ' % vs habitude atelier</span>';
       if (t.note) tags += '<span class="tag2">' + esc(String(t.note).trim()) + '</span>';
       if (r.locOk === true && !rank) tags += '<span class="tag2 ok">LOC suffisante</span>';
       var RK = ['', '1er choix · idéal', '2e choix', '3e choix', '4e choix', '5e choix'];
-      var lvl = 'good', lvTxt = 'Conforme Onsrud';
+      var lvl = 'good', lvTxt = r.fl ? r.fl + ' flûte' + (r.fl > 1 ? 's' : '') : 'Flûtes ?';
       if (r.locOk === false || r.ratio > 3.0001){ lvl = 'bad'; lvTxt = r.locOk === false ? 'LOC trop courte' : 'Trop profond'; }
+      else if (r.notMain){ lvl = 'warn'; lvTxt = 'Pas prévu pour ce matériau'; }
       else if (r.generic){ lvl = 'warn'; lvTxt = 'Estimation, à vérifier'; }
       b.className += ' lv-' + lvl;
-      var head = '<div class="rankrow">' + (rank ? '<div class="rank">' + RK[rank] + '</div>' : '<span></span>') + '<span class="lvl ' + lvl + '">' + lvTxt + '</span></div>' + '<div class="fhead">' + thumb(t) + '<div><b>' + esc(t.id) + '</b><span class="t1">' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div></div>';
-      var dims = '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' + (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' + (th > 0 && t.loc >= th - 1e-6 ? '<span class="dim" style="color:var(--muted)"><i></i> ' + (t.loc - th < 0.0005 ? 'pile l\'épaisseur' : esc(tri(t.loc - th)) + ' de plus que l\'épaisseur') + '</span>' : '') : '');
+      var head = '<div class="rankrow">' + (rank ? '<div class="rank">' + RK[rank] + '</div>' : '<span></span>') + '<span class="lvcol"><span class="lvl ' + lvl + '">' + lvTxt + '</span>' + (typeof t.loc === 'number' ? '<span class="locdec">LOC ' + fmt(t.loc,4) + ' po</span>' : '') + '</span></div>' + '<div class="fhead">' + thumb(t) + '<div><b>' + esc(t.id) + '</b><span class="t1">' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div></div>';
+      var dims = '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' + (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' + (th > 0 && t.loc >= th - 1e-6 ? '<span class="dim"><i>Marge</i> ' + (t.loc - th < 0.0005 ? '0 (pile l\'épaisseur)' : esc(tri(t.loc - th))) + '</span>' : '') : '');
       var fg, rpm = r.ir.rpm;
       if (r.fl && rpm > 0){
         var fmin = rpm*r.fl*r.cmin, fmax = rpm*r.fl*r.cmax, fmid = rpm*r.fl*r.cmid;
         fg = '<div class="feedgrid">' +
           (th > 0 ? '<div><span>Passes</span><b class="hi">' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b><small>' + esc(fracAny(r.per) || fmt(r.per,4) + '"') + ' · ' + fmt(r.per,4) + ' po · ' + fmt(r.per*25.4,2) + ' mm par passe (' + depthLabel(r.ratio) + (r.mult < 1 ? ', chipload × ' + r.mult : '') + ')</small></div>' : '') +
         '</div>' + setTable(r.ir, r.fl, r.cmin, r.cmax);
-      } else fg = '<p class="note">Nombre de flûtes inconnu dans ta liste : impossible de calculer l\'avance.</p>';
+      } else fg = '<p class="note">Flûtes inconnues : avance non calculée.</p>';
       var al = '';
-      if (th > 0 && t.dia < 0.375 && /plastic/.test(m.id)) al += '<div class="alert info"><b>Passe de finition conseillée :</b> petit outil, laisse 0.015" à 0.030" (0.4 à 0.8 mm) pour une dernière passe sur toute l\'épaisseur.</div>';
-      if (r.locOk === false) al += '<div class="alert bad"><b>Pas en une passe :</b> la LOC (' + esc(fracAny(t.loc) || fmt(t.loc,4)+'"') + ') est plus courte que l\'épaisseur. Fais plusieurs passes ou prends une fraise plus longue.</div>';
-      else if (r.ratio > 3.0001) al += '<div class="alert bad"><b>Plus de 3×D :</b> trop profond pour ce diamètre en une passe selon Onsrud. Fais plusieurs passes ou prends un outil plus gros.</div>';
-      if (r.generic) al += '<div class="alert">Pas de série Onsrud reconnue pour cet outil : avance estimée à partir de la valeur moyenne du matériau. Vérifie avec la fiche du fabricant.</div>';
+      if (th > 0 && t.dia < 0.375 && /plastic/.test(m.id)) al += '<div class="alert info"><b>Finition :</b> laisse 0.015–0.030" (0.4–0.8 mm).</div>';
+      if (r.locOk === false) al += '<div class="alert bad"><b>LOC trop courte</b> (' + esc(fracAny(t.loc) || fmt(t.loc,4)+'"') + ').</div>';
+      else if (r.ratio > 3.0001) al += '<div class="alert bad"><b>Plus de 3×D :</b> trop profond.</div>';
+      if (r.generic) al += '<div class="alert">Sans série Onsrud : avance estimée.</div>';
       b.innerHTML = head + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al;
-      b.addEventListener('click', function(){ openTool(key(t)); });
+      b.addEventListener('click', function(e){ if (e.target.closest('.sliders, .reset')) return; openTool(key(t)); });
+      b.addEventListener('keydown', function(e){ if (e.target === b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); openTool(key(t)); } });
+      tuneAll(b);
       return b;
     }
     var ok = main.filter(function(r){ return r.fl && (th > 0 ? (needKind() === 'straight' ? r.locOk === true : r.locOk !== false) : true); });
@@ -942,20 +1305,24 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
       top.push(best);
     });
     ok.forEach(function(r){ if (top.length < 5 && top.indexOf(r) < 0) top.push(r); });
+    // pas assez d'outils prévus pour ce matériau : on complète avec les autres fraises dont la LOC convient (à vérifier)
+    var nMain = top.length;
+    other.filter(function(r){ return r.fl && (th > 0 ? (needKind() === 'straight' ? r.locOk === true : r.locOk !== false) : true); })
+      .forEach(function(r){ if (top.length < 5) { r.notMain = true; top.push(r); } });
     var tb = $('top3'); tb.innerHTML = '';
     top.forEach(function(r,i){ tb.appendChild(card(r, i+1)); });
-    $('t3note').textContent = !(th > 0) ? 'Entre l\'épaisseur pour vérifier la LOC et calculer les passes.' :
-      top.length && needKind() !== 'straight' ? 'Outils de ce type dans ta liste, classés de l\'idéal au ' + (top.length > 1 ? top.length + 'e' : '1er') + ' choix.' + (top.length < 5 ? ' Ta liste n\'en contient pas plus pour ce matériau.' : '') :
-      top.length ? 'Fraises dont la LOC couvre ' + (fracAny(th) || fmt(th,4) + '"') + ', classées de l\'idéal au ' + (top.length > 1 ? top.length + 'e' : '1er') + ' choix' + (needKind() === 'straight' ? ', les ' + ({upcut:'Upcut',downcut:'Downcut',compression:'Compression'})[fDir] + ' en premier' : '') + '. Passes calculées selon la règle de l\'atelier : jamais plus profond que le diamètre de l\'outil par passe.' :
-      'Aucune fraise de ta liste n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + ' dans ce matériau.';
+    var t3 = th > 0 && !top.length ? 'Aucune fraise assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' : '';
+    if (th > 0 && top.length > nMain) t3 = 'Ambre = pas prévu pour ce matériau, à vérifier.';
+    $('t3note').textContent = t3;
     main = main.filter(function(r){ return top.indexOf(r) < 0; });
     $('allSum').textContent = 'Voir les ' + main.length + ' autres outils de ce type pour ce matériau';
     $('allBox').hidden = !main.length;
     var box = $('flist'); box.innerHTML = '';
-    $('fcount').textContent = 'Classées de la meilleure à la moins bonne. Les fraises à LOC trop courte sont grisées. Touche une fraise pour voir sa fiche.';
+    
     main.forEach(function(r){ box.appendChild(card(r)); });
     var b2 = $('flist2'); b2.innerHTML = '';
-    other.forEach(function(r){ b2.appendChild(card(r)); });
+    other = other.filter(function(r){ return top.indexOf(r) < 0; });
+    other.forEach(function(r){ r.notMain = false; b2.appendChild(card(r)); });
     $('moreBox').hidden = !other.length;
     $('moreSum').textContent = 'Voir les ' + other.length + ' autres outils de ce type (pas prévus pour ce matériau)';
     renderManual();
@@ -974,12 +1341,13 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     if (keys.indexOf(dcur) >= 0) ds.value = dcur;
     var d = diaDec(ds.value), fl = +$('m-fl').value;
     var th = parseNum($('thk').value); if (tUnit === 'mm' && th > 0) th = th/25.4;
-    var irm = idealRpm(sr), spm = shopRpm(d); irm.rpm = spm.rpm; irm.why = spm.why; var rpm = irm.rpm;
+    var irm = idealRpm(sr);
     var mp = th > 0 ? Math.max(1, Math.ceil(th/(dMax*d) - 1e-9)) : 1, ratio = th > 0 ? (th/mp)/d : 1, mult = depthMult(ratio);
     var c = sr.chipLoads[ds.value], cmin = c[0]*mult, cmax = c[1]*mult, cmid = (cmin+cmax)/2;
     $('m-out').innerHTML = '<div class="feedgrid">' +
       '<div><span>Passes</span><b>' + (th > 0 ? mp + ' passe' + (mp > 1 ? 's' : '') : '—') + '</b><small>' + (th > 0 ? fmt(th/mp,4) + ' po · ' + fmt(th/mp*25.4,2) + ' mm par passe (' + depthLabel(ratio) + ')' : 'Ø ' + tri(d)) + '</small></div></div>' + setTable(irm, fl, cmin, cmax) +
-      (ratio > 3.0001 ? '<div class="alert bad"><b>Plus de 3×D :</b> trop profond pour ce diamètre en une passe.</div>' : '');
+      (ratio > 3.0001 ? '<div class="alert bad"><b>Plus de 3×D :</b> trop profond.</div>' : '');
+    tuneAll($('m-out'));
   }
   // contrôles
   (function(){
@@ -987,7 +1355,7 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     CHOICES.forEach(function(m){
       if (m.hidden) return;
       var b = document.createElement('button'); b.type = 'button'; b.setAttribute('data-id', m.id);
-      b.innerHTML = esc(m.name) + (m.shop ? ' <span class="tag2 ok" style="font-size:.62rem;padding:1px 6px">atelier</span>' : '') + '<small>' + esc(m.desc) + '</small>';
+      b.innerHTML = esc(m.name) + '<small>' + esc(m.desc) + '</small>';
       b.addEventListener('click', function(){ fMat = m.id; syncSeg(); try { localStorage.setItem('feed-mat', m.id); } catch(e){} renderFeed(); });
       mb.appendChild(b);
     });
@@ -1029,31 +1397,100 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   var view = 'conv';
   function setView(v, noHash){
     view = v;
-    ['conv','feed','tools'].forEach(function(x){ $('tab-' + x).setAttribute('aria-selected', v === x); $('view-' + x).hidden = v !== x; });
-    $('h1').textContent = ({conv:'Convertisseur de cotes', feed:'Vitesses et avances', tools:'Liste d\'outils'})[v];
-    $('sub').hidden = v !== 'conv';
-    if (!noHash) try { history.replaceState(null, '', '#' + ({conv:'convertisseur', feed:'avances', tools:'outils'})[v]); } catch(e){}
+    ['conv','cotes','feed','tools'].forEach(function(x){ $('tab-' + x).setAttribute('aria-selected', v === x); $('view-' + x).hidden = v !== x; });
+    $('h1').textContent = ({conv:'Convertisseur de cotes', cotes:'Tolérance', feed:'Vitesses et avances', tools:'Liste d\'outils'})[v];
+    $('sub').hidden = true;
+    if (!noHash) try { history.replaceState(null, '', '#' + ({conv:'convertisseur', cotes:'cotes', feed:'avances', tools:'outils'})[v]); } catch(e){}
     window.scrollTo(0,0);
+    if (window.kbClose) window.kbClose();
   }
   $('tab-conv').addEventListener('click', function(){ setView('conv'); });
   $('tab-tools').addEventListener('click', function(){ setView('tools'); });
   $('tab-feed').addEventListener('click', function(){ setView('feed'); });
+  $('tab-cotes').addEventListener('click', function(){ setView('cotes'); });
+  // ================= Cotes et tolérances =================
+  function kv(inputId, segId){ var raw = String($(inputId).value).replace(/^[\s+\-±]+/, ''); if (!raw.trim()) return null; var v = parse(raw); if ($(segId).getAttribute('data-u') === 'mm' && v >= 0) v = v/25.4; return v; }
+  function kLine(cls, title, x){
+    return '<div class="kl ' + cls + '"><span class="kt">' + title + '</span><b>' + fmt(x,4) + ' po</b><small>' + fmt(x*25.4,3) + ' mm</small></div>';
+  }
+  function renderCotes(){
+    var nom = kv('k-nom','k-nom-u'), tp = kv('k-plus','k-plus-u'), tm = kv('k-minus','k-minus-u');
+    if (tp === null && tm === null){ tp = 0; tm = 0; }
+    else if (tp === null) tp = tm; else if (tm === null) tm = tp;
+    if (!(nom > 0) || isNaN(tp) || isNaN(tm) || tp < 0 || tm < 0){
+      $('k-res').innerHTML = '<p class="kempty">Entre une cote et une tolérance valides.</p>'; $('k-in').textContent = ''; return;
+    }
+    var mx = nom + tp, mn = nom - tm, moy = (mx + mn)/2, sym = Math.abs(tp - tm) < 1e-9;
+    var me = kv('k-mes','k-mes-u'), vd = $('k-verd');
+    if (me === null || isNaN(me) || !(me > 0)){ vd.className = 'kverd'; vd.innerHTML = '<p class="kempty">Entre la cote mesurée pour savoir si la pièce est bonne.</p>'; }
+    else {
+      var band = mx - mn, eps = 1e-9, cls, head, det;
+      if (me > mx + eps){ cls = 'bad'; head = 'Hors tolérance : trop grand'; det = 'de ' + fmt(me - mx,4) + ' po (' + fmt((me - mx)*25.4,3) + ' mm) au-dessus du max'; }
+      else if (me < mn - eps){ cls = 'bad'; head = 'Hors tolérance : trop petit'; det = 'de ' + fmt(mn - me,4) + ' po (' + fmt((mn - me)*25.4,3) + ' mm) sous le min'; }
+      else if (band > 0 && Math.min(mx - me, me - mn) < band*0.1){ cls = 'warn'; head = 'Bon, mais près de la limite'; det = 'reste ' + fmt(Math.min(mx - me, me - mn),4) + ' po (' + fmt(Math.min(mx - me, me - mn)*25.4,3) + ' mm) avant le ' + (mx - me < me - mn ? 'max' : 'min'); }
+      else { cls = 'good'; head = 'Bon : dans la tolérance'; det = 'écart à la moyenne ' + (me - moy >= 0 ? '+' : '−') + fmt(Math.abs(me - moy),4) + ' po (' + fmt(Math.abs(me - moy)*25.4,3) + ' mm)'; }
+      vd.className = 'kverd ' + cls;
+      vd.innerHTML = '<b>' + head + '</b><small>' + det + '</small><span>Mesurée : ' + esc(fracIn(me) || fmt(me,4) + ' po') + (fracIn(me) ? ' · ' + fmt(me,4) + ' po' : '') + ' · ' + fmt(me*25.4,3) + ' mm</span>';
+    }
+    $('k-res').innerHTML = kLine('kmax','Max', mx) + kLine('kmin','Min', mn) + kLine('kmoy','Moy.', moy);
+    $('k-in').innerHTML = esc('Cote ' + tri(nom) + ' · tolérance ' + (sym ? '± ' + fmt(tp,4) + ' po (' + fmt(tp*25.4,3) + ' mm)' : '+' + fmt(tp,4) + ' / −' + fmt(tm,4) + ' po (+' + fmt(tp*25.4,3) + ' / −' + fmt(tm*25.4,3) + ' mm)') + ' · tolérance totale ' + fmt(tp + tm,4) + ' po (' + fmt((tp + tm)*25.4,3) + ' mm).') +
+      (mn <= 0 ? '<span class="alert bad" style="display:block"><b>Attention :</b> la cote minimale est nulle ou négative.</span>' : '');
+  }
+  // recopie + ↔ − tant que l'autre champ n'a pas été modifié à la main
+  var kManual = {'k-plus':false, 'k-minus':false};
+  var kOther = {'k-plus':'k-minus', 'k-minus':'k-plus'};
+  function kTyped(id){
+    kManual[id] = true;
+    var o = kOther[id];
+    if (!kManual[o]){ $(o).value = $(id).value; u3set(o + '-u', o, $(id + '-u').getAttribute('data-u')); }
+    if (!$(id).value && !$(o).value){ kManual[id] = false; kManual[o] = false; }
+  }
+  var kField = 'k-nom';
+  function kSel(id){ kField = id; ['k-nom','k-plus','k-minus','k-mes'].forEach(function(x){ $(x).classList.toggle('ksel', x === id); }); }
+  ['k-nom','k-plus','k-minus','k-mes'].forEach(function(id){
+    $(id).addEventListener('focus', function(){ kSel(id); });
+    $(id).addEventListener('click', function(){ kSel(id); });
+    $(id).addEventListener('input', function(){ if (kOther[id]) kTyped(id); renderCotes(); });
+  });
+  kSel('k-nom');
+  $('k-pad').addEventListener('click', function(e){
+    var b = e.target.closest('button'); if (!b) return;
+    var k = b.getAttribute('data-k'), f = $(kField), s = f.value;
+    if (k === 'back') s = s.slice(0,-1);
+    else if (k === 'clear') s = '';
+    else if (k === ' ') { if (s && !/\s$/.test(s) && s.indexOf('/') < 0) s += ' '; }
+    else if (k === '/') { if (s && !/[\/\s]$/.test(s) && s.indexOf('/') < 0) s += '/'; }
+    else if (k === '.') { if (s.indexOf('.') < 0 && s.indexOf('/') < 0) s += (s ? '.' : '0.'); }
+    else s += k;
+    f.value = s; if (kOther[kField]) kTyped(kField); renderCotes();
+  });
+  u3init('k-nom-u','k-nom',renderCotes);
+  u3init('k-mes-u','k-mes',renderCotes);
+  u3init('k-plus-u','k-plus',function(){ if (!kManual['k-minus']) u3set('k-minus-u','k-minus',$('k-plus-u').getAttribute('data-u')); renderCotes(); });
+  u3init('k-minus-u','k-minus',function(){ if (!kManual['k-plus']) u3set('k-plus-u','k-plus',$('k-minus-u').getAttribute('data-u')); renderCotes(); });
+  u3set('k-plus-u','k-plus','dec'); u3set('k-minus-u','k-minus','dec');
+  renderCotes();
   renderTypes(); renderList();
 
   // table
+  function kOf(n){ if (!ALL) return ''; var r = n % D; if (!r) return 'k8'; var den = D / gcd(r, D); return den <= 8 ? 'k8' : 'k' + den; }
   function buildTable(){
     var html = '';
     for (var n=1;n<=4*D;n++){
       var d = n/D;
-      html += '<tr><td>' + frac(n) + '</td><td>' + d.toFixed(D > 16 ? 5 : 4) + '</td><td>' + (d*25.4).toFixed(3) +
+      html += '<tr class="' + kOf(n) + '"><td>' + frac(n) + '</td><td>' + d.toFixed(D > 16 ? 5 : 4) + '</td><td>' + (d*25.4).toFixed(3) +
               '</td><td>' + (d/2).toFixed(D > 16 ? 6 : 5) + '</td><td>' + (d*12.7).toFixed(3) + '</td></tr>';
     }
     $('tbody').innerHTML = html;
-    $('tbl-title').textContent = 'Table 1/' + D + ' po';
+    var mh = '';
+    for (var m=1;m<=4*D;m++){ var dm = m/D; mh += '<div class="mr ' + kOf(m) + '" role="button" tabindex="0" data-n="' + m + '"><b>' + frac(m) + '</b><span>' + dm.toFixed(D > 16 ? 5 : 4) + '</span><span>' + (dm*25.4).toFixed(3) + ' mm</span></div>'; }
+    $('mtb').innerHTML = mh; $('mth').textContent = ALL ? 'Table complète' : 'Table 1/' + D + ' po'; $('mtb').classList.toggle('all', ALL); $('tbody').classList.toggle('all', ALL);
+    requestAnimationFrame(function(){ var tr = $('tbody').querySelector('tr.hl'); if (tr) highlight([].indexOf.call($('tbody').children, tr) + 1); });
+    $('tbl-title').textContent = ALL ? 'Table complète (jusqu\'à 1/64 po)' : 'Table 1/' + D + ' po';
     $('sub').textContent = 'Valeur correcte + 2 crans en dessous, par pas de 1/' + D + ' po, avec le rayon.';
   }
   function setStep(d){
-    D = d;
+    ALL = d === 0; D = ALL ? 64 : d;
     var bs = $('steps').querySelectorAll('button');
     for (var i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', +bs[i].getAttribute('data-d') === d);
     try { localStorage.setItem('cote-step', String(d)); } catch(e){}
@@ -1062,8 +1499,8 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   $('steps').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (b) setStep(+b.getAttribute('data-d'));
   });
-  try { var sd = +localStorage.getItem('cote-step'); if ([8,16,32,64].indexOf(sd) >= 0) D = sd; } catch(e){}
-  (function(){ var bs = $('steps').querySelectorAll('button'); for (var i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', +bs[i].getAttribute('data-d') === D); })();
+  try { var sv = localStorage.getItem('cote-step'), sd = +sv; if (sv !== null && [0,8,16,32,64].indexOf(sd) >= 0) { ALL = sd === 0; D = ALL ? 64 : sd; } } catch(e){}
+  (function(){ var bs = $('steps').querySelectorAll('button'); for (var i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', +bs[i].getAttribute('data-d') === (ALL ? 0 : D)); })();
   buildTable();
 
   // chips
@@ -1077,15 +1514,27 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
     $('chips').appendChild(b);
   });
 
+  function pickRow(e){
+    var r = e.target.closest && e.target.closest('.mr'); if (!r) return;
+    if (e.type === 'keydown' && e.key !== 'Enter' && e.key !== ' ') return;
+    e.preventDefault();
+    var n = +r.getAttribute('data-n');
+    $('f-txt').value = frac(n);
+    $('cote').value = String(n / D);
+    setUnit('po');
+  }
+  $('mtb').addEventListener('click', pickRow);
+  $('mtb').addEventListener('keydown', pickRow);
   $('cote').addEventListener('input', update);
   $('f-txt').addEventListener('input', update);
   $('pad').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (!b) return;
-    var k = b.getAttribute('data-k'), f = $('f-txt'), s = f.value;
+    var k = b.getAttribute('data-k'), f = mode === 'frac' ? $('f-txt') : $('cote'), s = f.value;
     if (k === 'back') s = s.slice(0,-1);
     else if (k === 'clear') s = '';
     else if (k === ' ') { if (s && !/\s$/.test(s) && s.indexOf('/') < 0) s += ' '; }
     else if (k === '/') { if (s && !/[\/\s]$/.test(s) && s.indexOf('/') < 0) s += '/'; }
+    else if (k === '.') { if (s.indexOf('.') < 0 && s.indexOf('/') < 0) s += (s ? '.' : '0.'); }
     else s += k;
     f.value = s; update();
   });
@@ -1112,7 +1561,73 @@ details.more summary{cursor:pointer;font-weight:700;padding:8px 0;color:var(--ac
   var hsh = (location.hash || '').slice(1);
   if (hsh === 'outils') setView('tools', true);
   else if (hsh === 'avances') setView('feed', true);
+  else if (hsh === 'cotes') setView('cotes', true);
   else if (/^r\d+$/.test(hsh) && byKey(hsh)) { setView('tools', true); openTool(hsh, true); }
+
+  // clavier de l'app pour Épaisseur (Avances) et Diamètre / Épaisseur (Outils)
+  (function(){
+    var kb = $('kb'), cur = null, NAMES = {q:'Rechercher', thk:'Épaisseur à couper', 't-dia':'Diamètre de l\'outil', 't-thk':'Épaisseur à couper'};
+    function open(f){
+      if (cur && cur !== f) cur.classList.remove('kbon');
+      cur = f; f.classList.add('kbon'); $('kbl').textContent = NAMES[f.id] || '';
+      var alpha = f.id === 'q'; kb.querySelector('.kbpad').hidden = alpha; kb.querySelector('.kbalpha').hidden = !alpha; kb.classList.toggle('alpha', alpha);
+      kb.hidden = false; document.body.classList.add('kbopen');
+      document.body.style.setProperty('--kbh', kb.offsetHeight + 'px');
+      var r = f.getBoundingClientRect(), lim = window.innerHeight - kb.offsetHeight - 12;
+      if (r.bottom > lim || r.top < 0) window.scrollBy({top: r.bottom - lim + 8, behavior:'smooth'});
+    }
+    function close(){ if (cur) cur.classList.remove('kbon'); cur = null; kb.hidden = true; document.body.classList.remove('kbopen'); }
+    [].forEach.call(document.querySelectorAll('.kbf'), function(f){
+      f.addEventListener('focus', function(){ open(f); });
+      f.addEventListener('click', function(){ open(f); });
+    });
+    kb.addEventListener('mousedown', function(e){ e.preventDefault(); });
+    kb.addEventListener('click', function(e){
+      var b = e.target.closest('button'); if (!b || !cur) return;
+      var k = b.getAttribute('data-k'), v = cur.value;
+      if (k === 'ok') { cur.blur(); close(); return; }
+      if (k === 'back') v = v.slice(0,-1); else if (k === 'clear') v = ''; else v += k;
+      cur.value = v; cur.dispatchEvent(new Event('input', {bubbles:true}));
+    });
+    document.addEventListener('pointerdown', function(e){
+      if (kb.hidden) return;
+      if (kb.contains(e.target) || (e.target.classList && e.target.classList.contains('kbf'))) return;
+      if (e.target.closest && e.target.closest('.u3')) return;
+      close();
+    });
+    window.kbClose = close;
+  })();
+
+  // Sur téléphone : empêcher le clavier de l'iPhone de s'ouvrir sur les champs qui ont le clavier de l'app
+  try {
+    if (window.matchMedia('(pointer: coarse)').matches) {
+      [].forEach.call(document.querySelectorAll('input[inputmode="none"]'), function(f){
+        f.readOnly = true; f.setAttribute('aria-readonly', 'false'); f.classList.add('nokb');
+        // un toucher ne donne pas le focus au champ : pas de menu « Outils d'écriture / Remplir » d'iOS
+        var sx = 0, sy = 0;
+        f.addEventListener('touchstart', function(e){ var t = e.touches[0]; sx = t.clientX; sy = t.clientY; }, {passive:true});
+        f.addEventListener('touchend', function(e){
+          var t = e.changedTouches[0]; if (Math.abs(t.clientX - sx) > 10 || Math.abs(t.clientY - sy) > 10) return;
+          e.preventDefault();
+          if (document.activeElement && document.activeElement !== document.body && document.activeElement.blur) document.activeElement.blur();
+          f.dispatchEvent(new Event('focus'));
+        }, {passive:false});
+      });
+    }
+  } catch(e){}
+
+  // bouton mode clair / sombre
+  (function(){
+    var b = $('themeBtn');
+    function sync(){ var d = document.documentElement.getAttribute('data-mode') === 'dark'; b.textContent = d ? '☀' : '☾'; b.setAttribute('aria-label', d ? 'Mode clair' : 'Mode sombre'); }
+    b.addEventListener('click', function(){
+      var d = document.documentElement.getAttribute('data-mode') !== 'dark';
+      if (d) document.documentElement.setAttribute('data-mode','dark'); else document.documentElement.removeAttribute('data-mode');
+      try { localStorage.setItem('mode', d ? 'dark' : 'light'); } catch(e){}
+      sync();
+    });
+    sync();
+  })();
 })();
 </script>
 
