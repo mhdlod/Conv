@@ -550,6 +550,23 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .kcalc button.eq{grid-row:span 2;background:var(--blk)!important;color:#FFC400!important;font-size:1.8rem!important}
 .kexpr{display:block;font-family:var(--mono);font-size:.82rem;font-weight:700;color:var(--fg);margin:-2px 0 4px;min-height:0}
 .kexpr[hidden]{display:none}
+
+/* Entre 2 trous */
+.kmode{display:grid!important;grid-template-columns:1fr 1fr;margin-bottom:10px}
+.kmode button{padding:7px 4px!important;font-size:.9rem!important}
+.kmode button[aria-pressed="true"]{background:#FFC400!important;color:#111!important}
+.kwide{grid-column:1 / -1}
+.t2h{font-family:var(--cond,var(--sans));font-weight:800;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:#111;margin-top:4px}
+.t2h:first-child{margin-top:0}
+.t2w{margin:6px 0 0;font-weight:700;font-size:.85rem;padding:5px 8px;border-radius:8px}
+.t2w.bad{background:#C21A0E;color:#fff}
+.t2w.warn{background:#111;color:#FFC400}
+.t2l{display:grid;grid-template-columns:minmax(0,1fr) auto 4.6em;align-items:baseline;gap:6px;color:#111;line-height:1.25}
+.t2l span{font-family:var(--cond,var(--sans));font-weight:700;font-size:.72rem;text-transform:uppercase;letter-spacing:.04em}
+.t2l b{font-family:var(--mono);font-size:.92rem}
+.t2l small{font-family:var(--mono);font-size:.7rem;text-align:right}
+.t2l.nom b{font-size:1.05rem}
+.kmode{width:100%}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -656,7 +673,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
   <div class="views" id="view-cotes" role="tabpanel" aria-labelledby="tab-cotes" hidden>
     <section class="panel" aria-label="Cote et tolérance">
-      <div class="kgrid">
+      <div class="mode kmode" id="kmode" role="group" aria-label="Calcul"><button type="button" data-m="cote" aria-pressed="true">Cote et tolérance</button><button type="button" data-m="trous" aria-pressed="false">Entre 2 trous</button></div>
+      <div class="kgrid" id="k-cote">
         <div class="kcell">
           <label class="lbl" for="k-nom">Cote nominale</label>
           <input id="k-nom" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
@@ -688,6 +706,46 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         <div class="kcell">
           <span class="lbl">Verdict</span>
           <div class="kverd" id="k-verd"></div>
+        </div>
+      </div>
+      <div class="kgrid" id="k-trous" hidden>
+        <div class="kcell">
+          <label class="lbl" for="t2-c">Entraxe (centre à centre)</label>
+          <input id="t2-c" class="numin" type="text" inputmode="none" autocomplete="off" value="2">
+          <small class="kexpr" id="t2-c-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="t2-tc">± tolérance entraxe</label>
+          <input id="t2-tc" class="numin" type="text" inputmode="none" autocomplete="off" value="0.005">
+          <small class="kexpr" id="t2-tc-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="t2-d1">Diamètre 1 (0 = extrémité)</label>
+          <input id="t2-d1" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
+          <small class="kexpr" id="t2-d1-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="t2-td">± tolérance diamètre 1</label>
+          <input id="t2-td" class="numin" type="text" inputmode="none" autocomplete="off" value="0.002">
+          <small class="kexpr" id="t2-td-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="t2-d2">Diamètre 2 (0 = extrémité)</label>
+          <input id="t2-d2" class="numin" type="text" inputmode="none" autocomplete="off" value="3/8">
+          <small class="kexpr" id="t2-d2-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell">
+          <label class="lbl" for="t2-td2">± tolérance diamètre 2</label>
+          <input id="t2-td2" class="numin" type="text" inputmode="none" autocomplete="off" value="0.001">
+          <small class="kexpr" id="t2-td2-x" aria-live="polite"></small>
+        </div>
+        <div class="kcell kwide">
+          <span class="lbl">Unité des valeurs</span>
+          <div class="u3" id="t2-u" role="group" aria-label="Unité des valeurs"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        </div>
+        <div class="kcell kwide">
+          <span class="lbl">Résultats</span>
+          <div class="kbox" id="t2-res" aria-live="polite"></div>
         </div>
       </div>
       <div class="pad kcalc" id="k-pad" aria-label="Calculatrice">
@@ -1477,9 +1535,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function kLine(cls, title, x){
     return '<div class="kl ' + cls + '"><span class="kt">' + title + '</span><b>' + fmt(x,4) + ' po</b><small>' + fmt(x*25.4,3) + ' mm</small></div>';
   }
+  function kSeg(id){ return /^t2-/.test(id) ? 't2-u' : id + '-u'; }
   function kShowExpr(){
-    ['k-nom','k-plus','k-minus','k-mes'].forEach(function(id){
-      var raw = $(id).value, x = $(id + '-x'), u = $(id + '-u').getAttribute('data-u');
+    ['k-nom','k-plus','k-minus','k-mes','t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'].forEach(function(id){
+      var raw = $(id).value, x = $(id + '-x'), u = $(kSeg(id)).getAttribute('data-u');
       if (raw && isNaN(parse(raw)) && /[×÷+−()√²π]|sin|cos|tan/.test(raw)){
         var v = evalExpr(raw); x.textContent = isNaN(v) ? '= …' : '= ' + kFmt(v, u) + (u === 'mm' ? ' mm' : ' po'); x.hidden = false;
       } else { x.textContent = ''; x.hidden = true; }
@@ -1492,7 +1551,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   }
   function frac64(n){ var w = Math.floor(n/64), r = n % 64, g = gcd(r, 64); return (w ? w + (r ? ' ' : '') : '') + (r ? (r/g) + '/' + (64/g) : ''); }
   function renderCotes(){
-    kShowExpr();
+    kShowExpr(); if (typeof renderTrous === 'function') renderTrous();
     var nom = kv('k-nom','k-nom-u'), tp = kv('k-plus','k-plus-u'), tm = kv('k-minus','k-minus-u');
     if (tp === null && tm === null){ tp = 0; tm = 0; }
     else if (tp === null) tp = tm; else if (tm === null) tm = tp;
@@ -1525,8 +1584,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (!$(id).value && !$(o).value){ kManual[id] = false; kManual[o] = false; }
   }
   var kField = 'k-nom';
-  function kSel(id){ kField = id; ['k-nom','k-plus','k-minus','k-mes'].forEach(function(x){ $(x).classList.toggle('ksel', x === id); }); }
-  ['k-nom','k-plus','k-minus','k-mes'].forEach(function(id){
+  var KF = ['k-nom','k-plus','k-minus','k-mes','t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'];
+  function kSel(id){ kField = id; KF.forEach(function(x){ $(x).classList.toggle('ksel', x === id); }); }
+  KF.forEach(function(id){
     $(id).addEventListener('focus', function(){ kSel(id); });
     $(id).addEventListener('click', function(){ kSel(id); });
     $(id).addEventListener('input', function(){ if (kOther[id]) kTyped(id); renderCotes(); });
@@ -1534,14 +1594,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   kSel('k-nom');
   $('k-pad').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (!b) return;
-    var k = b.getAttribute('data-k'), f = $(kField), s = f.value, seg = $(kField + '-u'), u = seg.getAttribute('data-u');
+    var k = b.getAttribute('data-k'), f = $(kField), s = f.value, seg = $(kSeg(kField)), u = seg.getAttribute('data-u');
     if (k === 'back') { var m = s.match(/(sin\(|cos\(|tan\(|√\()$/); s = m ? s.slice(0, -m[1].length) : s.slice(0,-1); }
     else if (k === 'clear') s = '';
     else if (k === '=' || k === 'mm2po' || k === 'po2mm') {
       var v = isNaN(parse(s)) ? evalExpr(s) : parse(s);
       if (!isNaN(v)) {
-        if (k === 'mm2po') { if (u === 'mm') v = v/25.4; u3set(kField + '-u', kField, 'dec'); u = 'dec'; }
-        if (k === 'po2mm') { if (u !== 'mm') v = v*25.4; u3set(kField + '-u', kField, 'mm'); u = 'mm'; }
+        if (k === 'mm2po') { if (u === 'mm') v = v/25.4; if (/^t2-/.test(kField)) t2Conv('dec', 1/25.4); else u3set(kField + '-u', kField, 'dec'); u = 'dec'; }
+        if (k === 'po2mm') { if (u !== 'mm') v = v*25.4; if (/^t2-/.test(kField)) t2Conv('mm', 25.4); else u3set(kField + '-u', kField, 'mm'); u = 'mm'; }
         s = kFmt(v, u);
       }
     }
@@ -1549,6 +1609,31 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     else s += k;
     f.value = s; if (kOther[kField]) kTyped(kField); renderCotes();
   });
+  // ---- Entre 2 trous ----
+  function t2v(id){ var raw = String($(id).value).replace(/^[\s+±]+/, ''); if (!raw.trim()) return null; var v = parse(raw); if (isNaN(v)) v = evalExpr(raw); if ($('t2-u').getAttribute('data-u') === 'mm' && v >= 0) v = v/25.4; return v; }
+  function t2Conv(u, k){ ['t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'].forEach(function(id){ if (id === kField) return; var v = parse($(id).value); if (isNaN(v)) v = evalExpr($(id).value); if (!isNaN(v) && $(id).value.trim()) $(id).value = kFmt(v*k, u); }); u3set('t2-u', 't2-c', u); }
+  function renderTrous(){
+    var c = t2v('t2-c'), tc = t2v('t2-tc') || 0, d1 = t2v('t2-d1'), d2 = t2v('t2-d2'), td = t2v('t2-td') || 0, td2 = t2v('t2-td2') || 0, box = $('t2-res');
+    if (!(c > 0) || d1 === null || d2 === null || isNaN(d1) || isNaN(d2) || d1 < 0 || d2 < 0 || isNaN(tc) || isNaN(td) || isNaN(td2)){ box.innerHTML = '<p class="kempty">Entre l\'entraxe et les deux diamètres.</p>'; return; }
+    var nh = (d1 > 0 ? 1 : 0) + (d2 > 0 ? 1 : 0), half = (d1 + d2)/2, var_ = tc + (d1 > 0 ? td/2 : 0) + (d2 > 0 ? td2/2 : 0);
+    var w = c - half, wmin = w - var_, wmax = w + var_, far = c + half, fmin = far - var_, fmax = far + var_;
+    function L(cls, t, x){ return '<div class="t2l ' + cls + '"><span>' + t + '</span><b>' + fmt(x,4) + ' po</b><small>' + fmt(x*25.4,3) + ' mm</small></div>'; }
+    var what = nh === 2 ? 'Paroi entre les trous' : nh === 1 ? 'Extrémité → bord du trou' : 'Extrémité → extrémité';
+    var h = '<div class="t2h">' + what + '</div>' + L('nom','Nominale', w) + L('','Min (pire cas)', wmin) + L('','Max', wmax) +
+      '<div class="t2h">' + (nh === 2 ? 'Bords les plus éloignés' : nh === 1 ? 'Extrémité → bord opposé du trou' : 'Distance totale') + '</div>' + L('','Nominale', far) + '<div class="t2l"><span>Min · max</span><b>' + fmt(fmin,4) + ' · ' + fmt(fmax,4) + ' po</b><small></small></div>';
+    if (w <= 0) h += '<p class="t2w bad">Les trous se chevauchent' + (w < 0 ? ' de ' + fmt(-w,4) + ' po (' + fmt(-w*25.4,3) + ' mm)' : ' (ils se touchent)') + '.</p>';
+    else if (wmin <= 0) h += '<p class="t2w warn">Au pire cas des tolérances, les trous se touchent ou se chevauchent.</p>';
+    box.innerHTML = h;
+  }
+  [].forEach.call($('kmode').children, function(b){ b.addEventListener('click', function(){
+    var m = b.getAttribute('data-m');
+    [].forEach.call($('kmode').children, function(x){ x.setAttribute('aria-pressed', x === b); });
+    $('k-cote').hidden = m !== 'cote'; $('k-trous').hidden = m !== 'trous';
+    kSel(m === 'cote' ? 'k-nom' : 't2-c');
+    try { localStorage.setItem('kmode', m); } catch(e){}
+  }); });
+  u3init('t2-u','t2-c',renderCotes);
+  ['t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'].forEach(function(id){ var x = $(id); if (/t[cd]$/.test(id)) x.setAttribute('data-tol','1'); });
   u3init('k-nom-u','k-nom',renderCotes);
   u3init('k-mes-u','k-mes',renderCotes);
   u3init('k-plus-u','k-plus',function(){ if (!kManual['k-minus']) u3set('k-minus-u','k-minus',$('k-plus-u').getAttribute('data-u')); renderCotes(); });
