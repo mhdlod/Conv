@@ -530,6 +530,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .themebtn{flex:none;width:36px;height:36px;margin:-4px 0;border-radius:10px;font-size:1.1rem!important;border:2px solid var(--ink);background:var(--key);color:var(--fg);font-size:1.25rem;line-height:1;cursor:pointer;box-shadow:0 3px 0 var(--ink);display:grid;place-items:center}
 .themebtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--ink)}
 .themebtn:focus-visible{outline:3px solid #FFC400;outline-offset:2px}
+
+/* Case active */
+#cote.act,.ftxt.act,.kcell input.act,.numin.act,.search.act{box-shadow:0 0 0 4px #FFC400!important;border-color:var(--ink)!important}
+.fcaret{position:absolute;width:3px;border-radius:2px;background:var(--fg);pointer-events:none;z-index:5;animation:fblink 1s steps(1) infinite}
+@keyframes fblink{0%,55%{opacity:1}56%,100%{opacity:0}}
+@media (prefers-reduced-motion:reduce){.fcaret{animation:none}}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1627,6 +1633,44 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       sync();
     });
     sync();
+  })();
+
+  // Case active : contour jaune + curseur qui clignote (Convertisseur, Tolérance, et champs à clavier)
+  (function(){
+    var caret = document.createElement('span'); caret.className = 'fcaret'; caret.setAttribute('aria-hidden','true'); document.body.appendChild(caret);
+    var cv = document.createElement('canvas').getContext('2d'), last = null;
+    function vis(el){ return el && el.offsetParent !== null; }
+    function active(){
+      var k = document.querySelector('.kbon'); if (vis(k)) return k;
+      if (vis($('cote'))) return $('cote');
+      if (vis($('f-txt'))) return $('f-txt');
+      var c = document.querySelector('.kcell input.ksel'); if (vis(c)) return c;
+      return null;
+    }
+    function place(){
+      var el = active();
+      if (last && last !== el) last.classList.remove('act');
+      last = el;
+      if (!el) { caret.hidden = true; return; }
+      el.classList.add('act');
+      var cs = getComputedStyle(el), r = el.getBoundingClientRect();
+      cv.font = cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+      var ls = parseFloat(cs.letterSpacing) || 0, txt = el.value || '';
+      var w = txt ? cv.measureText(txt).width + ls * txt.length : 0;
+      var x = r.left + parseFloat(cs.borderLeftWidth) + parseFloat(cs.paddingLeft) + Math.min(w, r.width - 24) - el.scrollLeft + 1;
+      var h = Math.round(parseFloat(cs.fontSize) * 1.05);
+      caret.style.height = h + 'px';
+      caret.style.left = (x + window.scrollX) + 'px';
+      caret.style.top = (r.top + window.scrollY + (r.height - h)/2) + 'px';
+      caret.hidden = false;
+      caret.style.animation = 'none'; void caret.offsetWidth; caret.style.animation = '';
+    }
+    var q = 0; function soon(){ if (q) return; q = requestAnimationFrame(function(){ q = 0; place(); }); }
+    ['input','click','keydown','resize','focusin'].forEach(function(t){ (t === 'resize' ? window : document).addEventListener(t, soon, true); });
+    document.addEventListener('pointerup', function(){ setTimeout(soon, 30); }, true);
+    try { document.fonts.ready.then(soon); } catch(e){}
+    new MutationObserver(soon).observe(document.body, {subtree:true, attributes:true, attributeFilter:['class','hidden']});
+    soon();
   })();
 })();
 </script>
