@@ -740,10 +740,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="field" style="margin-top:14px">
         <div class="inrow">
           <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre de l'outil (facultatif)</label>
-          <input id="t-dia" class="numin kbf" type="text" inputmode="none" autocomplete="off" placeholder="ex. 1/4">
+          <input id="t-dia" class="numin kbf" type="text" inputmode="none" autocomplete="off">
           <div class="u3" id="tdia-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
           <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-thk">Épaisseur à couper (facultatif)</label>
-          <input id="t-thk" class="numin kbf" type="text" inputmode="none" autocomplete="off" placeholder="ex. 1/2">
+          <input id="t-thk" class="numin kbf" type="text" inputmode="none" autocomplete="off">
           <div class="u3" id="tthk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
         </div>
         <p class="note" id="t-thkout"></p>
@@ -1050,7 +1050,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   }
   $('q').addEventListener('input', renderList);
   // sélecteur d'unité indépendant par champ : Fraction / Décimal po / mm
-  var PH = {frac:'ex. 1/2', dec:'ex. 0.5', mm:'ex. 12.7'};
+  var PH = {frac:'', dec:'', mm:''};
   function u3set(segId, inputId, u){
     var seg = $(segId); seg.setAttribute('data-u', u);
     [].forEach.call(seg.children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-u') === u); });
