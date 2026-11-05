@@ -781,6 +781,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     m = s.match(/^(\d*\.?\d+)\/(\d*\.?\d+)$/);
     if (m) return +m[2] ? (+m[1])/(+m[2]) : NaN;
     if (/^\d*\.?\d+$/.test(s)) return parseFloat(s);
+    if (/^\d+\.$/.test(s)) return parseFloat(s);
     return NaN;
   }
   function row(tag, n, inch, main){
@@ -1009,12 +1010,24 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (tdi > 0) msg.push('Diamètre : ' + tri(tdi));
     if (tth > 0) msg.push('Épaisseur : ' + tri(tth) + ' (LOC qui la couvre)');
     $('t-thkout').textContent = msg.length ? msg.join(' · ') : '';
-    var list = TOOLS.filter(function(t){
+    var base = TOOLS.filter(function(t){
       if (fType && t.type !== fType) return false;
       if (tth > 0 && !(typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) return false;
-      if (tdi > 0 && !(typeof t.dia === 'number' && Math.abs(t.dia - tdi) < 0.002)) return false;
       var h = hay(t); return words.every(function(w){ return h.indexOf(w) >= 0; });
     });
+    var list = base, nearMsg = '';
+    if (tdi > 0){
+      list = base.filter(function(t){ return typeof t.dia === 'number' && Math.abs(t.dia - tdi) < 0.002; });
+      if (!list.length){
+        var best = null; base.forEach(function(t){ if (typeof t.dia === 'number' && (best === null || Math.abs(t.dia - tdi) < Math.abs(best - tdi))) best = t.dia; });
+        if (best !== null){
+          list = base.filter(function(t){ return typeof t.dia === 'number' && Math.abs(t.dia - best) < 0.002; });
+          var uu = $('tdia-u').getAttribute('data-u'), typed = $('t-dia').value.trim().replace(/\.$/,'');
+          var lab = uu === 'mm' ? typed + ' mm' : uu === 'dec' ? typed + ' po' : typed + '"';
+          nearMsg = 'Aucun outil de ' + esc(lab) + '. Plus proche : <b>' + esc(fracAny(best) || fmt(best,4) + '"') + '</b> (' + fmt(best,4) + ' po · ' + fmt(best*25.4,3) + ' mm) — ' + list.length + ' outil' + (list.length > 1 ? 's' : '') + '.';
+        }
+      }
+    }
     list.sort(function(a,b){
       var x = typeof a.dia === 'number' ? a.dia : 1e9, y = typeof b.dia === 'number' ? b.dia : 1e9; if (x !== y) return x - y;
       if (tth > 0){ var la = typeof a.loc === 'number' ? a.loc : 1e9, lb = typeof b.loc === 'number' ? b.loc : 1e9; if (la !== lb) return la - lb; }
@@ -1031,6 +1044,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       }
       box.innerHTML = '<p class="empty-state">Aucun outil ne correspond.' + near + '</p>'; return;
     }
+    if (nearMsg){ var n = document.createElement('div'); n.className = 'alert info nearmsg'; n.innerHTML = nearMsg; box.appendChild(n); }
     var frag = document.createDocumentFragment(); list.forEach(function(t){ frag.appendChild(toolRow(t)); }); box.appendChild(frag);
   }
   $('q').addEventListener('input', renderList);
