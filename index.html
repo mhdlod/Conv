@@ -720,7 +720,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
           <small class="kexpr" id="t2-tc-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-d1">Diamètre 1 (0 = extrémité)</label>
+          <label class="lbl" for="t2-d1">Diamètre 1 (0 = paroi)</label>
           <input id="t2-d1" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
           <small class="kexpr" id="t2-d1-x" aria-live="polite"></small>
         </div>
@@ -730,7 +730,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
           <small class="kexpr" id="t2-td-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-d2">Diamètre 2 (0 = extrémité)</label>
+          <label class="lbl" for="t2-d2">Diamètre 2 (0 = paroi)</label>
           <input id="t2-d2" class="numin" type="text" inputmode="none" autocomplete="off" value="3/8">
           <small class="kexpr" id="t2-d2-x" aria-live="polite"></small>
         </div>
@@ -1618,9 +1618,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var nh = (d1 > 0 ? 1 : 0) + (d2 > 0 ? 1 : 0), half = (d1 + d2)/2, var_ = tc + (d1 > 0 ? td/2 : 0) + (d2 > 0 ? td2/2 : 0);
     var w = c - half, wmin = w - var_, wmax = w + var_, far = c + half, fmin = far - var_, fmax = far + var_;
     function L(cls, t, x){ return '<div class="t2l ' + cls + '"><span>' + t + '</span><b>' + fmt(x,4) + ' po</b><small>' + fmt(x*25.4,3) + ' mm</small></div>'; }
-    var what = nh === 2 ? 'Paroi entre les trous' : nh === 1 ? 'Extrémité → bord du trou' : 'Extrémité → extrémité';
+    var what = nh === 2 ? 'Paroi entre les trous' : nh === 1 ? 'Paroi → bord du trou' : 'Paroi → paroi';
     var h = '<div class="t2h">' + what + '</div>' + L('nom','Nominale', w) + L('','Min (pire cas)', wmin) + L('','Max', wmax) +
-      '<div class="t2h">' + (nh === 2 ? 'Bords les plus éloignés' : nh === 1 ? 'Extrémité → bord opposé du trou' : 'Distance totale') + '</div>' + L('','Nominale', far) + '<div class="t2l"><span>Min · max</span><b>' + fmt(fmin,4) + ' · ' + fmt(fmax,4) + ' po</b><small></small></div>';
+      '<div class="t2h">' + (nh === 2 ? 'Bords les plus éloignés' : nh === 1 ? 'Paroi → bord opposé du trou' : 'Distance totale') + '</div>' + L('','Nominale', far) + '<div class="t2l"><span>Min · max</span><b>' + fmt(fmin,4) + ' · ' + fmt(fmax,4) + ' po</b><small></small></div>';
     if (w <= 0) h += '<p class="t2w bad">Les trous se chevauchent' + (w < 0 ? ' de ' + fmt(-w,4) + ' po (' + fmt(-w*25.4,3) + ' mm)' : ' (ils se touchent)') + '.</p>';
     else if (wmin <= 0) h += '<p class="t2w warn">Au pire cas des tolérances, les trous se touchent ou se chevauchent.</p>';
     box.innerHTML = h;
