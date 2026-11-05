@@ -568,14 +568,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .t2l.nom b{font-size:1.05rem}
 .kmode{width:100%}
 
-.t2g{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.t2b{background:#fff;border:2px solid #111;border-radius:10px;padding:6px 8px;display:flex;flex-direction:column;gap:2px;min-width:0}
-.t2bt{font-family:var(--cond,var(--sans));font-weight:800;font-size:.74rem;letter-spacing:.05em;text-transform:uppercase;color:#111;border-bottom:2px solid #111;padding-bottom:3px;margin-bottom:2px}
-.t2v{display:flex;flex-direction:column;color:#111;line-height:1.15}
-.t2v + .t2v{border-top:1px dashed #111;padding-top:4px;margin-top:2px}
-.t2v span{font-family:var(--cond,var(--sans));font-weight:700;font-size:.66rem;letter-spacing:.06em;text-transform:uppercase}
-.t2v b{font-family:var(--mono);font-size:1.12rem;font-weight:800;white-space:nowrap}
-.t2v small{font-family:var(--mono);font-size:.74rem}
+.t2g{display:flex;flex-direction:column;gap:10px}
+.t2b{background:#fff;border:2px solid #111;border-radius:10px;overflow:hidden;min-width:0}
+.t2bt{background:#111;color:#FFC400;font-family:var(--cond,var(--sans));font-weight:800;font-size:.9rem;letter-spacing:.06em;text-transform:uppercase;padding:5px 10px}
+.t2r{display:grid;grid-template-columns:1fr 1fr}
+.t2v{display:flex;flex-direction:column;align-items:flex-start;padding:6px 10px 8px;color:#111;line-height:1.1;min-width:0}
+.t2v + .t2v{border-left:2px solid #111}
+.t2v span{font-family:var(--cond,var(--sans));font-weight:800;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
+.t2v b{font-family:var(--mono);font-size:1.35rem;font-weight:800;white-space:nowrap}
 #t2-res{padding:8px!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
@@ -1627,10 +1627,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (!(c > 0) || d1 === null || d2 === null || isNaN(d1) || isNaN(d2) || d1 < 0 || d2 < 0 || isNaN(tc) || isNaN(td) || isNaN(td2)){ box.innerHTML = '<p class="kempty">Entre l\'entraxe et les deux diamètres.</p>'; return; }
     var nh = (d1 > 0 ? 1 : 0) + (d2 > 0 ? 1 : 0), half = (d1 + d2)/2, var_ = tc + (d1 > 0 ? td/2 : 0) + (d2 > 0 ? td2/2 : 0);
     var w = c - half, wmin = w - var_, wmax = w + var_, far = c + half, fmin = far - var_, fmax = far + var_;
-    function V(t, x){ return '<div class="t2v"><span>' + t + '</span><b>' + x.toFixed(4) + ' po</b><small>' + (x*25.4).toFixed(3) + ' mm</small></div>'; }
-    function blk(title, mn, mx){ return '<div class="t2b"><div class="t2bt">' + title + '</div>' + V('Min', mn) + V('Max', mx) + '</div>'; }
-    var t1 = nh === 2 ? 'Bords proches' : nh === 1 ? 'Paroi → bord proche' : 'Paroi → paroi';
-    var t2 = nh === 2 ? 'Bords éloignés' : nh === 1 ? 'Paroi → bord opposé' : 'Paroi → paroi';
+    var mmU = $('t2-u').getAttribute('data-u') === 'mm';
+    function V(t, x){ return '<div class="t2v"><span>' + t + '</span><b>' + (mmU ? (x*25.4).toFixed(3) + ' mm' : x.toFixed(4) + ' po') + '</b></div>'; }
+    function blk(title, mn, mx){ return '<div class="t2b"><div class="t2bt">' + title + '</div><div class="t2r">' + V('Min', mn) + V('Max', mx) + '</div></div>'; }
+    var t1 = nh === 2 ? 'Parois proches' : nh === 1 ? 'Paroi → bord proche' : 'Paroi → paroi';
+    var t2 = nh === 2 ? 'Parois éloignées' : nh === 1 ? 'Paroi → bord éloigné' : 'Paroi → paroi';
     var h = '<div class="t2g">' + blk(t1, wmin, wmax) + blk(t2, fmin, fmax) + '</div>';
     if (w <= 0) h += '<p class="t2w bad">Les trous se chevauchent' + (w < 0 ? ' de ' + fmt(-w,4) + ' po (' + fmt(-w*25.4,3) + ' mm)' : ' (ils se touchent)') + '.</p>';
     else if (wmin <= 0) h += '<p class="t2w warn">Au pire cas des tolérances, les trous se touchent ou se chevauchent.</p>';
