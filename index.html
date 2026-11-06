@@ -577,7 +577,13 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .t2v span{font-family:var(--cond,var(--sans));font-weight:800;font-size:.75rem;letter-spacing:.08em;text-transform:uppercase}
 .t2v b{font-family:var(--mono);font-size:1.35rem;font-weight:800;white-space:nowrap}
 #t2-res{padding:8px!important}
-[data-mode="dark"] #t2-res .t2bt{color:#FFC400!important;background:#111!important}
+[data-mode="dark"] #t2-res{background:transparent!important;border:0!important;padding:0!important}
+[data-mode="dark"] #t2-res .t2b{background:#232323;border-color:#D6D2C6}
+[data-mode="dark"] #t2-res .t2bt{color:#111!important;background:#FFC400!important}
+[data-mode="dark"] #t2-res .t2v,[data-mode="dark"] #t2-res .t2v *{color:#F2F0EA!important}
+[data-mode="dark"] #t2-res .t2v span{color:#A9A69C!important}
+[data-mode="dark"] #t2-res .t2v + .t2v{border-left-color:#D6D2C6}
+[data-mode="dark"] #t2-res .t2w.warn{background:#FFC400;color:#111!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
