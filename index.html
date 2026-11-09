@@ -618,6 +618,37 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 #t2-res{padding:0!important;background:transparent!important;border:0!important}
 .t2v{flex-direction:row!important;align-items:baseline!important;gap:6px}
 .t2v span{flex:none}
+
+/* Entre 2 trous : une ligne par élément */
+#k-trous.t2grid[hidden]{display:none!important}
+#k-trous.t2grid:not([hidden]){display:flex!important;flex-direction:column;gap:5px!important}
+.t2row{display:flex;flex-direction:column;min-width:0}
+.t2row .lbl{font-size:.72rem!important;white-space:normal!important;margin-bottom:2px}
+.t2in{display:grid;grid-template-columns:minmax(0,1.7fr) auto minmax(0,1fr);align-items:center;gap:6px}
+#k-trous .t2in .numin{height:40px!important;font-size:1.2rem!important;padding:4px 10px!important;margin:0!important;width:100%}
+#k-trous .t2in .t2tol{font-size:1.05rem!important}
+.t2pm{font-family:var(--mono);font-weight:800;font-size:1.25rem;color:var(--fg)}
+.t2unit{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:10px;margin-top:2px}
+.t2unit .lbl{margin:0!important}
+.t2unit .u3{margin:0!important}
+#k-trous .u3 button{min-height:30px!important}
+#k-trous .kexpr{margin:1px 0 0}
+#k-trous .kwide{margin-top:3px}
+
+#k-trous.t2grid:not([hidden]){gap:4px!important}
+
+.t2top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:3px}
+.t2top .lbl{margin:0!important}
+.t2top .u3{margin:0!important;flex:0 0 52%}
+#k-trous .t2bt{padding:2px 8px!important;font-size:.72rem!important}
+#k-trous .t2v{padding:3px 8px 4px!important}
+#k-trous .t2v b{font-size:1.08rem!important}
+#k-trous .t2in .numin.act{box-shadow:0 0 0 4px #FFC400!important}
+#k-trous .t2top .u3 button{min-height:26px!important;padding:2px 0!important;font-size:.8rem!important}
+#k-trous .t2in .numin{height:38px!important}
+
+.kcalc button.clr{font-family:var(--sans)!important;font-size:.72rem!important;line-height:1.05;font-weight:800}
+.kbalpha button.cl{font-size:.9rem!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -644,7 +675,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="kr"><button type="button" data-k="Q">Q</button><button type="button" data-k="W">W</button><button type="button" data-k="E">E</button><button type="button" data-k="R">R</button><button type="button" data-k="T">T</button><button type="button" data-k="Y">Y</button><button type="button" data-k="U">U</button><button type="button" data-k="I">I</button><button type="button" data-k="O">O</button><button type="button" data-k="P">P</button></div>
       <div class="kr kr9"><button type="button" data-k="A">A</button><button type="button" data-k="S">S</button><button type="button" data-k="D">D</button><button type="button" data-k="F">F</button><button type="button" data-k="G">G</button><button type="button" data-k="H">H</button><button type="button" data-k="J">J</button><button type="button" data-k="K">K</button><button type="button" data-k="L">L</button></div>
       <div class="kr kr7"><button type="button" data-k="Z">Z</button><button type="button" data-k="X">X</button><button type="button" data-k="C">C</button><button type="button" data-k="V">V</button><button type="button" data-k="B">B</button><button type="button" data-k="N">N</button><button type="button" data-k="M">M</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button></div>
-      <div class="kr krb"><button type="button" data-k="-">-</button><button type="button" data-k=".">.</button><button type="button" data-k="/">/</button><button type="button" data-k=" " class="op sp">espace</button><button type="button" data-k="clear" class="op cl">Effacer</button></div>
+      <div class="kr krb"><button type="button" data-k="-">-</button><button type="button" data-k=".">.</button><button type="button" data-k="/">/</button><button type="button" data-k=" " class="op sp">espace</button><button type="button" data-k="clear" class="op cl">Effacer tout</button></div>
     </div>
   </div>
   <nav class="tabs" role="tablist" aria-label="Sections">
@@ -759,40 +790,33 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
           <div class="kverd" id="k-verd"></div>
         </div>
       </div>
-      <div class="kgrid" id="k-trous" hidden>
-        <div class="kcell">
-          <label class="lbl" for="t2-c">Entraxe (c. à c.)</label>
-          <input id="t2-c" class="numin" type="text" inputmode="none" autocomplete="off" value="2">
-          <small class="kexpr" id="t2-c-x" aria-live="polite"></small>
+      <div class="kgrid t2grid" id="k-trous" hidden>
+        <div class="t2row">
+          <div class="t2top"><label class="lbl" for="t2-c">Entraxe (centre à centre)</label><div class="u3" id="t2-u" role="group" aria-label="Unité des valeurs"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div></div>
+          <div class="t2in">
+            <input id="t2-c" class="numin" type="text" inputmode="none" autocomplete="off" value="2">
+            <span class="t2pm" aria-hidden="true">±</span>
+            <input id="t2-tc" class="numin t2tol" type="text" inputmode="none" autocomplete="off" value="0.005" aria-label="± tolérance entraxe">
+          </div>
+          <small class="kexpr" id="t2-c-x" aria-live="polite"></small><small class="kexpr" id="t2-tc-x" aria-live="polite"></small>
         </div>
-        <div class="kcell">
-          <label class="lbl" for="t2-tc">± tol.</label>
-          <input id="t2-tc" class="numin" type="text" inputmode="none" autocomplete="off" value="0.005">
-          <small class="kexpr" id="t2-tc-x" aria-live="polite"></small>
+        <div class="t2row">
+          <label class="lbl" for="t2-d1">Diamètre 1 (0 = paroi)</label>
+          <div class="t2in">
+            <input id="t2-d1" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
+            <span class="t2pm" aria-hidden="true">±</span>
+            <input id="t2-td" class="numin t2tol" type="text" inputmode="none" autocomplete="off" value="0.002" aria-label="± tolérance diamètre 1">
+          </div>
+          <small class="kexpr" id="t2-d1-x" aria-live="polite"></small><small class="kexpr" id="t2-td-x" aria-live="polite"></small>
         </div>
-        <div class="kcell">
-          <label class="lbl" for="t2-d1">Ø 1 (0 = paroi)</label>
-          <input id="t2-d1" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
-          <small class="kexpr" id="t2-d1-x" aria-live="polite"></small>
-        </div>
-        <div class="kcell">
-          <label class="lbl" for="t2-td">± tol. Ø 1</label>
-          <input id="t2-td" class="numin" type="text" inputmode="none" autocomplete="off" value="0.002">
-          <small class="kexpr" id="t2-td-x" aria-live="polite"></small>
-        </div>
-        <div class="kcell">
-          <label class="lbl" for="t2-d2">Ø 2 (0 = paroi)</label>
-          <input id="t2-d2" class="numin" type="text" inputmode="none" autocomplete="off" value="3/8">
-          <small class="kexpr" id="t2-d2-x" aria-live="polite"></small>
-        </div>
-        <div class="kcell">
-          <label class="lbl" for="t2-td2">± tol. Ø 2</label>
-          <input id="t2-td2" class="numin" type="text" inputmode="none" autocomplete="off" value="0.001">
-          <small class="kexpr" id="t2-td2-x" aria-live="polite"></small>
-        </div>
-        <div class="kcell kunit">
-          <span class="lbl">Unité</span>
-          <div class="u3" id="t2-u" role="group" aria-label="Unité des valeurs"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        <div class="t2row">
+          <label class="lbl" for="t2-d2">Diamètre 2 (0 = paroi)</label>
+          <div class="t2in">
+            <input id="t2-d2" class="numin" type="text" inputmode="none" autocomplete="off" value="3/8">
+            <span class="t2pm" aria-hidden="true">±</span>
+            <input id="t2-td2" class="numin t2tol" type="text" inputmode="none" autocomplete="off" value="0.001" aria-label="± tolérance diamètre 2">
+          </div>
+          <small class="kexpr" id="t2-d2-x" aria-live="polite"></small><small class="kexpr" id="t2-td2-x" aria-live="polite"></small>
         </div>
         <div class="kcell kwide">
           <div class="kbox" id="t2-res" aria-live="polite"></div>
@@ -802,7 +826,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         <button type="button" data-k="sin(" class="fn">sin</button><button type="button" data-k="cos(" class="fn">cos</button><button type="button" data-k="tan(" class="fn">tan</button><button type="button" data-k="√(" class="fn" aria-label="Racine carrée">√</button><button type="button" data-k="²" class="fn" aria-label="Au carré">x²</button><button type="button" data-k="π" class="fn">π</button>
         <button type="button" data-k="mm2po" class="fn w3">mm → po</button><button type="button" data-k="po2mm" class="fn w3">po → mm</button>
         <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="÷" class="op">÷</button><button type="button" data-k="/" class="op" aria-label="Barre de fraction">/</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
-        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="op">×</button><button type="button" data-k=" " class="op sm">espace</button><button type="button" data-k="clear" class="op" aria-label="Tout effacer">C</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="op">×</button><button type="button" data-k=" " class="op sm">espace</button><button type="button" data-k="clear" class="op clr">Effacer<br>tout</button>
         <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="−" class="op">−</button><button type="button" data-k="+" class="op">+</button><button type="button" data-k="=" class="eq" aria-label="Calculer">=</button>
         <button type="button" data-k="0" class="w2">0</button><button type="button" data-k=".">.</button><button type="button" data-k="(" class="fn">(</button><button type="button" data-k=")" class="fn">)</button>
       </div>
@@ -1181,7 +1205,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function u3set(segId, inputId, u){
     var seg = $(segId); seg.setAttribute('data-u', u);
     [].forEach.call(seg.children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-u') === u); });
-    var inp = $(inputId); if (!/^k-/.test(inputId) && !inp.classList.contains('kbf')) inp.setAttribute('inputmode', u === 'frac' ? 'text' : 'decimal');
+    var inp = $(inputId); if (!/^(k|t2)-/.test(inputId) && !inp.classList.contains('kbf')) inp.setAttribute('inputmode', u === 'frac' ? 'text' : 'decimal');
     if (inp.hasAttribute('placeholder')) inp.setAttribute('placeholder', PH[u]);
   }
   function u3init(segId, inputId, cb){
@@ -1869,7 +1893,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var k = document.querySelector('.kbon'); if (vis(k)) return k;
       if (vis($('cote'))) return $('cote');
       if (vis($('f-txt'))) return $('f-txt');
-      var c = document.querySelector('.kcell input.ksel'); if (vis(c)) return c;
+      var c = document.querySelector('#view-cotes input.ksel'); if (vis(c)) return c;
       return null;
     }
     function place(){
