@@ -584,6 +584,40 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 [data-mode="dark"] #t2-res .t2v span{color:#A9A69C!important}
 [data-mode="dark"] #t2-res .t2v + .t2v{border-left-color:#D6D2C6}
 [data-mode="dark"] #t2-res .t2w.warn{background:#FFC400;color:#111!important}
+
+/* Tolérance : tout tient sur l'écran */
+.kcalc button{min-height:0!important;height:var(--kh,44px)!important}
+.kcalc{gap:5px!important}
+#view-cotes .panel{padding-bottom:10px}
+#view-cotes .kmode{margin-bottom:6px}
+#view-cotes .kmode button{padding:5px 4px!important}
+#view-cotes .lbl{margin-bottom:2px}
+#view-cotes .kcell .numin{height:clamp(34px,5vh,48px);font-size:1.15rem;margin-bottom:3px}
+#view-cotes .kcell .u3 button{min-height:24px;padding:2px 2px}
+#view-cotes .kgrid{gap:4px 10px}
+#k-pad{margin-top:8px!important}
+#k-trous{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1.3fr) minmax(0,1fr)!important;gap:5px 6px!important}
+#k-trous .kunit{grid-column:span 2;justify-content:flex-end}
+#k-trous .lbl{font-size:.62rem;white-space:nowrap;overflow:hidden;text-overflow:clip}
+#k-trous .numin{height:36px!important;font-size:1rem!important;padding:4px 6px!important;letter-spacing:-.02em}
+#k-trous .u3 button{min-height:34px!important}
+#k-trous .kexpr{font-size:.7rem}
+.t2g{gap:6px!important}
+.t2bt{padding:3px 8px!important;font-size:.78rem!important}
+.t2v{padding:2px 8px 4px!important}
+.t2v span{font-size:.62rem!important}
+.t2v b{font-size:1.15rem!important}
+
+/* compaction supplémentaire */
+#view-cotes #k-res{padding:4px 8px!important;gap:1px!important}
+#view-cotes #k-res .kl{line-height:1.05}
+#view-cotes #k-res .kl b{font-size:.86rem}
+#view-cotes #k-res .kl small{font-size:.55rem;line-height:1}
+#view-cotes .kverd .kempty{font-size:.74rem;line-height:1.2;margin:0}
+#view-cotes .kverd{padding:5px 8px!important}
+#t2-res{padding:0!important;background:transparent!important;border:0!important}
+.t2v{flex-direction:row!important;align-items:baseline!important;gap:6px}
+.t2v span{flex:none}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -727,41 +761,40 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       </div>
       <div class="kgrid" id="k-trous" hidden>
         <div class="kcell">
-          <label class="lbl" for="t2-c">Entraxe (centre à centre)</label>
+          <label class="lbl" for="t2-c">Entraxe (c. à c.)</label>
           <input id="t2-c" class="numin" type="text" inputmode="none" autocomplete="off" value="2">
           <small class="kexpr" id="t2-c-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-tc">± tolérance entraxe</label>
+          <label class="lbl" for="t2-tc">± tol.</label>
           <input id="t2-tc" class="numin" type="text" inputmode="none" autocomplete="off" value="0.005">
           <small class="kexpr" id="t2-tc-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-d1">Diamètre 1 (0 = paroi)</label>
+          <label class="lbl" for="t2-d1">Ø 1 (0 = paroi)</label>
           <input id="t2-d1" class="numin" type="text" inputmode="none" autocomplete="off" value="1/2">
           <small class="kexpr" id="t2-d1-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-td">± tolérance diamètre 1</label>
+          <label class="lbl" for="t2-td">± tol. Ø 1</label>
           <input id="t2-td" class="numin" type="text" inputmode="none" autocomplete="off" value="0.002">
           <small class="kexpr" id="t2-td-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-d2">Diamètre 2 (0 = paroi)</label>
+          <label class="lbl" for="t2-d2">Ø 2 (0 = paroi)</label>
           <input id="t2-d2" class="numin" type="text" inputmode="none" autocomplete="off" value="3/8">
           <small class="kexpr" id="t2-d2-x" aria-live="polite"></small>
         </div>
         <div class="kcell">
-          <label class="lbl" for="t2-td2">± tolérance diamètre 2</label>
+          <label class="lbl" for="t2-td2">± tol. Ø 2</label>
           <input id="t2-td2" class="numin" type="text" inputmode="none" autocomplete="off" value="0.001">
           <small class="kexpr" id="t2-td2-x" aria-live="polite"></small>
         </div>
-        <div class="kcell kwide">
-          <span class="lbl">Unité des valeurs</span>
+        <div class="kcell kunit">
+          <span class="lbl">Unité</span>
           <div class="u3" id="t2-u" role="group" aria-label="Unité des valeurs"><button type="button" data-u="frac" aria-pressed="true">Frac.</button><button type="button" data-u="dec" aria-pressed="false">Déc.</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
         </div>
         <div class="kcell kwide">
-          <span class="lbl">Résultats</span>
           <div class="kbox" id="t2-res" aria-live="polite"></div>
         </div>
       </div>
@@ -1522,7 +1555,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   $('tab-conv').addEventListener('click', function(){ setView('conv'); });
   $('tab-tools').addEventListener('click', function(){ setView('tools'); });
   $('tab-feed').addEventListener('click', function(){ setView('feed'); });
-  $('tab-cotes').addEventListener('click', function(){ setView('cotes'); });
+  $('tab-cotes').addEventListener('click', function(){ setView('cotes'); setTimeout(fitCalc, 0); });
   // ================= Cotes et tolérances =================
   // calculatrice : évalue un calcul (+ − × ÷, fractions, parenthèses, sin/cos/tan en degrés, √, x², π)
   function evalExpr(src){
@@ -1567,8 +1600,16 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     return fmt(v, 5);
   }
   function frac64(n){ var w = Math.floor(n/64), r = n % 64, g = gcd(r, 64); return (w ? w + (r ? ' ' : '') : '') + (r ? (r/g) + '/' + (64/g) : ''); }
+  function fitCalc(){
+    var v = $('view-cotes'); if (v.hidden) return;
+    var pad = $('k-pad'), tabs = document.querySelector('.tabs');
+    var r = pad.getBoundingClientRect(), top = r.top + window.scrollY, limit = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 22;
+    var kh = Math.max(28, Math.min(50, (limit - top - 5*5) / 6));
+    pad.style.setProperty('--kh', Math.floor(kh) + 'px');
+  }
+  window.addEventListener('resize', function(){ fitCalc(); });
   function renderCotes(){
-    kShowExpr(); if (typeof renderTrous === 'function') renderTrous();
+    kShowExpr(); setTimeout(fitCalc, 0); if (typeof renderTrous === 'function') renderTrous();
     var nom = kv('k-nom','k-nom-u'), tp = kv('k-plus','k-plus-u'), tm = kv('k-minus','k-minus-u');
     if (tp === null && tm === null){ tp = 0; tm = 0; }
     else if (tp === null) tp = tm; else if (tm === null) tm = tp;
@@ -1650,6 +1691,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     $('k-cote').hidden = m !== 'cote'; $('k-trous').hidden = m !== 'trous';
     kSel(m === 'cote' ? 'k-nom' : 't2-c');
     try { localStorage.setItem('kmode', m); } catch(e){}
+    fitCalc();
   }); });
   u3init('t2-u','t2-c',renderCotes);
   ['t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'].forEach(function(id){ var x = $(id); if (/t[cd]$/.test(id)) x.setAttribute('data-tol','1'); });
