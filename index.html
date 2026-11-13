@@ -649,6 +649,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
 .kcalc button.clr{font-family:var(--sans)!important;font-size:.72rem!important;line-height:1.05;font-weight:800}
 .kbalpha button.cl{font-size:.9rem!important}
+
+/* Nombre de flûtes sur chaque outil */
+.tid{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0}
+.flb{font-family:var(--cond,var(--sans));font-weight:800;font-size:.78rem;letter-spacing:.03em;padding:1px 7px;border-radius:999px;background:#FFC400;color:#111;border:1.5px solid var(--ink,#111);white-space:nowrap}
+.flb.unk{background:transparent;color:var(--muted);border-style:dashed}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1071,11 +1076,16 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (t.mpn != null) bits.push(String(t.mpn));
     return bits.join(' · ');
   }
+  function fluteBadge(t){
+    if (typeof t.flutes === 'number') return '<span class="flb">' + t.flutes + ' flûte' + (t.flutes > 1 ? 's' : '') + '</span>';
+    if (/^(End Mill|Drill|Cutter|Insert)$/.test(t.type || '')) return '<span class="flb unk">flûtes ?</span>';
+    return '';
+  }
   function toolRow(t, hideDia){
     var b = document.createElement('button'); b.type = 'button'; b.className = 'trow';
     b.setAttribute('data-k', key(t));
     b.innerHTML = thumb(t) +
-      '<span class="tmain"><span class="thd"><b>' + esc(t.id || '—') + '</b>' + (t.location ? '<span class="loc">' + esc(t.location) + '</span>' : '') + '</span><span class="t1">' + esc(summary(t)) + '</span>' +
+      '<span class="tmain"><span class="thd"><span class="tid"><b>' + esc(t.id || '—') + '</b>' + fluteBadge(t) + '</span>' + (t.location ? '<span class="loc">' + esc(t.location) + '</span>' : '') + '</span><span class="t1">' + esc(summary(t)) + '</span>' +
       (typeof t.dia === 'number' && !hideDia ? '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' : '') +
       (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' : '') + '</span>';
     b.addEventListener('click', function(){ openTool(key(t)); });
@@ -1103,10 +1113,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
          (t.location ? '<span class="pill">Emplacement ' + esc(t.location) + '</span>' : '') + '</div>';
     var dupes = TOOLS.filter(function(o){ return o.id && o.id === t.id; });
     if (dupes.length > 1) h += '<div class="warnbox">Attention : le n° ' + esc(t.id) + ' est utilisé pour ' + dupes.length + ' outils différents dans la liste.</div>';
-    var bigs = ['dia','loc','shank','radius'].filter(function(f){ return typeof t[f] === 'number'; });
+    var bigs = ['flutes','dia','loc','shank','radius'].filter(function(f){ return typeof t[f] === 'number'; });
     if (bigs.length){
       h += '<div class="big">' + bigs.map(function(f){
         var lab = {dia:'Diamètre',loc:'Longueur de coupe',shank:'Queue',radius:'Rayon'}[f], fr = fracAny(t[f]);
+        if (f === 'flutes') return '<div class="kv"><span>Flûtes</span><b>' + t.flutes + '</b><small>' + (t.flutes > 1 ? 'flûtes' : 'flûte') + ' de coupe</small></div>';
         return '<div class="kv"><span>' + lab + '</span><b>' + (fr || fmt(t[f],4) + '"') + '</b><small>' + fmt(t[f],4) + ' po · ' + fmt(t[f]*25.4,3) + ' mm</small></div>';
       }).join('') + '</div>';
     }
