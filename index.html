@@ -654,6 +654,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .tid{display:inline-flex;align-items:baseline;gap:6px;flex-wrap:wrap;min-width:0}
 .flb{font-family:var(--cond,var(--sans));font-weight:800;font-size:.78rem;letter-spacing:.03em;padding:1px 7px;border-radius:999px;background:#FFC400;color:#111;border:1.5px solid var(--ink,#111);white-space:nowrap}
 .flb.unk{background:transparent;color:var(--muted);border-style:dashed}
+
+/* tri des outils */
+.fsort{display:grid!important;grid-template-columns:1fr 1fr;width:100%;margin:6px 0 8px}
+.fsort button{padding:8px 4px!important;font-size:.92rem!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -856,7 +860,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     </section>
 
     <section aria-label="Les 5 meilleurs outils">
-      <h2>Les 5 meilleurs outils de ta liste</h2>
+      <h2 id="topTitle">Les 5 meilleurs outils de ta liste</h2>
+      <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="loc" aria-pressed="false">LOC la plus proche</button></div>
       <p class="note" id="t3note"></p>
       <div class="flist" id="top3"></div>
     </section>
@@ -905,6 +910,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         <p class="note" id="t-thkout"></p>
       </div>
     </section>
+    <div class="mode fsort" id="tsort" role="group" aria-label="Trier"><button type="button" data-s="dia" aria-pressed="true">Diamètre</button><button type="button" data-s="loc" aria-pressed="false">LOC la plus proche</button></div>
     <p class="count" id="tcount" role="status"></p>
     <div class="tlist" id="tlist"></div>
   </div>
@@ -1076,6 +1082,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (t.mpn != null) bits.push(String(t.mpn));
     return bits.join(' · ');
   }
+  var tSort = 'dia';
+  try { if (localStorage.getItem('tools-sort') === 'loc') tSort = 'loc'; } catch(e){}
   function fluteBadge(t){
     if (typeof t.flutes === 'number') return '<span class="flb">' + t.flutes + ' flûte' + (t.flutes > 1 ? 's' : '') + '</span>';
     if (/^(End Mill|Drill|Cutter|Insert)$/.test(t.type || '')) return '<span class="flb unk">flûtes ?</span>';
@@ -1191,12 +1199,15 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         }
       }
     }
+    var tLoc = tSort === 'loc' && tth > 0;
+    if (tLoc) list = list.filter(function(t){ return typeof t.loc === 'number' && t.loc + 1e-6 >= tth; });
     list.sort(function(a,b){
+      if (tLoc){ var ma = a.loc - tth, mb = b.loc - tth; if (Math.abs(ma - mb) > 0.0005) return ma - mb; }
       var x = typeof a.dia === 'number' ? a.dia : 1e9, y = typeof b.dia === 'number' ? b.dia : 1e9; if (x !== y) return x - y;
       if (tth > 0){ var la = typeof a.loc === 'number' ? a.loc : 1e9, lb = typeof b.loc === 'number' ? b.loc : 1e9; if (la !== lb) return la - lb; }
       return a.row - b.row;
     });
-    $('tcount').textContent = list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length;
+    $('tcount').textContent = (tSort === 'loc' && !(tth > 0)) ? 'Entre une épaisseur à couper pour trier par LOC. ' + list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length : list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length + (tLoc ? ' · LOC ≥ ' + (fracAny(tth) || fmt(tth,4) + '"') + ', la plus proche d\'abord' : '');
     var box = $('tlist'); box.innerHTML = '';
     if (!list.length){
       var near = '';
@@ -1492,11 +1503,25 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var nMain = top.length;
     other.filter(function(r){ return r.fl && (th > 0 ? (needKind() === 'straight' ? r.locOk === true : r.locOk !== false) : true); })
       .forEach(function(r){ if (top.length < 5) { r.notMain = true; top.push(r); } });
+    var sortLoc = fSort === 'loc' && th > 0;
+    $('topTitle').textContent = sortLoc ? 'LOC ≥ ' + (fracAny(th) || fmt(th,4) + '"') + ', la plus proche d\'abord' : 'Les 5 meilleurs outils de ta liste';
+    if (sortLoc){
+      var byLoc = main.concat(other).filter(function(r){ return r.fl && r.locOk === true; });
+      byLoc.forEach(function(r){ r.notMain = !(r.sr || r.appOk); });
+      byLoc.sort(function(a,b){ var d = (a.t.loc - th) - (b.t.loc - th); if (Math.abs(d) > 0.0005) return d; return sorter(a,b); });
+      var tl = $('top3'); tl.innerHTML = '';
+      byLoc.forEach(function(r){ tl.appendChild(card(r)); });
+      $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise de ta liste n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.';
+      $('allBox').hidden = true; $('moreBox').hidden = true;
+      renderManual();
+      return;
+    }
+    if (fSort === 'loc' && !(th > 0)) $('t3note').textContent = 'Entre une épaisseur pour trier par LOC.';
     var tb = $('top3'); tb.innerHTML = '';
     top.forEach(function(r,i){ tb.appendChild(card(r, i+1)); });
     var t3 = th > 0 && !top.length ? 'Aucune fraise assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' : '';
     if (th > 0 && top.length > nMain) t3 = 'Ambre = pas prévu pour ce matériau, à vérifier.';
-    $('t3note').textContent = t3;
+    if (!(fSort === 'loc' && !(th > 0))) $('t3note').textContent = t3;
     main = main.filter(function(r){ return top.indexOf(r) < 0; });
     $('allSum').textContent = 'Voir les ' + main.length + ' autres outils de ce type pour ce matériau';
     $('allBox').hidden = !main.length;
@@ -1555,6 +1580,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     $('thkLbl').textContent = fKind === 'pocket' ? '3. Profondeur du trou / de la poche' : fKind === 'chamfer' ? '3. Profondeur du chanfrein / de la gravure' : fKind === 'ball' ? '3. Profondeur à usiner' : '3. Épaisseur à couper (profondeur)';
     [].forEach.call($('mats').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fMat); });
   }
+  var fSort = 'best';
+  try { if (localStorage.getItem('feed-sort') === 'loc') fSort = 'loc'; } catch(e){}
+  [].forEach.call($('fsort').children, function(b){
+    b.setAttribute('aria-pressed', b.getAttribute('data-s') === fSort);
+    b.addEventListener('click', function(){ fSort = b.getAttribute('data-s'); [].forEach.call($('fsort').children, function(x){ x.setAttribute('aria-pressed', x === b); }); try { localStorage.setItem('feed-sort', fSort); } catch(e){} renderFeed(); });
+  });
   function setTU(u){ tUnit = u; u3set('thk-u', 'thk', u); renderFeed(); }
   [].forEach.call($('thk-u').children, function(b){ b.addEventListener('click', function(){ setTU(b.getAttribute('data-u')); }); });
   u3set('thk-u', 'thk', 'frac');
@@ -1934,6 +1965,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     new MutationObserver(function(ms){ for (var i=0;i<ms.length;i++){ if (ms[i].target !== caret) { soon(); return; } } }).observe(document.body, {subtree:true, attributes:true, attributeFilter:['class','hidden']});
     soon();
   })();
+
+  // tri de la liste d'outils
+  [].forEach.call($('tsort').children, function(b){
+    b.setAttribute('aria-pressed', b.getAttribute('data-s') === tSort);
+    b.addEventListener('click', function(){ tSort = b.getAttribute('data-s'); [].forEach.call($('tsort').children, function(x){ x.setAttribute('aria-pressed', x === b); }); try { localStorage.setItem('tools-sort', tSort); } catch(e){} renderList(); });
+  });
 })();
 </script>
 
