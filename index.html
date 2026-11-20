@@ -585,6 +585,23 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 [data-mode="dark"] #t2-res .t2v + .t2v{border-left-color:#D6D2C6}
 [data-mode="dark"] #t2-res .t2w.warn{background:#FFC400;color:#111!important}
 
+/* Photo du plan */
+#kmode{grid-template-columns:minmax(0,1fr) minmax(0,1fr) 88px 44px!important;gap:0}
+#kmode button{min-height:48px!important}
+#kmode [data-m]{font-size:.78rem!important;line-height:1.1;white-space:normal;letter-spacing:-.01em;padding:2px 4px!important}
+#kmode .kcam{background:var(--blk)!important;color:#FFC400!important;font-size:1.15rem!important;padding:0!important;border-color:var(--blk)!important}
+#kmode #k-cam{font-size:1.9rem!important;border-left:3px solid #FFC400!important}
+#kmode #k-lib{border-left:1px solid #555!important}
+.kplan{position:relative;margin:0 0 6px;border:2px solid var(--ink);border-radius:10px;overflow:hidden;background:#1b1b1b}
+.kplan[hidden]{display:none}
+.kpv{position:relative;height:var(--kph,180px);overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;cursor:grab}
+.kpv img{position:absolute;left:0;top:0;transform-origin:0 0;max-width:none;pointer-events:none;-webkit-user-drag:none}
+.kpbar{position:absolute;top:6px;right:6px;display:flex;gap:6px;z-index:2}
+.kpbar button{width:38px;height:34px;border-radius:9px;border:2px solid #111;background:#FFC400;color:#111;font-size:1rem;font-weight:800;padding:0;box-shadow:0 2px 0 #111}
+.kpbar button.x{background:#111;color:#FFC400;border-color:#FFC400}
+.kpgrip{height:16px;background:var(--blk);display:flex;align-items:center;justify-content:center;touch-action:none;cursor:ns-resize}
+.kpgrip::before{content:"";width:44px;height:4px;border-radius:2px;background:#FFC400}
+
 /* Tolérance : tout tient sur l'écran */
 .kcalc button{min-height:0!important;height:var(--kh,44px)!important}
 .kcalc{gap:5px!important}
@@ -676,9 +693,64 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   #view-tools .filters{gap:4px!important}
   #view-tools .flsel button{min-height:28px!important;padding:3px 2px!important}
   #view-tools .flrow{margin-top:4px}
+  #aflrow{margin:0 0 6px}
   #view-tools #tsort{margin:4px 0 4px!important}
   #view-tools #tsort button{padding:5px 2px!important}
 }
+
+/* Convertisseur : grand clavier pleine largeur */
+.convpanel > .padrow, .convpanel > .padrow ~ *:not(.mtbl){grid-column:1 / -1}
+.convpanel .padrow .pad{gap:7px}
+.convpanel .padrow .pad button{min-height:clamp(46px,7.2vh,64px)!important;font-size:1.7rem!important}
+.convpanel .padrow .pad button.op{font-size:1.05rem!important}
+
+/* Tolérance : Max et Min en grand (vert), Moy. petite au milieu */
+#k-res{gap:0!important;padding:5px 9px!important}
+#k-res .kl.kmax,#k-res .kl.kmin{display:grid!important;grid-template-columns:auto 1fr;column-gap:5px;align-items:baseline;line-height:1.05}
+#k-res .kl.kmax small,#k-res .kl.kmin small{grid-column:2}
+#k-res .kl.kmax .kt,#k-res .kl.kmin .kt{font-size:.62rem!important;font-weight:800;color:#111!important}
+#k-res .kl.kmax b,#k-res .kl.kmin b{font-size:1.24rem!important;font-weight:800;color:#0B6B32!important;letter-spacing:-.02em;white-space:nowrap}
+#k-res .kl.kmax small,#k-res .kl.kmin small{font-size:.74rem!important;font-weight:700;color:#0B6B32!important;line-height:1.1}
+#k-res .kl.kmoy{display:flex;align-items:baseline;gap:6px;margin:1px 0;padding:1px 0;border-top:1px dashed rgba(17,17,17,.45);border-bottom:1px dashed rgba(17,17,17,.45)}
+#k-res .kl.kmoy .kt,#k-res .kl.kmoy b{font-size:.6rem!important;font-weight:700;color:#4A4A40!important;white-space:nowrap;letter-spacing:-.03em}
+#k-res .kl.kmoy{gap:4px!important}
+#k-res .kl.kmoy b{white-space:normal!important;overflow-wrap:anywhere}
+[data-mode="dark"] #k-res .kl.kmax b,[data-mode="dark"] #k-res .kl.kmin b,[data-mode="dark"] #k-res .kl.kmax small,[data-mode="dark"] #k-res .kl.kmin small{color:#0B6B32!important}
+[data-mode="dark"] #k-res .kl.kmoy .kt,[data-mode="dark"] #k-res .kl.kmoy b{color:#4A4A40!important}
+
+/* Tolérance : cases à gauche, clavier à droite */
+.kside{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(0,1fr);gap:8px;align-items:start}
+.kleft{min-width:0}
+#view-cotes #k-cote{grid-template-columns:minmax(0,1fr)!important;gap:2px!important}
+#k-cote .kcell:nth-child(1){order:1}#k-cote .kcell:nth-child(3){order:2}#k-cote .kcell:nth-child(4){order:3}#k-cote .kcell:nth-child(5){order:4}#k-cote .kcell:nth-child(2){order:5;margin-top:4px}#k-cote .kcell:nth-child(6){order:6;margin-top:2px}
+#k-cote .kcell:nth-child(2) > .lbl,#k-cote .kcell:nth-child(6) > .lbl{display:none}
+#view-cotes .kcell .numin{height:36px!important;font-size:1.1rem!important;margin-bottom:2px!important}
+#view-cotes #k-cote .u3 button{min-height:24px!important;font-size:.74rem!important}
+#view-cotes .kverd{min-height:0}
+#view-cotes .kverd b{font-size:.92rem}
+#k-pad{margin-top:0!important;grid-template-columns:repeat(12,minmax(0,1fr))!important;gap:4px!important}
+#k-pad button{grid-column:span 3}
+#k-pad button.w4{grid-column:span 4}
+#k-pad button.w6{grid-column:span 6}
+#k-pad button.w12{grid-column:span 12;grid-row:auto!important}
+#k-pad button.fn{font-size:.85rem!important}
+#k-pad button.op.sm{font-size:.68rem!important;padding:0!important}
+#k-pad button.w4.fn{font-size:.8rem!important}
+#k-pad button[data-k="back"]{font-size:1.6rem!important}
+#k-pad button.clr{font-size:.95rem!important;line-height:1.05;padding:0 4px!important}
+#view-cotes #k-trous{display:flex!important;flex-direction:column;gap:6px!important}
+#view-cotes #k-trous[hidden]{display:none!important}
+#k-trous .t2top{flex-direction:column;align-items:stretch;gap:3px}
+#k-trous .t2top .u3{flex:none}
+#k-trous .t2in{grid-template-columns:minmax(0,1.4fr) auto minmax(0,1fr);gap:3px}
+#k-trous .t2in .numin{height:36px!important;font-size:1rem!important;padding:4px 6px!important}
+#k-trous .t2in .t2tol{font-size:.92rem!important}
+#k-trous .t2pm{font-size:1rem}
+#k-trous .t2v{padding:2px 6px 4px!important}
+#k-trous .t2r{grid-template-columns:1fr!important}
+#k-trous .t2v{flex-direction:row!important;justify-content:space-between;align-items:baseline!important;padding:3px 8px!important}
+#k-trous .t2v + .t2v{border-left:0!important;border-top:1px solid currentColor}
+#k-trous .t2v b{font-size:1.05rem!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -785,7 +857,15 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
   <div class="views" id="view-cotes" role="tabpanel" aria-labelledby="tab-cotes" hidden>
     <section class="panel" aria-label="Cote et tolérance">
-      <div class="mode kmode" id="kmode" role="group" aria-label="Calcul"><button type="button" data-m="cote" aria-pressed="true">Cote et tolérance</button><button type="button" data-m="trous" aria-pressed="false">Entre 2 trous</button></div>
+      <div class="kplan" id="k-plan" hidden>
+        <div class="kpv" id="kpv"><img id="kp-img" alt="Photo du plan" draggable="false"></div>
+        <div class="kpbar"><button type="button" id="kp-fit" aria-label="Voir tout le plan">⤢</button><button type="button" id="kp-x" class="x" aria-label="Fermer la photo">✕</button></div>
+        <div class="kpgrip" id="kp-grip" role="separator" aria-label="Agrandir ou réduire la photo"></div>
+      </div>
+      <div class="mode kmode" id="kmode" role="group" aria-label="Calcul"><button type="button" data-m="cote" aria-pressed="true">Cote et tolérance</button><button type="button" data-m="trous" aria-pressed="false">Entre 2 trous</button><button type="button" class="kcam" id="k-cam" aria-label="Photo du plan">📷</button><button type="button" class="kcam" id="k-lib" aria-label="Plan depuis la photothèque">🖼</button></div>
+      <input type="file" id="k-file" accept="image/*" capture="environment" hidden><input type="file" id="k-file2" accept="image/*" hidden>
+      <div class="kside">
+        <div class="kleft">
       <div class="kgrid" id="k-cote">
         <div class="kcell">
           <label class="lbl" for="k-nom">Cote nominale</label>
@@ -852,13 +932,18 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
           <div class="kbox" id="t2-res" aria-live="polite"></div>
         </div>
       </div>
+        </div>
       <div class="pad kcalc" id="k-pad" aria-label="Calculatrice">
-        <button type="button" data-k="sin(" class="fn">sin</button><button type="button" data-k="cos(" class="fn">cos</button><button type="button" data-k="tan(" class="fn">tan</button><button type="button" data-k="√(" class="fn" aria-label="Racine carrée">√</button><button type="button" data-k="²" class="fn" aria-label="Au carré">x²</button><button type="button" data-k="π" class="fn">π</button>
-        <button type="button" data-k="mm2po" class="fn w3">mm → po</button><button type="button" data-k="po2mm" class="fn w3">po → mm</button>
-        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="÷" class="op">÷</button><button type="button" data-k="/" class="op" aria-label="Barre de fraction">/</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
-        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="op">×</button><button type="button" data-k=" " class="op sm">espace</button><button type="button" data-k="clear" class="op clr">Effacer<br>tout</button>
-        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="−" class="op">−</button><button type="button" data-k="+" class="op">+</button><button type="button" data-k="=" class="eq" aria-label="Calculer">=</button>
-        <button type="button" data-k="0" class="w2">0</button><button type="button" data-k=".">.</button><button type="button" data-k="(" class="fn">(</button><button type="button" data-k=")" class="fn">)</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="÷" class="op">÷</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="×" class="op">×</button>
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="−" class="op">−</button>
+        <button type="button" data-k="0" >0</button><button type="button" data-k=".">.</button><button type="button" data-k="/" class="op" aria-label="Barre de fraction">/</button><button type="button" data-k="+" class="op">+</button>
+        <button type="button" data-k="back" class="w6 op" aria-label="Effacer un caractère">⌫</button><button type="button" data-k="clear" class="w6 op clr">Effacer<br>tout</button>
+        <button type="button" data-k="sin(" class="fn">sin</button><button type="button" data-k="cos(" class="fn">cos</button><button type="button" data-k="tan(" class="fn">tan</button><button type="button" data-k="√(" class="fn" aria-label="Racine carrée">√</button>
+        <button type="button" data-k="²" class="fn" aria-label="Au carré">x²</button><button type="button" data-k="π" class="fn">π</button><button type="button" data-k="(" class="fn">(</button><button type="button" data-k=")" class="fn">)</button>
+        <button type="button" data-k=" " class="w4 op sm">espace</button><button type="button" data-k="mm2po" class="w4 fn">mm → po</button><button type="button" data-k="po2mm" class="w4 fn">po → mm</button>
+        <button type="button" data-k="=" class="eq w12" aria-label="Calculer">=</button>
+      </div>
       </div>
       <p class="note" id="k-in" hidden></p>
     </section>
@@ -883,6 +968,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     <section aria-label="Les 5 meilleurs outils">
       <h2 id="topTitle">Les 5 meilleurs outils de ta liste</h2>
       <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dia" aria-pressed="false">Ø proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button><button type="button" data-s="dialoc" aria-pressed="false">Ø + LOC proches</button></div>
+      <div class="flrow" id="aflrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="aflsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
       <p class="note" id="t3note"></p>
       <div class="flist" id="top3"></div>
     </section>
@@ -1213,7 +1299,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var base = TOOLS.filter(function(t){
       if (fType && t.type !== fType) return false;
       if (fType === 'End Mill' && fFl && t.flutes !== fFl) return false;
-      if (tth > 0 && !(typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) return false;
+      if (tth > 0 && !(typeof t.loc === 'number' && t.loc > tth + 0.0005)) return false;
       var h = hay(t); return words.every(function(w){ return h.indexOf(w) >= 0; });
     });
     var list = base, nearMsg = '';
@@ -1230,7 +1316,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       }
     }
     var tLoc = tth > 0, tDL = tSort !== 'loc' && tth > 0, tD = tSort === 'dia';
-    if (tLoc) list = list.filter(function(t){ return typeof t.loc === 'number' && t.loc + 1e-6 >= tth && (!tDL || typeof t.dia === 'number'); });
+    if (tLoc) list = list.filter(function(t){ return typeof t.loc === 'number' && t.loc > tth + 0.0005 && (!tDL || typeof t.dia === 'number'); });
     var dl = dialocCmp(tth);
     list.sort(function(a,b){
       if (tDL) return (tD ? dDia(a, b, tth) : dl(a, b, a, b)) || a.row - b.row;
@@ -1239,12 +1325,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       if (tth > 0){ var la = typeof a.loc === 'number' ? a.loc : 1e9, lb = typeof b.loc === 'number' ? b.loc : 1e9; if (la !== lb) return la - lb; }
       return a.row - b.row;
     });
-    $('tcount').textContent = (!(tth > 0)) ? 'Entre une épaisseur à couper pour trier par Ø ou LOC proche. ' + list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length : list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length + (tDL ? ' · Ø le plus proche de ' + (fracAny(tth) || fmt(tth,4) + '"') + (tD ? '' : ', puis LOC la plus juste') : tLoc ? ' · LOC ≥ ' + (fracAny(tth) || fmt(tth,4) + '"') + ', la plus proche d\'abord' : '');
+    $('tcount').textContent = (!(tth > 0)) ? 'Entre une épaisseur à couper pour trier par Ø ou LOC proche. ' + list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length : list.length + ' outil' + (list.length > 1 ? 's' : '') + ' sur ' + TOOLS.length + (tDL ? ' · Ø le plus proche de ' + (fracAny(tth) || fmt(tth,4) + '"') + (tD ? '' : ', puis LOC la plus juste') : tLoc ? ' · LOC > ' + (fracAny(tth) || fmt(tth,4) + '"') + ', la plus proche d\'abord' : '');
     var box = $('tlist'); box.innerHTML = '';
     if (!list.length){
       var near = '';
       if (tdi > 0){
-        var ds = []; TOOLS.forEach(function(t){ if (typeof t.dia === 'number' && (!(tth > 0) || (typeof t.loc === 'number' && t.loc + 1e-6 >= tth)) && ds.indexOf(t.dia) < 0) ds.push(t.dia); });
+        var ds = []; TOOLS.forEach(function(t){ if (typeof t.dia === 'number' && (!(tth > 0) || (typeof t.loc === 'number' && t.loc > tth + 0.0005)) && ds.indexOf(t.dia) < 0) ds.push(t.dia); });
         ds.sort(function(a,b){ return Math.abs(a - tdi) - Math.abs(b - tdi); });
         if (ds.length) near = ' Diamètres les plus proches dans ta liste : ' + ds.slice(0,3).sort(function(a,b){ return a-b; }).map(function(d){ return esc(fracAny(d) || fmt(d,4) + '"'); }).join(', ') + '.';
       }
@@ -1465,12 +1551,13 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var passes = th > 0 ? Math.max(1, Math.ceil(th/(dMax*t.dia) - 1e-9)) : 1;
       var per = th > 0 ? th/passes : 0, ratio = th > 0 ? per / t.dia : 1, mult = depthMult(ratio);
       var cmin = c.min*mult, cmax = c.max*mult, cmid = (cmin+cmax)/2;
-      var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc + 1e-6 >= th;
+      var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc > th + 0.0005;
       var lv = recoLevel(sr, t.dia, m);
       var ir = idealRpm(sr);
       var prod = fl ? (ir.ons || 18000)*fl*cmid/passes : 0;
       return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
     });
+    if (aFl) rows = rows.filter(function(r){ return r.fl === aFl; });
     var main = rows.filter(function(r){ return r.sr || r.appOk; });
     var other = rows.filter(function(r){ return !(r.sr || r.appOk); });
     var lvRank = {best:3, better:2, good:1, '':0};
@@ -1541,7 +1628,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     other.filter(function(r){ return r.fl && (th > 0 ? (needKind() === 'straight' ? r.locOk === true : r.locOk !== false) : true); })
       .forEach(function(r){ if (top.length < 5) { r.notMain = true; top.push(r); } });
     var sortLoc = fSort !== 'best' && th > 0, sortDL = (fSort === 'dia' || fSort === 'dialoc') && th > 0, sortD = fSort === 'dia';
-    $('topTitle').textContent = sortDL ? 'Ø le plus proche de ' + (fracAny(th) || fmt(th,4) + '"') + (sortD ? '' : ', puis LOC la plus juste') : sortLoc ? 'LOC ≥ ' + (fracAny(th) || fmt(th,4) + '"') + ', la plus proche d\'abord' : 'Les 5 meilleurs outils de ta liste';
+    $('topTitle').textContent = sortDL ? 'Ø le plus proche de ' + (fracAny(th) || fmt(th,4) + '"') + (sortD ? '' : ', puis LOC la plus juste') : sortLoc ? 'LOC > ' + (fracAny(th) || fmt(th,4) + '"') + ', la plus proche d\'abord' : 'Les 5 meilleurs outils de ta liste';
     if (sortLoc){
       var byLoc = main.concat(other).filter(function(r){ return r.fl && r.locOk === true; });
       byLoc.forEach(function(r){ r.notMain = !(r.sr || r.appOk); });
@@ -1552,7 +1639,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         if (sortDL && (lastD2 === null || Math.abs(r.t.dia - lastD2) > 0.0005)) { lastD2 = r.t.dia; var hd = document.createElement('div'); hd.innerHTML = dgrpHead(r.t.dia, th); tl.appendChild(hd.firstChild); }
         tl.appendChild(card(r));
       });
-      $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise de ta liste n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.';
+      $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '');
       $('allBox').hidden = true; $('moreBox').hidden = true;
       renderManual();
       return;
@@ -1560,7 +1647,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (fSort !== 'best' && !(th > 0)) $('t3note').textContent = 'Entre une épaisseur à couper pour ce tri.';
     var tb = $('top3'); tb.innerHTML = '';
     top.forEach(function(r,i){ tb.appendChild(card(r, i+1)); });
-    var t3 = th > 0 && !top.length ? 'Aucune fraise assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' : '';
+    var t3 = th > 0 && !top.length ? 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '') : '';
     if (th > 0 && top.length > nMain) t3 = 'Ambre = pas prévu pour ce matériau, à vérifier.';
     if (!(fSort !== 'best' && !(th > 0))) $('t3note').textContent = t3;
     main = main.filter(function(r){ return top.indexOf(r) < 0; });
@@ -1621,7 +1708,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     $('thkLbl').textContent = fKind === 'pocket' ? '3. Profondeur du trou / de la poche' : fKind === 'chamfer' ? '3. Profondeur du chanfrein / de la gravure' : fKind === 'ball' ? '3. Profondeur à usiner' : '3. Épaisseur à couper (profondeur)';
     [].forEach.call($('mats').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fMat); });
   }
-  var fSort = 'best';
+  var fSort = 'best', aFl = 1;
   try { var fs0 = localStorage.getItem('feed-sort'); if (fs0 === 'dia' || fs0 === 'loc' || fs0 === 'dialoc') fSort = fs0; } catch(e){}
   [].forEach.call($('fsort').children, function(b){
     b.setAttribute('aria-pressed', b.getAttribute('data-s') === fSort);
@@ -1710,8 +1797,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function fitCalc(){
     var v = $('view-cotes'); if (v.hidden) return;
     var pad = $('k-pad'), tabs = document.querySelector('.tabs');
-    var r = pad.getBoundingClientRect(), top = r.top + window.scrollY, limit = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 22;
-    var kh = Math.max(28, Math.min(50, (limit - top - 5*5) / 6));
+    var r = pad.getBoundingClientRect(), top = r.top + window.scrollY, limit = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 44;
+    var kh = Math.max(30, Math.min(58, (Math.max(limit, top + $('k-cote').parentNode.offsetHeight) - top - 8*4) / 9));
     pad.style.setProperty('--kh', Math.floor(kh) + 'px');
   }
   window.addEventListener('resize', function(){ fitCalc(); });
@@ -1735,7 +1822,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       vd.className = 'kverd ' + cls;
       vd.innerHTML = '<b>' + head + '</b><small>' + det + '</small><span>Mesurée : ' + esc(fracIn(me) || fmt(me,4) + ' po') + (fracIn(me) ? ' · ' + fmt(me,4) + ' po' : '') + ' · ' + fmt(me*25.4,3) + ' mm</span>';
     }
-    $('k-res').innerHTML = kLine('kmax','Max', mx) + kLine('kmin','Min', mn) + kLine('kmoy','Moy.', moy);
+    $('k-res').innerHTML = kLine('kmax','Max', mx) + '<div class="kl kmoy"><span class="kt">Moy.</span><b>' + fmt(moy,4) + ' po · ' + fmt(moy*25.4,3) + ' mm</b></div>' + kLine('kmin','Min', mn);
     $('k-in').innerHTML = esc('Cote ' + tri(nom) + ' · tolérance ' + (sym ? '± ' + fmt(tp,4) + ' po (' + fmt(tp*25.4,3) + ' mm)' : '+' + fmt(tp,4) + ' / −' + fmt(tm,4) + ' po (+' + fmt(tp*25.4,3) + ' / −' + fmt(tm*25.4,3) + ' mm)') + ' · tolérance totale ' + fmt(tp + tm,4) + ' po (' + fmt((tp + tm)*25.4,3) + ' mm).') +
       (mn <= 0 ? '<span class="alert bad" style="display:block"><b>Attention :</b> la cote minimale est nulle ou négative.</span>' : '');
   }
@@ -1792,14 +1879,101 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     else if (wmin <= 0) h += '<p class="t2w warn">Au pire cas des tolérances, les trous se touchent ou se chevauchent.</p>';
     box.innerHTML = h;
   }
-  [].forEach.call($('kmode').children, function(b){ b.addEventListener('click', function(){
+  [].forEach.call($('kmode').querySelectorAll('[data-m]'), function(b){ b.addEventListener('click', function(){
     var m = b.getAttribute('data-m');
-    [].forEach.call($('kmode').children, function(x){ x.setAttribute('aria-pressed', x === b); });
+    [].forEach.call($('kmode').querySelectorAll('[data-m]'), function(x){ x.setAttribute('aria-pressed', x === b); });
     $('k-cote').hidden = m !== 'cote'; $('k-trous').hidden = m !== 'trous';
     kSel(m === 'cote' ? 'k-nom' : 't2-c');
     try { localStorage.setItem('kmode', m); } catch(e){}
     fitCalc();
   }); });
+  // ---- Photo du plan (affichée en haut, zoom avec 2 doigts) ----
+  (function(){
+    var box = $('k-plan'), vw = $('kpv'), img = $('kp-img'), st = {s:1, x:0, y:0}, pts = {}, g = null, lastTap = 0;
+    function get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } }
+    function put(k, v){ try { if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v); return true; } catch(e){ return false; } }
+    function fitS(){ return Math.min(vw.clientWidth / img.naturalWidth, vw.clientHeight / img.naturalHeight); }
+    function clamp(){
+      var f = fitS(); st.s = Math.max(f, Math.min(f*12, st.s));
+      var W = img.naturalWidth*st.s, H = img.naturalHeight*st.s, cw = vw.clientWidth, ch = vw.clientHeight;
+      st.x = W <= cw ? (cw - W)/2 : Math.min(0, Math.max(cw - W, st.x));
+      st.y = H <= ch ? (ch - H)/2 : Math.min(0, Math.max(ch - H, st.y));
+    }
+    function draw(save){ clamp(); img.style.transform = 'translate(' + st.x + 'px,' + st.y + 'px) scale(' + st.s + ')'; if (save) put('kplan-v', JSON.stringify({s: st.s / fitS(), x: st.x, y: st.y})); }
+    function fit(){ st.s = vw.clientWidth / img.naturalWidth; st.x = 0; st.y = 0; draw(true); }
+    function all(){ st.s = fitS(); draw(true); }
+    function zoomAt(k, cx, cy){ var ns = st.s*k, f = fitS(); ns = Math.max(f, Math.min(f*12, ns)); k = ns / st.s; st.x = cx - (cx - st.x)*k; st.y = cy - (cy - st.y)*k; st.s = ns; }
+    var pend = null;
+    function apply(){
+      if (!pend || !vw.clientWidth || !img.naturalWidth) return;
+      var v = pend; pend = null;
+      if (v === 'fit') fit(); else { st.s = v.s * fitS(); st.x = v.x; st.y = v.y; draw(false); }
+    }
+    if (window.ResizeObserver) new ResizeObserver(function(){ if (pend) apply(); else if (img.naturalWidth && vw.clientWidth) draw(false); }).observe(vw);
+    function show(src, keepView){
+      img.onload = function(){
+        box.hidden = false;
+        var v = null; if (keepView){ try { v = JSON.parse(get('kplan-v')); } catch(e){} }
+        pend = v && v.s ? v : 'fit'; apply();
+        if (typeof fitCalc === 'function') setTimeout(fitCalc, 0);
+      };
+      img.src = src;
+    }
+    function load(f){
+      if (!f) return;
+      var u = URL.createObjectURL(f), im = new Image();
+      im.onload = function(){
+        var k = Math.min(1, 2400 / Math.max(im.naturalWidth, im.naturalHeight)), c = document.createElement('canvas');
+        c.width = Math.round(im.naturalWidth*k); c.height = Math.round(im.naturalHeight*k);
+        c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); URL.revokeObjectURL(u);
+        var d = c.toDataURL('image/jpeg', .82);
+        if (!put('kplan', d)){ d = (function(){ var c2 = document.createElement('canvas'); c2.width = Math.round(c.width*.6); c2.height = Math.round(c.height*.6); c2.getContext('2d').drawImage(c, 0, 0, c2.width, c2.height); return c2.toDataURL('image/jpeg', .75); })(); put('kplan', d); }
+        put('kplan-v', null); show(d, false);
+      };
+      im.src = u;
+    }
+    function pick(id){ if (window.kbClose) window.kbClose(); $(id).value = ''; $(id).click(); }
+    $('k-cam').addEventListener('click', function(){ pick('k-file'); });
+    $('k-lib').addEventListener('click', function(){ pick('k-file2'); });
+    $('k-file').addEventListener('change', function(){ load(this.files && this.files[0]); });
+    $('k-file2').addEventListener('change', function(){ load(this.files && this.files[0]); });
+    $('kp-fit').addEventListener('click', function(){ if (Math.abs(st.s - fitS()) < 1e-6) fit(); else all(); });
+    $('kp-x').addEventListener('click', function(){ box.hidden = true; img.removeAttribute('src'); put('kplan', null); put('kplan-v', null); if (typeof fitCalc === 'function') fitCalc(); });
+    // glisser = déplacer ; 2 doigts = zoom ; double-toucher = zoom ×2 / tout voir
+    function rel(e){ var r = vw.getBoundingClientRect(); return {x: e.clientX - r.left, y: e.clientY - r.top}; }
+    vw.addEventListener('pointerdown', function(e){
+      e.preventDefault(); try { vw.setPointerCapture(e.pointerId); } catch(_){}
+      pts[e.pointerId] = rel(e); g = null;
+      var now = Date.now(), ids = Object.keys(pts);
+      if (ids.length === 1 && now - lastTap < 300){ var p = pts[e.pointerId]; if (st.s > fitS()*1.05) fit(); else { zoomAt(2.5, p.x, p.y); draw(true); } lastTap = 0; }
+      else lastTap = now;
+    });
+    vw.addEventListener('pointermove', function(e){
+      if (!pts[e.pointerId]) return; e.preventDefault();
+      var prev = pts[e.pointerId], cur = rel(e), ids = Object.keys(pts);
+      if (ids.length >= 2){
+        var o = pts[ids[0] == e.pointerId ? ids[1] : ids[0]];
+        var d0 = Math.hypot(prev.x - o.x, prev.y - o.y), d1 = Math.hypot(cur.x - o.x, cur.y - o.y);
+        var mx = (cur.x + o.x)/2, my = (cur.y + o.y)/2, pmx = (prev.x + o.x)/2, pmy = (prev.y + o.y)/2;
+        st.x += mx - pmx; st.y += my - pmy; if (d0 > 0) zoomAt(d1/d0, mx, my);
+      } else { st.x += cur.x - prev.x; st.y += cur.y - prev.y; }
+      pts[e.pointerId] = cur; draw(false);
+      if (Math.abs(cur.x - prev.x) + Math.abs(cur.y - prev.y) > 3) lastTap = 0;
+    });
+    function up(e){ if (!pts[e.pointerId]) return; delete pts[e.pointerId]; draw(true); }
+    vw.addEventListener('pointerup', up); vw.addEventListener('pointercancel', up);
+    vw.addEventListener('wheel', function(e){ e.preventDefault(); var p = rel(e); zoomAt(e.deltaY < 0 ? 1.15 : 1/1.15, p.x, p.y); draw(true); }, {passive:false});
+    // poignée : hauteur de la photo
+    var gr = $('kp-grip'), gy = null, gh = 0;
+    function setH(h){ h = Math.max(90, Math.min(window.innerHeight*0.6, h)); vw.style.setProperty('--kph', Math.round(h) + 'px'); return h; }
+    var hs = parseFloat(get('kplan-h')); setH(hs > 0 ? hs : Math.round(window.innerHeight*0.14));
+    gr.addEventListener('pointerdown', function(e){ e.preventDefault(); gy = e.clientY; gh = vw.clientHeight; try { gr.setPointerCapture(e.pointerId); } catch(_){} });
+    gr.addEventListener('pointermove', function(e){ if (gy === null) return; e.preventDefault(); setH(gh + e.clientY - gy); draw(false); if (typeof fitCalc === 'function') fitCalc(); });
+    function gup(){ if (gy === null) return; gy = null; put('kplan-h', String(vw.clientHeight)); draw(true); }
+    gr.addEventListener('pointerup', gup); gr.addEventListener('pointercancel', gup);
+    window.addEventListener('resize', function(){ if (!box.hidden && img.naturalWidth) draw(false); });
+    var saved = get('kplan'); if (saved) show(saved, true);
+  })();
   u3init('t2-u','t2-c',renderCotes);
   ['t2-c','t2-tc','t2-d1','t2-d2','t2-td','t2-td2'].forEach(function(id){ var x = $(id); if (/t[cd]$/.test(id)) x.setAttribute('data-tol','1'); });
   u3init('k-nom-u','k-nom',renderCotes);
@@ -2003,6 +2177,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     ['input','click','keydown','resize','focusin'].forEach(function(t){ (t === 'resize' ? window : document).addEventListener(t, soon, true); });
     document.addEventListener('pointerup', function(){ setTimeout(soon, 30); }, true);
     try { document.fonts.ready.then(soon); } catch(e){}
+    try { new ResizeObserver(soon).observe(document.body); } catch(e){}
+    window.addEventListener('scroll', soon, {passive:true});
     new MutationObserver(function(ms){ for (var i=0;i<ms.length;i++){ if (ms[i].target !== caret) { soon(); return; } } }).observe(document.body, {subtree:true, attributes:true, attributeFilter:['class','hidden']});
     soon();
   })();
@@ -2018,6 +2194,19 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   [].forEach.call($('flsel').children, function(b){
     b.addEventListener('click', function(){ fFl = +b.getAttribute('data-f'); [].forEach.call($('flsel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderList(); });
   });
+
+  // filtre du nombre de flûtes (Vitesses et avances)
+  [].forEach.call($('aflsel').children, function(b){
+    b.addEventListener('click', function(){ aFl = +b.getAttribute('data-f'); [].forEach.call($('aflsel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderFeed(); });
+  });
+
+  // Convertisseur : clavier sur toute la largeur, table rapide à droite du haut seulement
+  (function(){
+    var pn = document.querySelector('.convpanel'); if (!pn) return;
+    var kids = [].slice.call(pn.children), pr = pn.querySelector('.padrow'), mt = pn.querySelector('.mtbl');
+    var idx = kids.filter(function(k){ return k !== mt; }).indexOf(pr);
+    mt.style.gridRow = '1 / ' + (idx + 1);
+  })();
 })();
 </script>
 
