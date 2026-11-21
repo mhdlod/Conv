@@ -786,6 +786,33 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 #apsrow{margin:0 0 6px}
 #apssel{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
 #apssel button{width:auto!important}
+
+/* Avances : outils 2/3 à gauche, matériaux 1/3 à droite (figés) */
+.acols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px;align-items:start;margin-top:14px}
+.acl{min-width:0}
+.acl > section{margin-top:0}
+.acr{position:sticky;top:8px;align-self:start;background:var(--panel);border:2px solid var(--ink);border-radius:12px;padding:8px 6px}
+.acr .lbl{display:block;margin:0 0 6px!important;font-size:.66rem!important}
+.acr #mats{display:flex!important;flex-direction:column;gap:6px}
+.acr #mats button{width:100%;min-height:44px;padding:4px 5px!important;font-size:.74rem!important;overflow-wrap:anywhere;line-height:1.1;text-align:left}
+.acr #mats button small{display:none!important}
+.acl #topTitle{font-size:.95rem!important;margin:0 0 6px!important}
+.acl #fsort{grid-template-columns:1fr 1fr!important}
+.acl #fsort button{font-size:.74rem!important;padding:6px 2px!important;min-height:34px}
+.acl .flrow{grid-template-columns:auto 1fr;gap:5px}
+.acl .flrow .lbl{font-size:.58rem!important}
+.acl .flsel button{font-size:.8rem!important;padding:4px 0!important;min-height:30px}
+.acl .feedcard{padding:8px 8px 4px 12px!important}
+.acl .feedcard .rankrow{flex-wrap:wrap;gap:4px}
+.acl .feedcard .cl1 b{font-size:.95rem}
+.acl .feedcard .cl1 span{font-size:.68rem}
+.acl .feedcard .cl2{font-size:.78rem;column-gap:8px}
+.acl .feedcard .cl3{font-size:.76rem}
+.acl .feedcard .cl3 b{font-size:.9rem}
+.acl .feedcard .cl4{font-size:.58rem}
+.acl .feedcard .dimbox,.acl .feedcard .fdet{font-size:.85rem}
+.acl .sets .tunebody{grid-template-columns:1fr!important}
+.acl details.more summary{font-size:.85rem}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -986,7 +1013,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
   <div class="views" id="view-feed" role="tabpanel" aria-labelledby="tab-feed" hidden>
     <section class="panel" aria-label="Paramètres de coupe">
-      <div class="field"><span class="lbl">1. Matériau</span><div class="seg" id="mats"></div></div>
       <div class="field"><span class="lbl">2. Type de travail</span><div class="seg" id="kinds"></div></div>
       <div class="field" id="dirField"><span class="lbl">Direction préférée</span><div class="seg" id="dirs"></div></div>
       <div class="field thkfield">
@@ -1000,6 +1026,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       </div>
     </section>
 
+    <div class="acols">
+    <div class="acl">
     <section aria-label="Les 5 meilleurs outils">
       <h2 id="topTitle">Les 5 meilleurs outils de ta liste</h2>
       <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dia" aria-pressed="false">Ø proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button><button type="button" data-s="dialoc" aria-pressed="false">Ø + LOC proches</button></div>
@@ -1009,6 +1037,15 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="flist" id="top3"></div>
     </section>
 
+    <section aria-label="Autres outils">
+      <details class="more" id="allBox"><summary id="allSum"></summary>
+      <p class="note" id="fcount" hidden></p>
+      <div class="flist" id="flist"></div></details>
+      <details class="more" id="moreBox"><summary id="moreSum"></summary><div class="flist" id="flist2"></div></details>
+    </section>
+    </div>
+    <aside class="acr" aria-label="Matériau"><span class="lbl">Matériau</span><div class="seg" id="mats"></div></aside>
+    </div>
     <section class="panel" aria-label="Conseils pour ce matériau">
       <span class="lbl">Conseils pour ce matériau</span>
       <div id="matwarn"></div>
@@ -1016,12 +1053,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div id="reco"></div>
     </section>
 
-    <section aria-label="Autres outils">
-      <details class="more" id="allBox"><summary id="allSum"></summary>
-      <p class="note" id="fcount" hidden></p>
-      <div class="flist" id="flist"></div></details>
-      <details class="more" id="moreBox"><summary id="moreSum"></summary><div class="flist" id="flist2"></div></details>
-    </section>
 
     <section class="panel" aria-label="Calcul manuel">
       <span class="lbl">Calcul manuel (n'importe quelle série Onsrud)</span>
