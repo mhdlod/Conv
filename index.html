@@ -825,6 +825,28 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acl .tunebody .vals .k{font-size:.58rem!important}
 .acl .set{padding:8px 6px!important}
 .acl details.more summary{font-size:.85rem}
+
+/* Avances : réglages dans la colonne de droite */
+.acr{max-height:calc(100vh - 96px);overflow-y:auto;overscroll-behavior:contain}
+.acr .field{margin:10px 0 0!important;padding:0!important;border:0!important}
+.acr .lbl{font-size:.62rem!important;letter-spacing:.04em}
+.acr #mats button{min-height:36px!important}
+.acr #kinds{display:flex!important;flex-direction:column;gap:5px}
+.acr #kinds button{width:100%;min-height:36px;padding:3px 5px!important;font-size:.72rem!important;line-height:1.1;text-align:left}
+.acr #kinds button small,.acr #dirs button small{display:none!important}
+.acr #dirs{display:grid!important;grid-template-columns:1fr 1fr;gap:4px}
+.acr #dirs button{min-height:34px;padding:2px!important;font-size:.68rem!important}
+.acr .thkfield .inrow{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px}
+.acr #thk{flex:none!important;width:100%!important;min-width:0!important;font-size:1rem!important;height:38px;padding:4px 8px!important}
+.acr .thkfield .inrow > *{width:100%!important;min-width:0!important}
+.acr #thk-u{display:grid!important;grid-template-columns:1fr 1fr 1fr;margin-top:4px}
+.acr #thk-u button{font-size:.56rem!important;padding:0!important;min-height:26px}
+.acr .minichips{display:grid!important;grid-template-columns:1fr 1fr;gap:3px;margin-top:5px}
+.acr .minichips button{font-size:.64rem!important;padding:2px 0!important;min-height:24px}
+.acr #thkout{font-size:.6rem!important;margin:4px 0 0!important}
+.acols{margin-top:6px}
+.acr .thkfield{display:block!important}
+.acr .thkfield > *{width:100%!important;max-width:none!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1024,19 +1046,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   </div>
 
   <div class="views" id="view-feed" role="tabpanel" aria-labelledby="tab-feed" hidden>
-    <section class="panel" aria-label="Paramètres de coupe">
-      <div class="field"><span class="lbl">2. Type de travail</span><div class="seg" id="kinds"></div></div>
-      <div class="field" id="dirField"><span class="lbl">Direction préférée</span><div class="seg" id="dirs"></div></div>
-      <div class="field thkfield">
-        <label class="lbl" for="thk" id="thkLbl">3. Épaisseur à couper (profondeur)</label>
-        <div class="inrow">
-          <input id="thk" class="numin kbf" type="text" inputmode="none" autocomplete="off" value="1/2" style="flex:1 1 140px">
-        </div>
-        <div class="u3" id="thk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
-        <div class="minichips" id="thkchips"></div>
-        <p class="note" id="thkout"></p>
-      </div>
-    </section>
 
     <div class="acols">
     <div class="acl">
@@ -1073,7 +1082,19 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div id="m-out"></div>
     </section>
     </div>
-    <aside class="acr" aria-label="Matériau"><span class="lbl">Matériau</span><div class="seg" id="mats"></div></aside>
+    <aside class="acr" aria-label="Paramètres de coupe"><span class="lbl">Matériau</span><div class="seg" id="mats"></div>
+      <div class="field"><span class="lbl">Type de travail</span><div class="seg" id="kinds"></div></div>
+      <div class="field" id="dirField"><span class="lbl">Direction préférée</span><div class="seg" id="dirs"></div></div>
+      <div class="field thkfield">
+        <label class="lbl" for="thk" id="thkLbl">3. Épaisseur à couper (profondeur)</label>
+        <div class="inrow">
+          <input id="thk" class="numin kbf" type="text" inputmode="none" autocomplete="off" value="1/2" style="flex:1 1 140px">
+        </div>
+        <div class="u3" id="thk-u" role="group" aria-label="Unité"><button type="button" data-u="frac" aria-pressed="true">Fraction</button><button type="button" data-u="dec" aria-pressed="false">Décimal</button><button type="button" data-u="mm" aria-pressed="false">mm</button></div>
+        <div class="minichips" id="thkchips"></div>
+        <p class="note" id="thkout"></p>
+      </div>
+    </aside>
     </div>
 
     <p class="src">Source : tableaux LMT Onsrud, via <a href="https://maurojob23-ux.github.io/CNC-Router-Speeds/" target="_blank" rel="noopener">CNC Router Speeds</a>.</p>
