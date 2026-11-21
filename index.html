@@ -1592,6 +1592,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     });
     if (aFl) rows = rows.filter(function(r){ return r.fl === aFl; });
     rows = rows.filter(function(r){ return r.ratio <= 3.0001; });
+    // 2 ou 3 passes : seulement les outils pour qui une passe de moins dépasserait 1×D
+    if (th > 0 && aPs > 1) rows = rows.filter(function(r){ return th/(aPs - 1) > r.t.dia + 0.0005; });
     var main = rows.filter(function(r){ return r.sr || r.appOk; });
     var other = rows.filter(function(r){ return !(r.sr || r.appOk); });
     var lvRank = {best:3, better:2, good:1, '':0};
