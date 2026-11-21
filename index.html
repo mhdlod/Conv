@@ -791,6 +791,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acols{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);gap:8px;align-items:start;margin-top:14px}
 .acl{min-width:0}
 .acl > section{margin-top:0}
+.acl > section + section{margin-top:12px}
+.acl .panel{padding:10px 8px!important}
+.acl .reco{grid-template-columns:1fr!important}
+.acl .selrow{grid-template-columns:1fr 1fr!important}
+.acl .selrow label:first-child{grid-column:1/-1}
 .acr{position:sticky;top:8px;align-self:start;background:var(--panel);border:2px solid var(--ink);border-radius:12px;padding:8px 6px}
 .acr .lbl{display:block;margin:0 0 6px!important;font-size:.66rem!important}
 .acr #mats{display:flex!important;flex-direction:column;gap:6px}
@@ -811,7 +816,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acl .feedcard .cl3 b{font-size:.9rem}
 .acl .feedcard .cl4{font-size:.58rem}
 .acl .feedcard .dimbox,.acl .feedcard .fdet{font-size:.85rem}
-.acl .sets .tunebody{grid-template-columns:1fr!important}
+.acl .tunebody{gap:4px}
+.acl .sliders{gap:2px}
+.acl .vs{width:40px}
+.acl .vs .vl,.acl .vs .vv{font-size:.56rem!important}
+.acl .tunebody .vals b{font-size:1rem!important}
+.acl .tunebody .vals small{font-size:.62rem!important;line-height:1.25}
+.acl .tunebody .vals .k{font-size:.58rem!important}
+.acl .set{padding:8px 6px!important}
 .acl details.more summary{font-size:.85rem}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
@@ -1043,9 +1055,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="flist" id="flist"></div></details>
       <details class="more" id="moreBox"><summary id="moreSum"></summary><div class="flist" id="flist2"></div></details>
     </section>
-    </div>
-    <aside class="acr" aria-label="Matériau"><span class="lbl">Matériau</span><div class="seg" id="mats"></div></aside>
-    </div>
     <section class="panel" aria-label="Conseils pour ce matériau">
       <span class="lbl">Conseils pour ce matériau</span>
       <div id="matwarn"></div>
@@ -1063,6 +1072,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       </div>
       <div id="m-out"></div>
     </section>
+    </div>
+    <aside class="acr" aria-label="Matériau"><span class="lbl">Matériau</span><div class="seg" id="mats"></div></aside>
+    </div>
 
     <p class="src">Source : tableaux LMT Onsrud, via <a href="https://maurojob23-ux.github.io/CNC-Router-Speeds/" target="_blank" rel="noopener">CNC Router Speeds</a>.</p>
   </div>
