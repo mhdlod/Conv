@@ -847,6 +847,23 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acols{margin-top:6px}
 .acr .thkfield{display:block!important}
 .acr .thkfield > *{width:100%!important;max-width:none!important}
+
+/* colonne de droite : tient dans l'écran, ne défile pas, sous l'encoche de l'iPhone */
+.acr{top:calc(env(safe-area-inset-top,0px) + 6px)!important;max-height:none!important;overflow:visible!important;padding:6px 5px!important}
+.acr .field{margin:7px 0 0!important}
+.acr .lbl{font-size:.56rem!important;margin:0 0 3px!important;line-height:1.15}
+.acr #mats{gap:4px!important}
+.acr #mats button{min-height:31px!important;font-size:.7rem!important;padding:2px 5px!important}
+.acr #kinds{gap:4px!important}
+.acr #kinds button{min-height:31px!important;font-size:.66rem!important;padding:2px 5px!important}
+.acr #dirs button{min-height:30px!important}
+.acr #thk{height:34px!important;min-height:34px!important}
+.acr #thk-u button{min-height:24px!important}
+.acr .minichips{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:3px!important}
+.acr .minichips button{font-size:.58rem!important;min-height:24px!important;padding:1px 0!important;white-space:nowrap}
+.acr #thkout{font-size:.56rem!important;line-height:1.2}
+.acr .minichips button:last-child{grid-column:span 2}
+@media (max-height:720px){.acr{position:static!important}}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
