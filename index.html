@@ -777,6 +777,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .feedcard .cl2 .dec{font-size:.72rem;font-weight:500;color:var(--muted)}
 .feedcard .cl3{font-family:var(--mono);font-size:.9rem}
 .feedcard .cl3 b{font-size:1.02rem}
+.feedcard .cl4{font-family:var(--mono);font-size:.66rem;color:var(--muted);margin-top:-2px}
 .feedcard .fdet{margin-top:8px}
 .feedcard .fdet[hidden]{display:none}
 .feedcard .cmore{margin-top:4px;text-align:center;font-family:var(--cond,var(--sans));font-weight:800;font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
@@ -1418,11 +1419,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   ];
   CHOICES.forEach(function(c){ var f = MATFR[c.on]; if (!c.name){ c.name = f[0]; c.desc = f[1]; } c.kw = f[2]; });
   function choice(){ for (var i=0;i<CHOICES.length;i++) if (CHOICES[i].id === fMat) return CHOICES[i]; return CHOICES[0]; }
-  function shopRpm(dia){
-    var ch = choice(), half = typeof dia === 'number' && Math.abs(dia - 0.5) < 0.0005;
-    if (half) return fKind === 'pocket' ? {rpm:18000, why:'trous 1/2" (atelier)'} : {rpm:20000, why:'détourage 1/2" (atelier)'};
-    return ch.shop && fKind === 'pocket' ? {rpm:17000, why:'trous / poches (atelier)'} : {rpm:23000, why: fKind === 'pocket' ? 'RPM atelier' : 'détourage (atelier)'};
-  }
   var WARNFR = {
     'When chip rewelding occurs while cutting plastic, increase feed rate or switch to a single edge tool.':'Copeaux ressoudés : + d\'avance ou 1 flûte.',
     'Incorrect chip loads can result in cratering, melting, or poor surface finish.':'Mauvais chipload = fonte, cratères, mauvais fini.',
@@ -1454,10 +1450,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function dirOk(t){ return String(t.dir || '').toLowerCase().indexOf(fDir) >= 0; }
   // Réglage atelier (tous matériaux) : 23 000 RPM sous Ø 1/2", 16 000 RPM à Ø 1/2" et plus ; chipload au haut de la plage Onsrud
   function idealRpm(series, dia){
+    if (fKind === 'pocket') return {rpm:17000, why:'Réglage atelier', ons:17000, onsWhy:'Réglage atelier · trous / poches'};
     var big = dia >= 0.5 - 1e-6, r = big ? 16000 : 23000;
     return {rpm:r, why:'Réglage atelier', ons:r, onsWhy:'Réglage atelier · Ø ' + (big ? '1/2" et plus' : 'sous 1/2"')};
   }
   // chipload visé : haut de la plage Onsrud ; RPM du réglage atelier
+  function rngTxt(rpm, fl, cmin, cmax){ return 'Chipload ' + fmt(cmin,4) + '–' + fmt(cmax,4) + '" · Feed ' + fmt(rpm*fl*cmin,0) + '–' + fmt(rpm*fl*cmax,0) + ' IPM'; }
   function setTable(ir, fl, cmin, cmax){
     var c = cmax, rpm = ir.ons, why = ir.onsWhy;
     var lo = Math.max(0.0001, Math.floor(cmin*0.5*10000)/10000), hi = Math.ceil(cmax*1.5*10000)/10000;
@@ -1488,7 +1486,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     [q('.s-c'), q('.s-r')].forEach(function(el){ var v = +el.dataset.value, mn = +el.dataset.min, mx = +el.dataset.max; el.querySelector('.fill').style.height = ((v-mn)/(mx-mn)*100) + '%'; el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuemin', mn); el.setAttribute('aria-valuemax', mx); });
     q('.s-c').classList.toggle('out', out); q('.sv-c').classList.toggle('out', out); q('.s-c').setAttribute('aria-valuetext', fmt(c,4) + ' po'); q('.s-r').setAttribute('aria-valuetext', rpm + ' RPM');
     box.classList.toggle('changed', Math.abs(c - +d.c0) >= 0.00005 || rpm !== +d.r0);
-    var fc = box.closest('.feedcard'); if (fc && fc.querySelector('.cs-r')){ fc.querySelector('.cs-r').textContent = rpm.toLocaleString('fr-CA'); fc.querySelector('.cs-f').textContent = fmt(f,0); fc.querySelector('.cs-c').textContent = fmt(c,4) + '"'; }
+    var fc = box.closest('.feedcard'); if (fc && fc.querySelector('.cs-r')){ fc.querySelector('.cs-r').textContent = rpm.toLocaleString('fr-CA'); fc.querySelector('.cs-f').textContent = fmt(f,0); fc.querySelector('.cs-c').textContent = fmt(c,4) + '"'; var l4 = fc.querySelector('.cl4'); if (l4) l4.textContent = rngTxt(rpm, +l4.dataset.fl, +l4.dataset.cmin, +l4.dataset.cmax); }
   }
   function tuneAll(root){ [].forEach.call(root.querySelectorAll('.tune'), tuneUpdate); }
   function vslSet(el, v){ var mn = +el.dataset.min, mx = +el.dataset.max, st = +el.dataset.step; v = Math.min(mx, Math.max(mn, Math.round((v - mn)/st)*st + mn)); el.dataset.value = +v.toFixed(6); tuneUpdate(el.closest('.tune')); }
@@ -1620,7 +1618,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       else if (r.notMain){ lvl = 'warn'; lvTxt = 'Pas prévu pour ce matériau'; }
       else if (r.generic){ lvl = 'warn'; lvTxt = 'Estimation, à vérifier'; }
       b.className += ' lv-' + lvl;
-      var head = '<div class="rankrow">' + (rank ? '<div class="rank">' + RK[rank] + '</div>' : '<span></span>') + '<span class="lvcol"><span class="lvl ' + lvl + '">' + lvTxt + '</span>' + (typeof t.loc === 'number' ? '<span class="locdec">LOC ' + fmt(t.loc,4) + ' po</span>' : '') + '</span></div>';
+      var head = '<div class="rankrow">' + (rank ? '<div class="rank">' + RK[rank] + '</div>' : '<span></span>') + '<span class="lvcol"><span class="lvl ' + lvl + '">' + lvTxt + '</span>' + '</span></div>';
       var fhead = '<div class="fhead">' + thumb(t) + '<div><b>' + esc(t.id) + '</b><span class="t1">' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div></div>';
       var dims = '<span class="dim"><i>Ø</i> ' + esc(tri(t.dia)) + '</span>' + (typeof t.loc === 'number' ? '<span class="dim"><i>LOC</i> ' + esc(tri(t.loc)) + '</span>' + (th > 0 && t.loc >= th - 1e-6 ? '<span class="dim"><i>Marge</i> ' + (t.loc - th < 0.0005 ? '0 (pile l\'épaisseur)' : esc(tri(t.loc - th))) + '</span>' : '') : '');
       var fg, rpm = r.ir.rpm;
@@ -1638,7 +1636,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var c0 = r.cmax, r0 = r.ir.ons;
       var sum = '<div class="csum"><div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>' +
         '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b></span>' : '') + '</div>' +
-        (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
+        (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div><div class="cl4" data-fl="' + r.fl + '" data-cmin="' + r.cmin + '" data-cmax="' + r.cmax + '">' + rngTxt(r0, r.fl, r.cmin, r.cmax) + '</div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
       b.innerHTML = head + sum + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
       b.setAttribute('aria-expanded', 'false');
       function tog(){ var d = b.querySelector('.fdet'), o = d.hidden; d.hidden = !o; b.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o)); b.querySelector('.cmore').textContent = o ? '▲ Moins' : '▼ Détails'; }
