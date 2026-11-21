@@ -784,7 +784,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .feedcard .toout{margin-top:8px;width:100%;min-height:40px;border:2px solid var(--ink);border-radius:10px;background:var(--key);color:var(--fg);font-weight:800;font-size:.9rem}
 .feedcard{padding-top:10px!important;padding-bottom:6px!important}
 #apsrow{margin:0 0 6px}
-#apssel{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important}
+#apssel{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important}
 #apssel button{width:auto!important}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
@@ -1004,7 +1004,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <h2 id="topTitle">Les 5 meilleurs outils de ta liste</h2>
       <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dia" aria-pressed="false">Ø proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button><button type="button" data-s="dialoc" aria-pressed="false">Ø + LOC proches</button></div>
       <div class="flrow" id="aflrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="aflsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
-      <div class="flrow" id="apsrow"><span class="lbl">Passes</span><div class="mode flsel" id="apssel" role="group" aria-label="Nombre de passes"><button type="button" data-p="1" aria-pressed="true">1</button><button type="button" data-p="2" aria-pressed="false">2</button><button type="button" data-p="3" aria-pressed="false">3</button></div></div>
+      <div class="flrow" id="apsrow"><span class="lbl">Passes</span><div class="mode flsel" id="apssel" role="group" aria-label="Nombre de passes"><button type="button" data-p="1" aria-pressed="true">1</button><button type="button" data-p="2" aria-pressed="false">2</button><button type="button" data-p="3" aria-pressed="false">3</button><button type="button" data-p="4" aria-pressed="false">4+</button></div></div>
       <p class="note" id="t3note"></p>
       <div class="flist" id="top3"></div>
     </section>
@@ -1581,7 +1581,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var fl = typeof t.flutes === 'number' ? t.flutes : null;
       var c = sr ? chip(sr, t.dia) : null, generic = false;
       if (!c){ var b = m.defaultChipLoad || 0.005; c = {min:b*(t.dia/0.25)*0.8, max:b*(t.dia/0.25)*1.2}; generic = true; }
-      var passes = th > 0 ? aPs : 1;
+      var passes = th > 0 ? Math.max(1, Math.ceil(th/t.dia - 1e-6)) : 1;
       var per = th > 0 ? th/passes : 0, ratio = th > 0 ? per / t.dia : 1, mult = depthMult(ratio);
       var cmin = c.min*mult, cmax = c.max*mult, cmid = (cmin+cmax)/2;
       var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc > th + 0.0005;
@@ -1591,9 +1591,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
     });
     if (aFl) rows = rows.filter(function(r){ return r.fl === aFl; });
-    rows = rows.filter(function(r){ return r.ratio <= 3.0001; });
-    // 2 ou 3 passes : seulement les outils pour qui une passe de moins dépasserait 1×D
-    if (th > 0 && aPs > 1) rows = rows.filter(function(r){ return th/(aPs - 1) > r.t.dia + 0.0005; });
+    // passes à 1×D maximum : chaque outil va dans son nombre de passes (4 = 4 et plus)
+    if (th > 0) rows = rows.filter(function(r){ return aPs < 4 ? r.passes === aPs : r.passes >= 4; });
     var main = rows.filter(function(r){ return r.sr || r.appOk; });
     var other = rows.filter(function(r){ return !(r.sr || r.appOk); });
     var lvRank = {best:3, better:2, good:1, '':0};
@@ -1721,7 +1720,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var d = diaDec(ds.value), fl = +$('m-fl').value;
     var th = parseNum($('thk').value); if (tUnit === 'mm' && th > 0) th = th/25.4;
     var irm = idealRpm(sr, d);
-    var mp = th > 0 ? aPs : 1, ratio = th > 0 ? (th/mp)/d : 1, mult = depthMult(ratio);
+    var mp = th > 0 ? Math.max(1, Math.ceil(th/d - 1e-6)) : 1, ratio = th > 0 ? (th/mp)/d : 1, mult = depthMult(ratio);
     var c = sr.chipLoads[ds.value], cmin = c[0]*mult, cmax = c[1]*mult, cmid = (cmin+cmax)/2;
     $('m-out').innerHTML = '<div class="feedgrid">' +
       '<div><span>Passes</span><b>' + (th > 0 ? mp + ' passe' + (mp > 1 ? 's' : '') : '—') + '</b><small>' + (th > 0 ? fmt(th/mp,4) + ' po · ' + fmt(th/mp*25.4,2) + ' mm par passe (' + depthLabel(ratio) + ')' : 'Ø ' + tri(d)) + '</small></div></div>' + setTable(irm, fl, cmin, cmax) +
