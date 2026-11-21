@@ -1452,18 +1452,17 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   }
   function needKind(){ return fKind === 'chamfer' ? 'chamfer' : fKind === 'ball' ? 'ball' : 'straight'; }
   function dirOk(t){ return String(t.dir || '').toLowerCase().indexOf(fDir) >= 0; }
-  // RPM Onsrud : les tableaux de charge par dent d'Onsrud sont donnés pour environ 18 000 RPM (référence Onsrud),
-  // sauf les séries 37-50 et 37-60 notées à 12 500 RPM. Onsrud ne donne pas de plage de RPM.
-  function idealRpm(series){
-    var ons = series ? (/^37-[56]0/.test(String(series.series)) ? 12500 : 18000) : null;
-    return {rpm:23000, why:'RPM de l\'atelier', ons:ons, onsWhy: ons === 12500 ? 'Onsrud, série 37-50/37-60' : 'référence Onsrud'};
+  // Réglage atelier (tous matériaux) : 23 000 RPM sous Ø 1/2", 16 000 RPM à Ø 1/2" et plus ; chipload au haut de la plage Onsrud
+  function idealRpm(series, dia){
+    var big = dia >= 0.5 - 1e-6, r = big ? 16000 : 23000;
+    return {rpm:r, why:'Réglage atelier', ons:r, onsWhy:'Réglage atelier · Ø ' + (big ? '1/2" et plus' : 'sous 1/2"')};
   }
-  // chipload visé : milieu de la plage Onsrud ; RPM de référence Onsrud
+  // chipload visé : haut de la plage Onsrud ; RPM du réglage atelier
   function setTable(ir, fl, cmin, cmax){
-    var c = (cmin + cmax)/2, rpm = ir.ons || 18000, why = ir.ons ? ir.onsWhy : 'référence Onsrud · estimation, outil sans série';
+    var c = cmax, rpm = ir.ons, why = ir.onsWhy;
     var lo = Math.max(0.0001, Math.floor(cmin*0.5*10000)/10000), hi = Math.ceil(cmax*1.5*10000)/10000;
     return '<div class="sets one"><div class="set smax tune" data-fl="' + fl + '" data-cmin="' + cmin + '" data-cmax="' + cmax + '" data-c0="' + c + '" data-r0="' + rpm + '" data-why="' + esc(why) + '">' +
-      '<div class="tunehead"><span class="st">Onsrud</span><span class="reset" role="button" tabindex="0">↺ Valeurs Onsrud</span></div><div class="tunebody"><div class="vals">' +
+      '<div class="tunehead"><span class="st">Réglage atelier</span><span class="reset" role="button" tabindex="0">↺ Réglage atelier</span></div><div class="tunebody"><div class="vals">' +
       '<span class="k">RPM</span><b class="v-r"></b><small class="v-why"></small>' +
       '<span class="k">Avance</span><b class="v-f"></b><small class="v-fmm"></small><small class="v-eq"></small>' +
       '<span class="k">Chipload</span><b class="v-c"></b><small class="v-cmm"></small><small>plage ' + fmt(cmin,4) + '–' + fmt(cmax,4) + '" · ' + fl + ' flûte' + (fl > 1 ? 's' : '') + '</small></div>' +
@@ -1477,10 +1476,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function tuneUpdate(box){
     var q = function(c){ return box.querySelector(c); }, d = box.dataset;
     var fl = +d.fl, c = +q('.s-c').dataset.value, rpm = +q('.s-r').dataset.value, cmin = +d.cmin, cmax = +d.cmax, f = rpm*fl*c;
-    var cs = Math.abs(c - +d.c0) < 0.00005 ? 'milieu Onsrud' : c < cmin - 1e-7 ? 'sous la plage Onsrud' : c > cmax + 1e-7 ? 'au-dessus de la plage Onsrud' : 'dans la plage Onsrud';
+    var cs = Math.abs(c - +d.c0) < 0.00005 ? 'max Onsrud' : c < cmin - 1e-7 ? 'sous la plage Onsrud' : c > cmax + 1e-7 ? 'au-dessus de la plage Onsrud' : 'dans la plage Onsrud';
     var out = c < cmin - 1e-7 || c > cmax + 1e-7;
     q('.v-r').textContent = rpm.toLocaleString('fr-CA');
-    q('.v-why').textContent = rpm === +d.r0 ? d.why : 'ajusté · réf. Onsrud ' + (+d.r0).toLocaleString('fr-CA');
+    q('.v-why').textContent = rpm === +d.r0 ? d.why : 'ajusté · réglage atelier ' + (+d.r0).toLocaleString('fr-CA');
     q('.v-f').textContent = fmt(f,0) + ' po/min'; q('.v-fmm').textContent = mmTxt(f);
     q('.v-eq').textContent = '= ' + rpm.toLocaleString('fr-CA') + ' × ' + fl + ' × ' + fmt(c,4) + '"';
     q('.v-c').textContent = fmt(c,4) + '"'; q('.v-cmm').textContent = fmt(c*25.4,3) + ' mm · ' + cs;
@@ -1585,8 +1584,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var cmin = c.min*mult, cmax = c.max*mult, cmid = (cmin+cmax)/2;
       var locOk = !(th > 0) || typeof t.loc !== 'number' ? null : t.loc > th + 0.0005;
       var lv = recoLevel(sr, t.dia, m);
-      var ir = idealRpm(sr);
-      var prod = fl ? (ir.ons || 18000)*fl*cmid/passes : 0;
+      var ir = idealRpm(sr, t.dia);
+      var prod = fl ? ir.ons*fl*cmax/passes : 0;
       return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
     });
     if (aFl) rows = rows.filter(function(r){ return r.fl === aFl; });
@@ -1636,7 +1635,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       if (r.locOk === false) al += '<div class="alert bad"><b>LOC trop courte</b> (' + esc(fracAny(t.loc) || fmt(t.loc,4)+'"') + ').</div>';
       else if (r.ratio > 3.0001) al += '<div class="alert bad"><b>Plus de 3×D :</b> trop profond.</div>';
       if (r.generic) al += '<div class="alert">Sans série Onsrud : avance estimée.</div>';
-      var c0 = (r.cmin + r.cmax)/2, r0 = (r.ir && r.ir.ons) || 18000;
+      var c0 = r.cmax, r0 = r.ir.ons;
       var sum = '<div class="csum"><div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>' +
         '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b></span>' : '') + '</div>' +
         (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
@@ -1716,7 +1715,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (keys.indexOf(dcur) >= 0) ds.value = dcur;
     var d = diaDec(ds.value), fl = +$('m-fl').value;
     var th = parseNum($('thk').value); if (tUnit === 'mm' && th > 0) th = th/25.4;
-    var irm = idealRpm(sr);
+    var irm = idealRpm(sr, d);
     var mp = th > 0 ? Math.max(1, Math.ceil(th/(dMax*d) - 1e-9)) : 1, ratio = th > 0 ? (th/mp)/d : 1, mult = depthMult(ratio);
     var c = sr.chipLoads[ds.value], cmin = c[0]*mult, cmax = c[1]*mult, cmid = (cmin+cmax)/2;
     $('m-out').innerHTML = '<div class="feedgrid">' +
