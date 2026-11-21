@@ -772,8 +772,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .feedcard .cl1{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
 .feedcard .cl1 b{font-family:var(--mono);font-size:1.05rem}
 .feedcard .cl1 span{font-size:.8rem;color:var(--muted)}
-.feedcard .cl2{display:flex;gap:12px;flex-wrap:wrap;font-family:var(--mono);font-size:.92rem}
+.feedcard .cl2{display:flex;column-gap:10px;row-gap:1px;flex-wrap:wrap;font-family:var(--mono);font-size:.9rem}
 .feedcard .cl2 i{font-style:normal;font-weight:800;color:var(--muted);font-family:var(--sans);font-size:.78rem}
+.feedcard .cl2 .dec{font-size:.72rem;font-weight:500;color:var(--muted)}
 .feedcard .cl3{font-family:var(--mono);font-size:.9rem}
 .feedcard .cl3 b{font-size:1.02rem}
 .feedcard .fdet{margin-top:8px}
@@ -1637,7 +1638,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       if (r.generic) al += '<div class="alert">Sans série Onsrud : avance estimée.</div>';
       var c0 = (r.cmin + r.cmax)/2, r0 = (r.ir && r.ir.ons) || 18000;
       var sum = '<div class="csum"><div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>' +
-        '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b></span>' : '') + '</div>' +
+        '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b></span>' : '') + '</div>' +
         (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
       b.innerHTML = head + sum + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
       b.setAttribute('aria-expanded', 'false');
