@@ -864,6 +864,18 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acr #thkout{font-size:.56rem!important;line-height:1.2}
 .acr .minichips button:last-child{grid-column:span 2}
 @media (max-height:720px){.acr{position:static!important}}
+
+/* curseurs : 3 curseurs compacts, visibles quand la fiche est ouverte ou « Afficher les curseurs » */
+.feedcard .ftune{display:none;margin-top:6px}
+.feedcard.open .ftune,.tuneon .feedcard .ftune{display:block}
+.tunetog{width:100%;min-height:34px;margin:0 0 8px;border:2px solid var(--ink);border-radius:10px;background:var(--key);color:var(--fg);font-weight:800;font-size:.8rem}
+.tunetog[aria-pressed="true"]{background:#FFC400;color:#111;border-color:#111}
+.acl .vs{width:34px!important;gap:4px}
+.acl .vsl{width:14px!important;min-height:150px!important}
+.acl .vs .vl{font-size:.5rem!important;letter-spacing:.02em}
+.acl .vs .vv{font-size:.52rem!important}
+.acl .sliders{gap:1px!important}
+.vsl .fband{position:absolute;left:0;right:0;background:rgba(11,107,50,.22);border-top:2px solid #0B6B32;border-bottom:2px solid #0B6B32;pointer-events:none}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1071,6 +1083,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dia" aria-pressed="false">Ø proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button><button type="button" data-s="dialoc" aria-pressed="false">Ø + LOC proches</button></div>
       <div class="flrow" id="aflrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="aflsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
       <div class="flrow" id="apsrow"><span class="lbl">Passes</span><div class="mode flsel" id="apssel" role="group" aria-label="Nombre de passes"><button type="button" data-p="1" aria-pressed="true">1</button><button type="button" data-p="2" aria-pressed="false">2</button><button type="button" data-p="3" aria-pressed="false">3</button><button type="button" data-p="4" aria-pressed="false">4+</button></div></div>
+      <button type="button" class="tunetog" id="tunetog" aria-pressed="false">Afficher les curseurs</button>
       <p class="note" id="t3note"></p>
       <div class="flist" id="top3"></div>
     </section>
@@ -1554,6 +1567,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
           '<div class="fill"></div><div class="band" style="bottom:' + ((cmin-lo)/(hi-lo)*100) + '%;height:' + ((cmax-cmin)/(hi-lo)*100) + '%"></div></div><span class="vv sv-c"></span></div>' +
         '<div class="vs"><span class="vl">RPM</span><div class="vsl s-r" role="slider" tabindex="0" aria-label="RPM" data-min="6000" data-max="24000" data-step="500" data-value="' + rpm + '">' +
           '<div class="fill"></div><div class="tick" style="top:' + ((1-(rpm-6000)/18000)*100) + '%"></div></div><span class="vv sv-r"></span></div>' +
+        '<div class="vs"><span class="vl">Avance</span><div class="vsl s-f" role="slider" tabindex="0" aria-label="Avance" data-min="0" data-max="1" data-step="1" data-value="0">' +
+          '<div class="fill"></div><div class="band fband"></div></div><span class="vv sv-f"></span></div>' +
       '</div></div></div></div>';
   }
   function tuneUpdate(box){
@@ -1568,13 +1583,20 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     q('.v-c').textContent = fmt(c,4) + '"'; q('.v-cmm').textContent = fmt(c*25.4,3) + ' mm · ' + cs;
     q('.v-c').classList.toggle('out', out); q('.v-cmm').classList.toggle('out', out);
     q('.sv-c').textContent = fmt(c,4) + '"'; q('.sv-r').textContent = (rpm/1000).toLocaleString('fr-CA') + ' k';
-    [q('.s-c'), q('.s-r')].forEach(function(el){ var v = +el.dataset.value, mn = +el.dataset.min, mx = +el.dataset.max; el.querySelector('.fill').style.height = ((v-mn)/(mx-mn)*100) + '%'; el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuemin', mn); el.setAttribute('aria-valuemax', mx); });
+    var sf = q('.s-f'), sc = q('.s-c');
+    if (sf){ var fmn = rpm*fl*(+sc.dataset.min), fmx = rpm*fl*(+sc.dataset.max); sf.dataset.min = fmn; sf.dataset.max = fmx; sf.dataset.value = f;
+      var bd = sf.querySelector('.fband'); bd.style.bottom = ((rpm*fl*cmin - fmn)/(fmx - fmn)*100) + '%'; bd.style.height = ((rpm*fl*(cmax - cmin))/(fmx - fmn)*100) + '%';
+      q('.sv-f').textContent = fmt(f,0); q('.sv-f').classList.toggle('out', out); sf.classList.toggle('out', out); sf.setAttribute('aria-valuetext', fmt(f,0) + ' po/min'); }
+    [q('.s-c'), q('.s-r'), sf].filter(Boolean).forEach(function(el){ var v = +el.dataset.value, mn = +el.dataset.min, mx = +el.dataset.max; el.querySelector('.fill').style.height = ((v-mn)/(mx-mn)*100) + '%'; el.setAttribute('aria-valuenow', v); el.setAttribute('aria-valuemin', mn); el.setAttribute('aria-valuemax', mx); });
     q('.s-c').classList.toggle('out', out); q('.sv-c').classList.toggle('out', out); q('.s-c').setAttribute('aria-valuetext', fmt(c,4) + ' po'); q('.s-r').setAttribute('aria-valuetext', rpm + ' RPM');
     box.classList.toggle('changed', Math.abs(c - +d.c0) >= 0.00005 || rpm !== +d.r0);
     var fc = box.closest('.feedcard'); if (fc && fc.querySelector('.cs-r')){ fc.querySelector('.cs-r').textContent = rpm.toLocaleString('fr-CA'); fc.querySelector('.cs-f').textContent = fmt(f,0); fc.querySelector('.cs-c').textContent = fmt(c,4) + '"'; var l4 = fc.querySelector('.cl4'); if (l4) l4.textContent = rngTxt(rpm, +l4.dataset.fl, +l4.dataset.cmin, +l4.dataset.cmax); }
   }
   function tuneAll(root){ [].forEach.call(root.querySelectorAll('.tune'), tuneUpdate); }
-  function vslSet(el, v){ var mn = +el.dataset.min, mx = +el.dataset.max, st = +el.dataset.step; v = Math.min(mx, Math.max(mn, Math.round((v - mn)/st)*st + mn)); el.dataset.value = +v.toFixed(6); tuneUpdate(el.closest('.tune')); }
+  function vslSet(el, v){
+    if (el.classList.contains('s-f')){ var bx = el.closest('.tune'), sc = bx.querySelector('.s-c'), rp = +bx.querySelector('.s-r').dataset.value, fl = +bx.dataset.fl;
+      var c = Math.min(+sc.dataset.max, Math.max(+sc.dataset.min, v/(rp*fl))); sc.dataset.value = +(Math.round(c/0.0001)*0.0001).toFixed(6); tuneUpdate(bx); return; }
+    var mn = +el.dataset.min, mx = +el.dataset.max, st = +el.dataset.step; v = Math.min(mx, Math.max(mn, Math.round((v - mn)/st)*st + mn)); el.dataset.value = +v.toFixed(6); tuneUpdate(el.closest('.tune')); }
   function vslAt(el, y){ var r = el.getBoundingClientRect(), k = 1 - (y - r.top)/r.height; vslSet(el, +el.dataset.min + Math.min(1, Math.max(0, k))*(+el.dataset.max - +el.dataset.min)); }
   document.addEventListener('pointerdown', function(e){ var vs = e.target.closest && e.target.closest('.vs'), el = vs && vs.querySelector('.vsl'); if (!el) return;
     e.preventDefault(); el.classList.add('dragging'); try { el.setPointerCapture(e.pointerId); } catch(_){}
@@ -1713,8 +1735,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         var fmin = rpm*r.fl*r.cmin, fmax = rpm*r.fl*r.cmax, fmid = rpm*r.fl*r.cmid;
         fg = '<div class="feedgrid">' +
           (th > 0 ? '<div><span>Passes</span><b class="hi">' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b><small>' + esc(fracAny(r.per) || fmt(r.per,4) + '"') + ' · ' + fmt(r.per,4) + ' po · ' + fmt(r.per*25.4,2) + ' mm par passe (' + depthLabel(r.ratio) + (r.mult < 1 ? ', chipload × ' + r.mult : '') + ')</small></div>' : '') +
-        '</div>' + setTable(r.ir, r.fl, r.cmin, r.cmax);
-      } else fg = '<p class="note">Flûtes inconnues : avance non calculée.</p>';
+        '</div>';
+        var tn = setTable(r.ir, r.fl, r.cmin, r.cmax);
+      } else { fg = '<p class="note">Flûtes inconnues : avance non calculée.</p>'; tn = ''; }
       var al = '';
       if (th > 0 && t.dia < 0.375 && /plastic/.test(m.id)) al += '<div class="alert info"><b>Finition :</b> laisse 0.015–0.030" (0.4–0.8 mm).</div>';
       if (r.locOk === false) al += '<div class="alert bad"><b>LOC trop courte</b> (' + esc(fracAny(t.loc) || fmt(t.loc,4)+'"') + ').</div>';
@@ -1724,10 +1747,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var sum = '<div class="csum"><div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>' +
         '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b>' + (r.mult < 1 ? ' <small class="dec">· ' + depthLabel(r.ratio) + ' · chipload −' + Math.round((1-r.mult)*100) + ' %</small>' : '') + '</span>' : '') + '</div>' +
         (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div><div class="cl4" data-fl="' + r.fl + '" data-cmin="' + r.cmin + '" data-cmax="' + r.cmax + '">' + rngTxt(r0, r.fl, r.cmin, r.cmax) + '</div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
-      b.innerHTML = head + sum + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
+      b.innerHTML = head + sum + (tn ? '<div class="ftune">' + tn + '</div>' : '') + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
       b.setAttribute('aria-expanded', 'false');
       function tog(){ var d = b.querySelector('.fdet'), o = d.hidden; d.hidden = !o; b.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o)); b.querySelector('.cmore').textContent = o ? '▲ Moins' : '▼ Détails'; }
-      b.addEventListener('click', function(e){ if (e.target.closest('.sliders, .reset')) return; if (e.target.closest('.toout')) { openTool(key(t)); return; } if (e.target.closest('.fdet') && !e.target.closest('.fhead')) return; tog(); });
+      b.addEventListener('click', function(e){ if (e.target.closest('.sliders, .reset')) return; if (e.target.closest('.toout')) { openTool(key(t)); return; } if (e.target.closest('.ftune') || (e.target.closest('.fdet') && !e.target.closest('.fhead'))) return; tog(); });
       b.addEventListener('keydown', function(e){ if (e.target === b && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); tog(); } });
       tuneAll(b);
       return b;
@@ -2325,6 +2348,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     b.addEventListener('click', function(){ fFl = +b.getAttribute('data-f'); [].forEach.call($('flsel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderList(); });
   });
 
+  // curseurs RPM / chipload / avance visibles sur toutes les fiches
+  (function(){
+    var on = false; try { on = localStorage.getItem('a-tune') === '1'; } catch(e){}
+    function set(v){ on = v; $('tunetog').setAttribute('aria-pressed', String(v)); $('tunetog').textContent = v ? 'Cacher les curseurs' : 'Afficher les curseurs'; document.querySelector('.acl').classList.toggle('tuneon', v); try { localStorage.setItem('a-tune', v ? '1' : '0'); } catch(e){} }
+    $('tunetog').addEventListener('click', function(){ set(!on); }); set(on);
+  })();
   // nombre de passes (Vitesses et avances) : 1 par défaut
   [].forEach.call($('apssel').children, function(b){
     b.addEventListener('click', function(){ aPs = +b.getAttribute('data-p'); [].forEach.call($('apssel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderFeed(); });
