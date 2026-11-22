@@ -11,6 +11,40 @@
 <title>Convertisseur et outils CNC</title>
 <style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}[hidden]{display:none!important}img{max-width:100%}/* Convertisseur : seulement le premier cadre */
 #view-conv > section:not(.convpanel){display:none!important}
+
+/* Convertisseur — disposition « pouce droit » : lecture en haut, commandes en bas */
+.cv2{display:flex!important;flex-direction:column;gap:8px;padding:10px!important}
+.cv2 > *{grid-column:auto!important}
+.cvdisp{background:#FFE45C;border:2px solid var(--ink);border-radius:12px;padding:8px 12px;color:#111}
+.cvtop{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.cvfrac{font-family:var(--mono);font-size:2.4rem;font-weight:800;line-height:1;letter-spacing:-.03em;color:#111;white-space:nowrap}
+.cvnum{display:flex;flex-direction:column;align-items:flex-end;font-family:var(--mono)}
+.cvnum b{font-size:1.15rem;font-weight:800;color:#111;white-space:nowrap}
+.cvr{margin-top:4px;font-family:var(--mono);font-size:.8rem;color:#111}
+.cvr span{font-family:var(--cond,var(--sans));font-weight:800;text-transform:uppercase;letter-spacing:.05em;font-size:.68rem;opacity:.8}
+.cvr b{font-weight:700}
+.cv2 .status{margin:4px 0 0!important;font-size:.72rem!important;padding:0!important;background:none!important;border:0!important;color:#111!important}
+.cv2 .mtbl{display:flex;flex-direction:row;align-items:stretch;min-height:0}
+.cv2 .mth{writing-mode:vertical-rl;transform:rotate(180deg);border-bottom:0!important;border-left:2px solid var(--line);padding:4px 3px;font-size:.6rem}
+.cv2 .mtb{display:flex;flex-direction:row;overflow-x:auto;overflow-y:hidden;flex:1 1 0;touch-action:pan-x;scroll-snap-type:x proximity}
+.cv2 .mr{flex:0 0 auto;min-width:74px;border-bottom:0;border-right:1px solid color-mix(in srgb,var(--line) 25%,transparent);touch-action:pan-x;scroll-snap-align:center;padding:5px 8px}
+.cv2 .mr.hl{box-shadow:inset 0 -4px 0 var(--fg)}
+.cv2 .mtb.all .mr.hl{box-shadow:inset 0 -4px 0 var(--fg)}
+.cvctl{display:grid;grid-template-columns:auto 1fr;gap:6px;margin-top:auto}
+.cv2 #cvmode{display:grid;grid-template-columns:1fr 1fr;margin:0;width:auto}
+.cv2 #cvmode button{padding:8px 8px;font-size:.82rem}
+.cv2 #steps{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));margin:0!important;width:auto}
+.cv2 #steps button{padding:8px 0!important;font-size:.8rem}
+.cv2 .inrow{display:flex;gap:6px}
+.cv2 #cote,.cv2 .ftxt{flex:1 1 0;min-width:0;font-size:1.35rem!important;padding:8px 10px!important}
+.cv2 .unit button{padding:0 14px!important;font-size:1.05rem!important}
+.cv2 .padrow{margin-top:0}
+.cv2 .pad{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr)) minmax(0,1.15fr)!important;gap:6px!important}
+.cv2 .pad button{min-height:var(--ckh,60px)!important;font-size:1.6rem!important}
+.cv2 .pad button.op{font-size:.95rem!important}
+.cv2 .pad button[data-k="back"]{font-size:1.6rem!important}
+.cv2 .pad button.z{grid-column:span 1}
+.cv2 .pad button.clr{grid-column:span 2;font-size:1rem!important}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
@@ -928,31 +962,29 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   </nav>
 
   <div class="views" id="view-conv" role="tabpanel" aria-labelledby="tab-conv">
-  <section class="panel convpanel" aria-label="Cote à convertir">
-    <div class="toprow">
-    <div class="mode" role="group" aria-label="Mode de saisie">
-      <button type="button" id="m-dec" aria-pressed="true">Décimal</button>
-      <button type="button" id="m-frac" aria-pressed="false">Fraction</button>
+  <section class="panel convpanel cv2" aria-label="Cote à convertir">
+    <div class="cvdisp" aria-live="polite">
+      <div class="cvtop"><b class="cvfrac" id="cv-frac">–</b><div class="cvnum"><b id="c-in">–</b><b id="c-mm">–</b></div></div>
+      <div class="cvr"><span>Rayon</span> <b id="r-in">–</b> · <b id="r-mm">–</b></div>
+      <div class="status" id="status" role="status"></div>
     </div>
-    <div class="conv mini">
-      <div class="kv"><span>Cote po</span><b id="c-in">–</b></div>
-      <div class="kv"><span>Cote mm</span><b id="c-mm">–</b></div>
-      <div class="kv"><span>Rayon po</span><b id="r-in">–</b></div>
-      <div class="kv"><span>Rayon mm</span><b id="r-mm">–</b></div>
-    </div>
-    </div>
-    <span class="lbl">Précision</span>
-    <div class="mode" id="steps" role="group" aria-label="Table">
-      <button type="button" data-d="8" aria-pressed="false">1/8</button>
-      <button type="button" data-d="16" aria-pressed="true">1/16</button>
-      <button type="button" data-d="32" aria-pressed="false">1/32</button>
-      <button type="button" data-d="64" aria-pressed="false">1/64</button>
-      <button type="button" data-d="0" aria-pressed="false">Tous</button>
+    <div class="mtbl" aria-label="Table rapide"><div class="mth" id="mth">Table 1/16</div><div class="mtb" id="mtb"></div></div>
+    <div class="cvctl">
+      <div class="mode" id="cvmode" role="group" aria-label="Mode de saisie">
+        <button type="button" id="m-dec" aria-pressed="true">Déc.</button>
+        <button type="button" id="m-frac" aria-pressed="false">Frac.</button>
+      </div>
+      <div class="mode" id="steps" role="group" aria-label="Précision">
+        <button type="button" data-d="8" aria-pressed="false">1/8</button>
+        <button type="button" data-d="16" aria-pressed="true">1/16</button>
+        <button type="button" data-d="32" aria-pressed="false">1/32</button>
+        <button type="button" data-d="64" aria-pressed="false">1/64</button>
+        <button type="button" data-d="0" aria-pressed="false">Tous</button>
+      </div>
     </div>
     <div id="frac-box" hidden>
-      <label class="lbl" for="f-txt">Cote en fraction</label>
       <div class="inrow">
-        <input id="f-txt" type="text" inputmode="none" autocomplete="off" value="5/16" class="ftxt">
+        <input id="f-txt" type="text" inputmode="none" autocomplete="off" value="5/16" class="ftxt" aria-label="Cote en fraction">
         <div class="unit" role="group" aria-label="Unité">
           <button type="button" id="u2-po" aria-pressed="true">po</button>
           <button type="button" id="u2-mm" aria-pressed="false">mm</button>
@@ -960,9 +992,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       </div>
     </div>
     <div id="dec-box">
-    <label class="lbl" for="cote">Cote à convertir</label>
     <div class="inrow">
-      <input id="cote" type="text" inputmode="none" autocomplete="off" value="0.3125" aria-describedby="hint">
+      <input id="cote" type="text" inputmode="none" autocomplete="off" value="0.3125" aria-label="Cote à convertir">
       <div class="unit" role="group" aria-label="Unité">
         <button type="button" id="u-po" aria-pressed="true">po</button>
         <button type="button" id="u-mm" aria-pressed="false">mm</button>
@@ -970,13 +1001,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     </div>
     </div>
     <div class="padrow"><div class="pad" id="pad">
-        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="/" class="op">/</button>
-        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k=" " class="op">espace</button>
-        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
-        <button type="button" data-k="0">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op wide">Effacer tout</button>
+        <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
+        <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="/" class="op">/</button>
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k=" " class="op">espace</button>
+        <button type="button" data-k="0" class="z">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op clr">Effacer tout</button>
       </div></div>
-    <div class="mtbl" aria-label="Table rapide"><div class="mth" id="mth">Table 1/16</div><div class="mtb" id="mtb"></div></div>
-    <div class="status" id="status" role="status"></div>
   </section>
 
   <section class="choices" id="choices" aria-label="Choix d'outil"></section>
@@ -1229,7 +1258,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var u = unit;
     box.innerHTML = '';
     if (!(v > 0)){
-      ['c-in','c-mm','r-in','r-mm'].forEach(function(id){ $(id).textContent = '–'; });
+      ['c-in','c-mm','r-in','r-mm','cv-frac'].forEach(function(id){ $(id).textContent = '–'; });
       st.className = 'status err'; st.textContent = 'Entre une cote positive, par exemple 0.3125 ou 5/16.';
       highlight(-1); return;
     }
@@ -1248,6 +1277,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     } else {
       st.className = 'status warn round'; st.textContent = 'Pas un multiple de ' + S + ' : arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
     }
+    $('cv-frac').textContent = n < 1 ? '–' : (exact ? '' : '≈ ') + frac(n) + '"';
     box.appendChild(row('Valeur correcte', n, inch, true));
     box.appendChild(row('1 cran en dessous', n-1, inch, false));
     box.appendChild(row('2 crans en dessous', n-2, inch, false));
@@ -1258,7 +1288,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     for (var i=0;i<rows.length;i++) rows[i].className = kOf(i+1) + ((i+1 === n) ? ' hl' : '');
     var mb = $('mtb'), mr = mb.children, hit = null;
     for (var j=0;j<mr.length;j++){ var on = j+1 === n; mr[j].className = 'mr ' + kOf(j+1) + (on ? ' hl' : ''); if (on) hit = mr[j]; }
-    if (hit) mb.scrollTop = hit.offsetTop - (mb.clientHeight - hit.offsetHeight)/2;
+    if (hit) { if (mb.scrollWidth > mb.clientWidth + 2) mb.scrollLeft = hit.offsetLeft - (mb.clientWidth - hit.offsetWidth)/2; else mb.scrollTop = hit.offsetTop - (mb.clientHeight - hit.offsetHeight)/2; }
   }
   function setUnit(u){
     unit = u;
@@ -1912,6 +1942,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function setView(v, noHash){
     view = v;
     ['conv','cotes','feed','tools'].forEach(function(x){ $('tab-' + x).setAttribute('aria-selected', v === x); $('view-' + x).hidden = v !== x; });
+    setTimeout(function(){ if (typeof fitConv === 'function') fitConv(); }, 0);
     $('h1').textContent = ({conv:'Convertisseur de cotes', cotes:'Tolérance', feed:'Vitesses et avances', tools:'Liste d\'outils'})[v];
     $('sub').hidden = true;
     if (!noHash) try { history.replaceState(null, '', '#' + ({conv:'convertisseur', cotes:'cotes', feed:'avances', tools:'outils'})[v]); } catch(e){}
@@ -1966,6 +1997,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     return fmt(v, 5);
   }
   function frac64(n){ var w = Math.floor(n/64), r = n % 64, g = gcd(r, 64); return (w ? w + (r ? ' ' : '') : '') + (r ? (r/g) + '/' + (64/g) : ''); }
+  function fitConv(){
+    var pad = $('pad'); if (!pad || !pad.offsetParent) return;
+    var tabs = document.querySelector('.tabs'), lim = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 26;
+    pad.style.setProperty('--ckh', '44px');
+    var top = pad.getBoundingClientRect().top + window.scrollY - window.scrollY, kh = Math.max(44, Math.min(96, Math.floor((lim - top - 3*6)/4)));
+    pad.style.setProperty('--ckh', kh + 'px');
+  }
+  window.addEventListener('resize', fitConv); setTimeout(fitConv, 0); setTimeout(fitConv, 300);
   function fitCalc(){
     var v = $('view-cotes'); if (v.hidden) return;
     var pad = $('k-pad'), tabs = document.querySelector('.tabs');
