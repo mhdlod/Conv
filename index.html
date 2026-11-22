@@ -886,6 +886,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .feedcard .cmem b{font-size:.82rem}
 .feedcard .cmem span{font-weight:700}
 .feedcard .cmem i{font-style:normal;color:var(--muted);font-size:.66rem}
+.feedcard .cl2 .cloc,.feedcard .cl2 .cloc i,.feedcard .cl2 .cloc .dec{color:#1F5A99}
+.feedcard .cl2 .cloc{font-weight:700}
+:root:root:root[data-mode="dark"] .feedcard .cl2 .cloc,:root:root:root[data-mode="dark"] .feedcard .cl2 .cloc i,:root:root:root[data-mode="dark"] .feedcard .cl2 .cloc .dec{color:#7DB4F0}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1764,7 +1767,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       if (r.generic) al += '<div class="alert">Sans série Onsrud : avance estimée.</div>';
       var c0 = r.cmax, r0 = r.ir.ons;
       var sum = '<div class="csum">' + (mem ? '<div class="cl1"><b>' + mem.length + ' outils</b><span>' + esc(t.dir || '') + '</span></div>' : '<div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>') +
-        '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b>' + (r.mult < 1 ? ' <small class="dec">· ' + depthLabel(r.ratio) + ' · chipload −' + Math.round((1-r.mult)*100) + ' %</small>' : '') + '</span>' : '') + '</div>' +
+        '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span class="cloc"><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b>' + (r.mult < 1 ? ' <small class="dec">· ' + depthLabel(r.ratio) + ' · chipload −' + Math.round((1-r.mult)*100) + ' %</small>' : '') + '</span>' : '') + '</div>' +
         (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div><div class="cl4" data-fl="' + r.fl + '" data-cmin="' + r.cmin + '" data-cmax="' + r.cmax + '">' + rngTxt(r0, r.fl, r.cmin, r.cmax) + '</div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
       if (mem) sum = sum.replace(/<\/div>$/, '<div class="cmem">' + mem.map(function(m){ return '<div><b>' + esc(m.t.id) + '</b><span>' + esc(m.t.location || '—') + '</span><i>' + esc(m.t.mpn != null ? String(m.t.mpn) : '') + '</i></div>'; }).join('') + '</div></div>');
       b.innerHTML = head + sum + (tn ? '<div class="ftune">' + tn + '</div>' : '') + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
