@@ -1213,7 +1213,6 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         cell('Rayon po', n > 0 ? fmt(d/2,5) : '—', true) +
         cell('Rayon mm', n > 0 ? fmt(d*25.4/2,3) : '—', true) +
       '</div>';
-    if (n > 0) el.appendChild(matchBlock(d));
     return el;
   }
   function cell(k,v,r){ return '<div' + (r ? ' class="r"' : '') + '><span>' + k + '</span><b>' + v + '</b></div>'; }
@@ -1241,11 +1240,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var x = Math.round(inch*D*10000)/10000, n = Math.floor(x), exact = Math.abs(x - Math.round(x)) < 0.0001;
     if (exact) n = Math.round(x);
     if (n < 1){
-      st.className = 'status warn'; st.textContent = 'Cote plus petite que ' + S + ' po : aucun outil dans cette série.';
+      st.className = 'status warn'; st.textContent = 'Cote plus petite que ' + S + ' po.';
     } else if (exact){
       st.className = 'status ok'; st.textContent = 'Multiple exact de ' + S + ' : ' + frac(n) + ' po.';
     } else {
-      st.className = 'status warn round'; st.textContent = 'Pas un multiple de ' + S + ' : outil arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
+      st.className = 'status warn round'; st.textContent = 'Pas un multiple de ' + S + ' : arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
     }
     box.appendChild(row('Valeur correcte', n, inch, true));
     box.appendChild(row('1 cran en dessous', n-1, inch, false));
