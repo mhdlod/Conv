@@ -849,7 +849,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acr .thkfield > *{width:100%!important;max-width:none!important}
 
 /* colonne de droite : tient dans l'écran, ne défile pas, sous l'encoche de l'iPhone */
-.acr{top:calc(env(safe-area-inset-top,0px) + 6px)!important;max-height:none!important;overflow:visible!important;padding:6px 5px!important}
+.acr{transition:transform .18s ease;top:calc(env(safe-area-inset-top,0px) + 6px)!important;max-height:none!important;overflow:visible!important;padding:6px 5px!important}
 .acr .field{margin:7px 0 0!important}
 .acr .lbl{font-size:.56rem!important;margin:0 0 3px!important;line-height:1.15}
 .acr #mats{gap:4px!important}
@@ -2201,17 +2201,24 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
   // clavier de l'app pour Épaisseur (Avances) et Diamètre / Épaisseur (Outils)
   (function(){
-    var kb = $('kb'), cur = null, NAMES = {q:'Rechercher', thk:'Épaisseur à couper', 't-dia':'Diamètre de l\'outil', 't-thk':'Épaisseur à couper'};
+    var kb = $('kb'), cur = null, NAMES = {q:'Rechercher', 't-dia':'Diamètre de l\'outil'};
     function open(f){
       if (cur && cur !== f) cur.classList.remove('kbon');
       cur = f; f.classList.add('kbon'); $('kbl').textContent = NAMES[f.id] || '';
       var alpha = f.id === 'q'; kb.querySelector('.kbpad').hidden = alpha; kb.querySelector('.kbalpha').hidden = !alpha; kb.classList.toggle('alpha', alpha);
       kb.hidden = false; document.body.classList.add('kbopen');
       document.body.style.setProperty('--kbh', kb.offsetHeight + 'px');
-      var r = f.getBoundingClientRect(), lim = window.innerHeight - kb.offsetHeight - 12;
-      if (r.bottom > lim || r.top < 0) window.scrollBy({top: r.bottom - lim + 8, behavior:'smooth'});
+      var lim = window.innerHeight - kb.offsetHeight - 10, col = f.closest('.acr');
+      if (col){
+        // colonne figée (Avances) : la remonter pour que la case reste au-dessus du clavier
+        col.style.transform = ''; var rc = f.getBoundingClientRect();
+        if (rc.bottom > lim) col.style.transform = 'translateY(' + Math.round(lim - rc.bottom) + 'px)';
+      } else {
+        var r = f.getBoundingClientRect();
+        if (r.bottom > lim || r.top < 0) window.scrollBy({top: r.bottom - lim + 8, behavior:'smooth'});
+      }
     }
-    function close(){ if (cur) cur.classList.remove('kbon'); cur = null; kb.hidden = true; document.body.classList.remove('kbopen'); }
+    function close(){ if (cur) cur.classList.remove('kbon'); cur = null; kb.hidden = true; document.body.classList.remove('kbopen'); var c = document.querySelector('.acr'); if (c) c.style.transform = ''; }
     [].forEach.call(document.querySelectorAll('.kbf'), function(f){
       f.addEventListener('focus', function(){ open(f); });
       f.addEventListener('click', function(){ open(f); });
