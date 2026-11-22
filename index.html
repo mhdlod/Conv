@@ -876,6 +876,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acl .vs .vv{font-size:.52rem!important}
 .acl .sliders{gap:1px!important}
 .vsl .fband{position:absolute;left:0;right:0;background:rgba(11,107,50,.22);border-top:2px solid #0B6B32;border-bottom:2px solid #0B6B32;pointer-events:none}
+.acl #fsort{grid-template-columns:1fr 1fr!important}
+.acl #fsort button[data-s="dialoc"]{grid-column:span 1}
+.acl #fsort button[data-s="best"]{grid-column:1/-1}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1080,7 +1083,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     <div class="acl">
     <section aria-label="Les 5 meilleurs outils">
       <h2 id="topTitle">Les 5 meilleurs outils de ta liste</h2>
-      <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dia" aria-pressed="false">Ø proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button><button type="button" data-s="dialoc" aria-pressed="false">Ø + LOC proches</button></div>
+      <div class="mode fsort" id="fsort" role="group" aria-label="Trier"><button type="button" data-s="best" aria-pressed="true">Meilleur choix</button><button type="button" data-s="dialoc" aria-pressed="false">Ø proche + LOC proche</button><button type="button" data-s="loc" aria-pressed="false">LOC proche</button></div>
       <div class="flrow" id="aflrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="aflsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
       <div class="flrow" id="apsrow"><span class="lbl">Passes</span><div class="mode flsel" id="apssel" role="group" aria-label="Nombre de passes"><button type="button" data-p="1" aria-pressed="true">1</button><button type="button" data-p="2" aria-pressed="false">2</button><button type="button" data-p="3" aria-pressed="false">3</button><button type="button" data-p="4" aria-pressed="false">4+</button></div></div>
       <button type="button" class="tunetog" id="tunetog" aria-pressed="false">Afficher les curseurs</button>
@@ -1855,7 +1858,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     [].forEach.call($('mats').children, function(b){ b.setAttribute('aria-pressed', b.getAttribute('data-id') === fMat); });
   }
   var fSort = 'best', aFl = 1, aPs = 1;
-  try { var fs0 = localStorage.getItem('feed-sort'); if (fs0 === 'dia' || fs0 === 'loc' || fs0 === 'dialoc') fSort = fs0; } catch(e){}
+  try { var fs0 = localStorage.getItem('feed-sort'); if (fs0 === 'dia') fs0 = 'dialoc'; if (fs0 === 'loc' || fs0 === 'dialoc') fSort = fs0; } catch(e){}
   [].forEach.call($('fsort').children, function(b){
     b.setAttribute('aria-pressed', b.getAttribute('data-s') === fSort);
     b.addEventListener('click', function(){ fSort = b.getAttribute('data-s'); [].forEach.call($('fsort').children, function(x){ x.setAttribute('aria-pressed', x === b); }); try { localStorage.setItem('feed-sort', fSort); } catch(e){} renderFeed(); });
