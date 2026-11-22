@@ -879,6 +879,13 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acl #fsort{grid-template-columns:1fr 1fr!important}
 .acl #fsort button[data-s="dialoc"]{grid-column:span 1}
 .acl #fsort button[data-s="best"]{grid-column:1/-1}
+
+/* fiche groupée : liste des outils identiques */
+.feedcard .cmem{margin-top:5px;border-top:1px dashed var(--line);padding-top:4px;display:flex;flex-direction:column;gap:2px}
+.feedcard .cmem div{display:grid;grid-template-columns:auto 1fr auto;gap:6px;align-items:baseline;font-family:var(--mono);font-size:.78rem}
+.feedcard .cmem b{font-size:.82rem}
+.feedcard .cmem span{font-weight:700}
+.feedcard .cmem i{font-style:normal;color:var(--muted);font-size:.66rem}
 .dl{display:inline-flex;align-items:center;gap:8px;margin-top:10px;font-weight:700;font-size:.95rem;color:var(--accent);text-decoration:none;border:2px solid var(--accent);border-radius:8px;padding:8px 14px}
 </style>
 </head>
@@ -1715,7 +1722,16 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       return ea - eb;
     }
     main.sort(sorter); other.sort(sorter);
-    function card(r, rank){
+    // outils identiques (même Ø, LOC, flûtes, série, direction, passes) : une seule fiche
+    function gKey(r){ return [r.t.dia.toFixed(4), typeof r.t.loc === 'number' ? r.t.loc.toFixed(4) : '?', r.fl, (r.cmax||0).toFixed(5), r.ir ? r.ir.ons : 0, r.t.dir || '', r.passes, !!r.notMain, String(r.locOk)].join('|'); }
+    function groupRows(rows){ var out = [], idx = {}; rows.forEach(function(r){ var k = gKey(r); if (idx[k] != null) out[idx[k]].mem.push(r); else { idx[k] = out.length; out.push({r:r, mem:[r]}); } }); return out; }
+    function gcard(g, rank){
+      if (g.mem.length < 2) return card(g.r, rank, null);
+      // plage commune à tous les outils du groupe (la plus stricte)
+      var r = Object.assign({}, g.r); r.cmin = Math.max.apply(null, g.mem.map(function(m){ return m.cmin || 0; }));
+      return card(r, rank, g.mem);
+    }
+    function card(r, rank, mem){
       var t = r.t, b = document.createElement('div'); b.setAttribute('role','button'); b.tabIndex = 0;
       b.className = 'feedcard' + (rank ? ' top' + (rank === 1 ? ' top1' : '') : '') + (r.locOk === false ? ' bad' : '');
       var tags = '';
@@ -1747,9 +1763,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       else if (r.ratio > 3.0001) al += '<div class="alert bad"><b>Plus de 3×D :</b> trop profond.</div>';
       if (r.generic) al += '<div class="alert">Sans série Onsrud : avance estimée.</div>';
       var c0 = r.cmax, r0 = r.ir.ons;
-      var sum = '<div class="csum"><div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>' +
+      var sum = '<div class="csum">' + (mem ? '<div class="cl1"><b>' + mem.length + ' outils</b><span>' + esc(t.dir || '') + '</span></div>' : '<div class="cl1"><b>' + esc(t.id) + '</b><span>' + esc([t.dir, t.mpn != null ? String(t.mpn) : '', t.location].filter(Boolean).join(' · ')) + '</span></div>') +
         '<div class="cl2"><span><i>Ø</i> ' + esc(fracAny(t.dia) || fmt(t.dia,4) + '"') + (fracAny(t.dia) ? ' <small class="dec">(' + fmt(t.dia,4) + ')</small>' : '') + '</span>' + (typeof t.loc === 'number' ? '<span><i>LOC</i> ' + esc(fracAny(t.loc) || fmt(t.loc,4) + '"') + (fracAny(t.loc) ? ' <small class="dec">(' + fmt(t.loc,4) + ')</small>' : '') + '</span>' : '') + (th > 0 && r.passes ? '<span><b>' + r.passes + ' passe' + (r.passes > 1 ? 's' : '') + '</b>' + (r.mult < 1 ? ' <small class="dec">· ' + depthLabel(r.ratio) + ' · chipload −' + Math.round((1-r.mult)*100) + ' %</small>' : '') + '</span>' : '') + '</div>' +
         (r.fl && r.ir && r.ir.rpm > 0 ? '<div class="cl3"><b class="cs-r">' + r0.toLocaleString('fr-CA') + '</b> RPM · <b class="cs-f">' + fmt(r0*r.fl*c0,0) + '</b> po/min · <b class="cs-c">' + fmt(c0,4) + '"</b></div><div class="cl4" data-fl="' + r.fl + '" data-cmin="' + r.cmin + '" data-cmax="' + r.cmax + '">' + rngTxt(r0, r.fl, r.cmin, r.cmax) + '</div>' : '<div class="cl3">Avance non calculée</div>') + '</div>';
+      if (mem) sum = sum.replace(/<\/div>$/, '<div class="cmem">' + mem.map(function(m){ return '<div><b>' + esc(m.t.id) + '</b><span>' + esc(m.t.location || '—') + '</span><i>' + esc(m.t.mpn != null ? String(m.t.mpn) : '') + '</i></div>'; }).join('') + '</div></div>');
       b.innerHTML = head + sum + (tn ? '<div class="ftune">' + tn + '</div>' : '') + '<div class="fdet" hidden>' + fhead + '<div class="dimbox">' + dims + '</div>' + fg + (tags ? '<div class="tags">' + tags + '</div>' : '') + al + '<button type="button" class="toout">Voir dans Outils</button></div><div class="cmore" aria-hidden="true">▼ Détails</div>';
       b.setAttribute('aria-expanded', 'false');
       function tog(){ var d = b.querySelector('.fdet'), o = d.hidden; d.hidden = !o; b.classList.toggle('open', o); b.setAttribute('aria-expanded', String(o)); b.querySelector('.cmore').textContent = o ? '▲ Moins' : '▼ Détails'; }
@@ -1784,9 +1801,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var dlc = dialocCmp(th);
       byLoc.sort(function(a,b){ if (sortDL){ var c = sortD ? dDia(a.t, b.t, th) : dlc(a, b, a.t, b.t); if (c) return c; return sorter(a,b); } var d = (a.t.loc - th) - (b.t.loc - th); if (Math.abs(d) > 0.0005) return d; return sorter(a,b); });
       var tl = $('top3'); tl.innerHTML = '', lastD2 = null;
-      byLoc.forEach(function(r){
+      groupRows(byLoc).forEach(function(g){ var r = g.r;
         if (sortDL && (lastD2 === null || Math.abs(r.t.dia - lastD2) > 0.0005)) { lastD2 = r.t.dia; var hd = document.createElement('div'); hd.innerHTML = dgrpHead(r.t.dia, th); tl.appendChild(hd.firstChild); }
-        tl.appendChild(card(r));
+        tl.appendChild(gcard(g));
       });
       $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '');
       $('allBox').hidden = true; $('moreBox').hidden = true;
@@ -1795,19 +1812,21 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     }
     if (fSort !== 'best' && !(th > 0)) $('t3note').textContent = 'Entre une épaisseur à couper pour ce tri.';
     var tb = $('top3'); tb.innerHTML = '';
-    top.forEach(function(r,i){ tb.appendChild(card(r, i+1)); });
+    var gAll = groupRows(top.concat(main.filter(function(r){ return top.indexOf(r) < 0; }))), gTop = gAll.slice(0, Math.min(5, gAll.length)), gRest = gAll.slice(gTop.length);
+    gTop.forEach(function(g,i){ tb.appendChild(gcard(g, i+1)); });
+    top = []; gTop.forEach(function(g){ top = top.concat(g.mem); });
     var t3 = th > 0 && !top.length ? 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '') : '';
     if (th > 0 && top.length > nMain) t3 = 'Ambre = pas prévu pour ce matériau, à vérifier.';
     if (!(fSort !== 'best' && !(th > 0))) $('t3note').textContent = t3;
     main = main.filter(function(r){ return top.indexOf(r) < 0; });
+    var gM = groupRows(main);
     $('allSum').textContent = 'Voir les ' + main.length + ' autres outils de ce type pour ce matériau';
     $('allBox').hidden = !main.length;
     var box = $('flist'); box.innerHTML = '';
-    
-    main.forEach(function(r){ box.appendChild(card(r)); });
+    gM.forEach(function(g){ box.appendChild(gcard(g)); });
     var b2 = $('flist2'); b2.innerHTML = '';
     other = other.filter(function(r){ return top.indexOf(r) < 0; });
-    other.forEach(function(r){ r.notMain = false; b2.appendChild(card(r)); });
+    other.forEach(function(r){ r.notMain = false; }); groupRows(other).forEach(function(g){ b2.appendChild(gcard(g)); });
     $('moreBox').hidden = !other.length;
     $('moreSum').textContent = 'Voir les ' + other.length + ' autres outils de ce type (pas prévus pour ce matériau)';
     renderManual();
