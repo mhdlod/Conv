@@ -46,6 +46,14 @@
 .cv2 .pad button.z{grid-column:span 1}
 .cv2 .pad button.clr{grid-column:span 2;font-size:1rem!important}
 .cv2 .mth,.cv2 .status{display:none!important}
+
+.cvl{display:flex;flex-direction:column;min-width:0}
+.cvft{font-family:var(--mono);font-size:1.05rem;font-weight:800;color:#111;white-space:nowrap}
+.cvft:empty,.cvec:empty{display:none}
+.cvec{font-family:var(--mono);font-size:.78rem;font-weight:700;color:#7A3B00;margin-top:2px}
+.cv2 .unit button{padding:0 10px!important}
+.cv2 .pad button.clr{grid-column:span 1!important;font-size:.78rem!important;line-height:1.1}
+.cv2 .pad button.ft{font-size:1.8rem!important}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
@@ -965,7 +973,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   <div class="views" id="view-conv" role="tabpanel" aria-labelledby="tab-conv">
   <section class="panel convpanel cv2" aria-label="Cote à convertir">
     <div class="cvdisp" aria-live="polite">
-      <div class="cvtop"><b class="cvfrac" id="cv-frac">–</b><div class="cvnum"><b id="c-in">–</b><b id="c-mm">–</b></div></div>
+      <div class="cvtop"><div class="cvl"><b class="cvfrac" id="cv-frac">–</b><span class="cvft" id="cv-ft"></span></div><div class="cvnum"><b id="c-in">–</b><b id="c-mm">–</b></div></div>
+      <div class="cvec" id="cv-ec"></div>
       <div class="cvr"><span>R</span> <b id="r-in">–</b> · <b id="r-mm">–</b></div>
       <div class="status" id="status" role="status"></div>
     </div>
@@ -989,6 +998,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         <div class="unit" role="group" aria-label="Unité">
           <button type="button" id="u2-po" aria-pressed="true">po</button>
           <button type="button" id="u2-mm" aria-pressed="false">mm</button>
+          <button type="button" id="u2-pi" aria-pressed="false">pi</button>
         </div>
       </div>
     </div>
@@ -998,14 +1008,15 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <div class="unit" role="group" aria-label="Unité">
         <button type="button" id="u-po" aria-pressed="true">po</button>
         <button type="button" id="u-mm" aria-pressed="false">mm</button>
+        <button type="button" id="u-pi" aria-pressed="false">pi</button>
       </div>
     </div>
     </div>
     <div class="padrow"><div class="pad" id="pad">
         <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
         <button type="button" data-k="4">4</button><button type="button" data-k="5">5</button><button type="button" data-k="6">6</button><button type="button" data-k="/" class="op">/</button>
-        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k=" " class="op">espace</button>
-        <button type="button" data-k="0" class="z">0</button><button type="button" data-k=".">.</button><button type="button" data-k="clear" class="op clr">Effacer tout</button>
+        <button type="button" data-k="1">1</button><button type="button" data-k="2">2</button><button type="button" data-k="3">3</button><button type="button" data-k="'" class="op ft" aria-label="Pieds">'</button>
+        <button type="button" data-k="0" class="z">0</button><button type="button" data-k=".">.</button><button type="button" data-k=" " class="op">espace</button><button type="button" data-k="clear" class="op clr">Effacer tout</button>
       </div></div>
   </section>
 
@@ -1230,6 +1241,13 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     if (/^\d+\.$/.test(s)) return parseFloat(s);
     return NaN;
   }
+  // pieds-pouces : « 4' 7 1/2 » ; en unité pi sans « ' », la valeur est en pieds
+  function parseFt(s){
+    s = String(s).replace(/"/g,'').trim();
+    if (s.indexOf("'") < 0) { var f0 = parse(s); return f0 * 12; }
+    var pr = s.split("'"), ft = pr[0].trim() ? parse(pr[0]) : 0, rs = (pr[1] || '').trim(), inch = rs ? parse(rs) : 0;
+    return (ft >= 0 && inch >= 0) ? ft*12 + inch : NaN;
+  }
   function row(tag, n, inch, main){
     var d = n/D;
     var el = document.createElement('div');
@@ -1251,15 +1269,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 
   function update(){
     var v, st = $('status'), box = $('choices');
-    if (mode === 'frac'){
-      v = parse($('f-txt').value);
-    } else {
-      v = parse($('cote').value);
-    }
-    var u = unit;
+    var raw = mode === 'frac' ? $('f-txt').value : $('cote').value, isFt = unit === 'pi' || raw.indexOf("'") >= 0;
+    v = isFt ? parseFt(raw) : parse(raw);
+    var u = isFt ? 'po' : unit;
     box.innerHTML = '';
     if (!(v > 0)){
-      ['c-in','c-mm','r-in','r-mm','cv-frac'].forEach(function(id){ $(id).textContent = '–'; });
+      ['c-in','c-mm','r-in','r-mm','cv-frac'].forEach(function(id){ $(id).textContent = '–'; }); $('cv-ft').textContent = ''; $('cv-ec').textContent = '';
       st.className = 'status err'; st.textContent = 'Entre une cote positive, par exemple 0.3125 ou 5/16.';
       highlight(-1); return;
     }
@@ -1278,7 +1293,13 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     } else {
       st.className = 'status warn round'; st.textContent = 'Pas un multiple de ' + S + ' : arrondi au ' + S + ' en dessous (' + frac(n) + ' po).';
     }
-    $('cv-frac').textContent = n < 1 ? '–' : (exact ? '' : '≈ ') + frac(n) + '"';
+    // affichage : fraction la plus proche, écart, pieds-pouces
+    var nn = Math.round(inch*D), ex2 = Math.abs(inch*D - nn) < 0.0001;
+    $('cv-frac').textContent = nn < 1 ? '–' : (ex2 ? '' : '≈ ') + frac(nn) + '"';
+    var ec = inch - nn/D;
+    $('cv-ec').textContent = (nn >= 1 && !ex2) ? 'écart ' + (ec > 0 ? '+' : '−') + fmt(Math.abs(ec),4) + ' po · ' + (ec > 0 ? '+' : '−') + fmt(Math.abs(ec*25.4),3) + ' mm' : '';
+    var ftN = Math.floor(nn/(12*D)), remN = nn - ftN*12*D;
+    $('cv-ft').textContent = (inch >= 12 && nn >= 1) ? (ex2 ? '' : '≈ ') + ftN + "' " + (remN ? frac(remN) : '0') + '"' : '';
     box.appendChild(row('Valeur correcte', n, inch, true));
     box.appendChild(row('1 cran en dessous', n-1, inch, false));
     box.appendChild(row('2 crans en dessous', n-2, inch, false));
@@ -1297,6 +1318,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     $('u-mm').setAttribute('aria-pressed', u === 'mm');
     $('u2-po').setAttribute('aria-pressed', u === 'po');
     $('u2-mm').setAttribute('aria-pressed', u === 'mm');
+    $('u-pi').setAttribute('aria-pressed', u === 'pi');
+    $('u2-pi').setAttribute('aria-pressed', u === 'pi');
     try { localStorage.setItem('cote-unit', u); } catch(e){}
     update();
   }
@@ -2258,7 +2281,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     else if (k === 'clear') s = '';
     else if (k === ' ') { if (s && !/\s$/.test(s) && s.indexOf('/') < 0) s += ' '; }
     else if (k === '/') { if (s && !/[\/\s]$/.test(s) && s.indexOf('/') < 0) s += '/'; }
-    else if (k === '.') { if (s.indexOf('.') < 0 && s.indexOf('/') < 0) s += (s ? '.' : '0.'); }
+    else if (k === "'") { if (s && s.indexOf("'") < 0 && !/[\/\s.]$/.test(s)) s += "' "; }
+    else if (k === '.') { var tail = s.split("'").pop(); if (tail.indexOf('.') < 0 && tail.indexOf('/') < 0) s += (tail.trim() ? '.' : '0.'); }
     else s += k;
     f.value = s; update();
   });
@@ -2280,7 +2304,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   $('u-mm').addEventListener('click', function(){ setUnit('mm'); });
   $('u2-po').addEventListener('click', function(){ setUnit('po'); });
   $('u2-mm').addEventListener('click', function(){ setUnit('mm'); });
-  try { var s = localStorage.getItem('cote-unit'); if (s === 'mm' || s === 'po') unit = s; } catch(e){}
+  $('u-pi').addEventListener('click', function(){ setUnit('pi'); });
+  $('u2-pi').addEventListener('click', function(){ setUnit('pi'); });
+  try { var s = localStorage.getItem('cote-unit'); if (s === 'mm' || s === 'po' || s === 'pi') unit = s; } catch(e){}
   setUnit(unit);
   var hsh = (location.hash || '').slice(1);
   if (hsh === 'outils') setView('tools', true);
