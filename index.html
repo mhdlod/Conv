@@ -1218,7 +1218,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 <script src="speeds.js"></script>
 <script>
 (function(){
-  var unit = 'po', mode = 'dec', D = 16, ALL = false;
+  var unit = 'po', mode = 'dec', D = 16, ALL = false, noAuto = false;
   var $ = function(id){ return document.getElementById(id); };
   function gcd(a,b){ return b ? gcd(b, a % b) : a; }
   // n = nombre de crans de 1/D -> "1 1/4", "5/16", "2"
@@ -1279,6 +1279,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       highlight(-1); return;
     }
     var inch = u === 'mm' ? v/25.4 : v;
+    // précision automatique : si la cote tombe juste sur une fraction plus fine que la précision choisie, on passe à cette précision
+    if (!ALL && !noAuto){ var dens = [8,16,32,64]; for (var di=0; di<dens.length; di++){ var dn = dens[di], q = inch*dn; if (Math.abs(q - Math.round(q)) < 1e-6){ if (dn > D){ setStep(dn); return; } break; } } }
     $('c-in').textContent = fmt(inch,4) + ' po';
     $('c-mm').textContent = fmt(inch*25.4,3) + ' mm';
     $('r-in').textContent = fmt(inch/2,5) + ' po';
@@ -2241,7 +2243,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var bs = $('steps').querySelectorAll('button');
     for (var i=0;i<bs.length;i++) bs[i].setAttribute('aria-pressed', +bs[i].getAttribute('data-d') === d);
     try { localStorage.setItem('cote-step', String(d)); } catch(e){}
-    buildTable(); update();
+    noAuto = true; buildTable(); update(); noAuto = false;
   }
   $('steps').addEventListener('click', function(e){
     var b = e.target.closest('button'); if (b) setStep(+b.getAttribute('data-d'));
