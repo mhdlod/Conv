@@ -70,6 +70,15 @@
 html,body,button,[role="button"],.pad,.mode,.unit,.feedcard,.tabs,label,.lbl{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 button *{pointer-events:none}
 input,textarea{-webkit-user-select:text;user-select:text}
+.cv2 .pad button{font-size:clamp(1.6rem, calc(var(--ckh,60px) * .34), 2.4rem)!important}
+.cv2 .pad button.op{font-size:clamp(.95rem, calc(var(--ckh,60px) * .16), 1.2rem)!important}
+.cv2 .pad button.clr{font-size:clamp(.78rem, calc(var(--ckh,60px) * .14), 1.05rem)!important}
+.cv2 .pad button[data-k="back"],.cv2 .pad button.ft{font-size:clamp(1.6rem, calc(var(--ckh,60px) * .3), 2.2rem)!important}
+.cv2.convpanel .padrow .pad button{min-height:var(--ckh,60px)!important}
+.cv2.convpanel .padrow .pad button{font-size:clamp(1.7rem, calc(var(--ckh,60px) * .36), 2.6rem)!important}
+.cv2.convpanel .padrow .pad button.op{font-size:clamp(.95rem, calc(var(--ckh,60px) * .17), 1.25rem)!important}
+.cv2.convpanel .padrow .pad button.clr{font-size:clamp(.8rem, calc(var(--ckh,60px) * .15), 1.1rem)!important}
+.cv2.convpanel .padrow .pad button[data-k="back"],.cv2.convpanel .padrow .pad button.ft,.cv2.convpanel .padrow .pad button[data-k="/"]{font-size:clamp(1.6rem, calc(var(--ckh,60px) * .32), 2.4rem)!important}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
@@ -2031,9 +2040,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   function frac64(n){ var w = Math.floor(n/64), r = n % 64, g = gcd(r, 64); return (w ? w + (r ? ' ' : '') : '') + (r ? (r/g) + '/' + (64/g) : ''); }
   function fitConv(){
     var pad = $('pad'); if (!pad || !pad.offsetParent) return;
-    var tabs = document.querySelector('.tabs'), lim = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 26;
+    var tabs = document.querySelector('.tabs'), lim = (tabs ? tabs.getBoundingClientRect().top : window.innerHeight) - 52;
     pad.style.setProperty('--ckh', '44px');
-    var top = pad.getBoundingClientRect().top + window.scrollY - window.scrollY, kh = Math.max(44, Math.min(96, Math.floor((lim - top - 3*6)/4)));
+    var top = pad.getBoundingClientRect().top + window.scrollY - window.scrollY, kh = Math.max(44, Math.min(150, Math.floor((lim - top - 3*6)/4)));
     pad.style.setProperty('--ckh', kh + 'px');
   }
   window.addEventListener('resize', fitConv); setTimeout(fitConv, 0); setTimeout(fitConv, 300);
