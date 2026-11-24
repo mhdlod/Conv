@@ -54,6 +54,16 @@
 .cv2 .unit button{padding:0 10px!important}
 .cv2 .pad button.clr{grid-column:span 1!important;font-size:.78rem!important;line-height:1.1}
 .cv2 .pad button.ft{font-size:1.8rem!important}
+
+.cv2 .cvctl{grid-template-columns:auto 1fr}
+.cv2 #cvunit{display:grid;grid-template-columns:repeat(3,auto);margin:0}
+.cv2 #cvunit button{padding:8px 9px!important;font-size:.84rem!important;min-height:0}
+.cv2 .cvin{display:flex;gap:6px;align-items:stretch}
+.cv2 .cvin > #dec-box,.cv2 .cvin > #frac-box{flex:1 1 0;min-width:0;display:flex}
+.cv2 .cvin > [hidden]{display:none!important}
+.cv2 .cvin input{width:100%}
+.cv2 .cvin #cvmode{display:grid;grid-template-columns:1fr 1fr;margin:0;width:auto;flex:none}
+.cv2 .cvin #cvmode button{padding:0 10px;font-size:.9rem}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
@@ -980,9 +990,10 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     </div>
     <div class="mtbl" aria-label="Table rapide"><div class="mth" id="mth">Table 1/16</div><div class="mtb" id="mtb"></div></div>
     <div class="cvctl">
-      <div class="mode" id="cvmode" role="group" aria-label="Mode de saisie">
-        <button type="button" id="m-dec" aria-pressed="true">Déc.</button>
-        <button type="button" id="m-frac" aria-pressed="false">Frac.</button>
+      <div class="unit" id="cvunit" role="group" aria-label="Unité">
+        <button type="button" id="u-po" aria-pressed="true">po</button>
+        <button type="button" id="u-mm" aria-pressed="false">mm</button>
+        <button type="button" id="u-pi" aria-pressed="false">pi</button>
       </div>
       <div class="mode" id="steps" role="group" aria-label="Précision">
         <button type="button" data-d="8" aria-pressed="false">1/8</button>
@@ -992,25 +1003,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         <button type="button" data-d="0" aria-pressed="false">Tous</button>
       </div>
     </div>
-    <div id="frac-box" hidden>
-      <div class="inrow">
-        <input id="f-txt" type="text" inputmode="none" autocomplete="off" value="5/16" class="ftxt" aria-label="Cote en fraction">
-        <div class="unit" role="group" aria-label="Unité">
-          <button type="button" id="u2-po" aria-pressed="true">po</button>
-          <button type="button" id="u2-mm" aria-pressed="false">mm</button>
-          <button type="button" id="u2-pi" aria-pressed="false">pi</button>
-        </div>
+    <div class="cvin">
+      <div id="frac-box" hidden><input id="f-txt" type="text" inputmode="none" autocomplete="off" value="5/16" class="ftxt" aria-label="Cote en fraction"></div>
+      <div id="dec-box"><input id="cote" type="text" inputmode="none" autocomplete="off" value="0.3125" aria-label="Cote à convertir"></div>
+      <div class="mode" id="cvmode" role="group" aria-label="Mode de saisie">
+        <button type="button" id="m-dec" aria-pressed="true">Déc.</button>
+        <button type="button" id="m-frac" aria-pressed="false">Frac.</button>
       </div>
-    </div>
-    <div id="dec-box">
-    <div class="inrow">
-      <input id="cote" type="text" inputmode="none" autocomplete="off" value="0.3125" aria-label="Cote à convertir">
-      <div class="unit" role="group" aria-label="Unité">
-        <button type="button" id="u-po" aria-pressed="true">po</button>
-        <button type="button" id="u-mm" aria-pressed="false">mm</button>
-        <button type="button" id="u-pi" aria-pressed="false">pi</button>
-      </div>
-    </div>
+      <div hidden><button type="button" id="u2-po"></button><button type="button" id="u2-mm"></button><button type="button" id="u2-pi"></button></div>
     </div>
     <div class="padrow"><div class="pad" id="pad">
         <button type="button" data-k="7">7</button><button type="button" data-k="8">8</button><button type="button" data-k="9">9</button><button type="button" data-k="back" class="op" aria-label="Effacer un caractère">⌫</button>
