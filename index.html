@@ -65,6 +65,11 @@
 .cv2 .cvin #cvmode{display:grid;grid-template-columns:1fr 1fr;margin:0;width:auto;flex:none}
 .cv2 .cvin #cvmode button{padding:0 10px;font-size:.9rem}
 .cvnum b.hidec{background:#CFE6FF;color:#0B4A8B!important;border-radius:6px;padding:0 6px}
+
+/* iPhone : pas de bulle « Copier / Outils d'écriture » ni de sélection de texte au toucher long */
+html,body,button,[role="button"],.pad,.mode,.unit,.feedcard,.tabs,label,.lbl{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+button *{pointer-events:none}
+input,textarea{-webkit-user-select:text;user-select:text}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
