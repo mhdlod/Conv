@@ -64,6 +64,7 @@
 .cv2 .cvin input{width:100%}
 .cv2 .cvin #cvmode{display:grid;grid-template-columns:1fr 1fr;margin:0;width:auto;flex:none}
 .cv2 .cvin #cvmode button{padding:0 10px;font-size:.9rem}
+.cvnum b.hidec{background:#CFE6FF;color:#0B4A8B!important;border-radius:6px;padding:0 6px}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600;700&family=Barlow+Condensed:wght@600;700;800&family=JetBrains+Mono:wght@400;600;700&display=swap">
@@ -2284,8 +2285,11 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     else if (k === ' ') { if (s && !/\s$/.test(s) && s.indexOf('/') < 0) s += ' '; }
     else if (k === '/') { if (s && !/[\/\s]$/.test(s) && s.indexOf('/') < 0) s += '/'; }
     else if (k === "'") { if (s && s.indexOf("'") < 0 && !/[\/\s.]$/.test(s)) s += "' "; }
-    else if (k === '.') { var tail = s.split("'").pop(); if (tail.indexOf('.') < 0 && tail.indexOf('/') < 0) s += (tail.trim() ? '.' : '0.'); }
+    else if (k === '.') { var tail = s.split("'").pop(); if (tail.indexOf('.') < 0 && tail.indexOf('/') < 0) s += (/\d$/.test(tail) ? '.' : (tail && !/\s$/.test(tail) ? '.' : '0.')); }
     else s += k;
+    // passage automatique : « / » → Frac., « . » → Déc.
+    if (mode === 'dec' && s.indexOf('/') >= 0){ $('f-txt').value = s; setMode('frac'); return; }
+    if (mode === 'frac' && k === '.' && /\.$/.test(s)){ $('cote').value = s; setMode('dec'); return; }
     f.value = s; update();
   });
   function setMode(m){
@@ -2294,13 +2298,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     $('m-frac').setAttribute('aria-pressed', m === 'frac');
     $('dec-box').hidden = m !== 'dec';
     $('frac-box').hidden = m !== 'frac';
+    $('c-in').classList.toggle('hidec', m === 'frac');
     try { localStorage.setItem('cote-mode', m); } catch(e){}
     update();
   }
   $('m-dec').addEventListener('click', function(){ setMode('dec'); });
   $('m-frac').addEventListener('click', function(){ setMode('frac'); });
   try { var sm = localStorage.getItem('cote-mode'); if (sm === 'frac') mode = 'frac'; } catch(e){}
-  $('dec-box').hidden = mode !== 'dec'; $('frac-box').hidden = mode !== 'frac';
+  $('dec-box').hidden = mode !== 'dec'; $('frac-box').hidden = mode !== 'frac'; $('c-in').classList.toggle('hidec', mode === 'frac');
   $('m-dec').setAttribute('aria-pressed', mode === 'dec'); $('m-frac').setAttribute('aria-pressed', mode === 'frac');
   $('u-po').addEventListener('click', function(){ setUnit('po'); });
   $('u-mm').addEventListener('click', function(){ setUnit('mm'); });
