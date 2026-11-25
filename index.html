@@ -2064,14 +2064,14 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     }
     var mx = nom + tp, mn = nom - tm, moy = (mx + mn)/2, sym = Math.abs(tp - tm) < 1e-9;
     var me = kv('k-mes','k-mes-u'), vd = $('k-verd');
-    if (me === null || isNaN(me) || !(me > 0)){ vd.className = 'kverd'; vd.innerHTML = '<p class="kempty">Entre la cote mesurée pour savoir si la pièce est bonne.</p>'; }
+    if (me === null || isNaN(me) || !(me > 0)){ vd.className = 'kverd'; vd.innerHTML = ''; vd.parentNode.style.display = 'none'; }
     else {
       var band = mx - mn, eps = 1e-9, cls, head, det;
       if (me > mx + eps){ cls = 'bad'; head = 'Hors tolérance : trop grand'; det = 'de ' + fmt(me - mx,4) + ' po (' + fmt((me - mx)*25.4,3) + ' mm) au-dessus du max'; }
       else if (me < mn - eps){ cls = 'bad'; head = 'Hors tolérance : trop petit'; det = 'de ' + fmt(mn - me,4) + ' po (' + fmt((mn - me)*25.4,3) + ' mm) sous le min'; }
       else if (band > 0 && Math.min(mx - me, me - mn) < band*0.1){ cls = 'warn'; head = 'Bon, mais près de la limite'; det = 'reste ' + fmt(Math.min(mx - me, me - mn),4) + ' po (' + fmt(Math.min(mx - me, me - mn)*25.4,3) + ' mm) avant le ' + (mx - me < me - mn ? 'max' : 'min'); }
       else { cls = 'good'; head = 'Bon : dans la tolérance'; det = 'écart à la moyenne ' + (me - moy >= 0 ? '+' : '−') + fmt(Math.abs(me - moy),4) + ' po (' + fmt(Math.abs(me - moy)*25.4,3) + ' mm)'; }
-      vd.className = 'kverd ' + cls;
+      vd.className = 'kverd ' + cls; vd.parentNode.style.display = '';
       vd.innerHTML = '<b>' + head + '</b><small>' + det + '</small><span>Mesurée : ' + esc(fracIn(me) || fmt(me,4) + ' po') + (fracIn(me) ? ' · ' + fmt(me,4) + ' po' : '') + ' · ' + fmt(me*25.4,3) + ' mm</span>';
     }
     $('k-res').innerHTML = kLine('kmax','Max', mx) + '<div class="kl kmoy"><span class="kt">Moy.</span><b>' + fmt(moy,4) + ' po · ' + fmt(moy*25.4,3) + ' mm</b></div>' + kLine('kmin','Min', mn);
