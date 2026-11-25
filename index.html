@@ -759,6 +759,8 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .flrow .lbl{margin:0!important}
 .flsel{display:grid!important;grid-template-columns:repeat(4,1fr) 1.6fr;width:100%;margin:0!important}
 .flsel button{padding:5px 2px!important;font-size:.9rem!important;min-height:32px}
+#dirsel{grid-template-columns:repeat(3,1fr)!important}
+#view-tools .flrow > .lbl{min-width:6.4em}
 
 @media (max-width:520px){
   #view-tools .filters button{min-height:27px!important;padding:2px 3px!important}
@@ -1210,6 +1212,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <input id="q" class="search kbf" type="search" inputmode="none" autocomplete="off" placeholder="N° outil, n° fabricant, emplacement, note…">
       <div class="filters" id="types" role="group" aria-label="Type d'outil"></div>
       <div class="flrow" id="flrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="flsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
+      <div class="flrow" id="dirrow"><span class="lbl">Direction</span><div class="mode flsel" id="dirsel" role="group" aria-label="Direction de coupe"><button type="button" data-d="upcut" aria-pressed="false">Upcut</button><button type="button" data-d="downcut" aria-pressed="false">Downcut</button><button type="button" data-d="" aria-pressed="true">Toutes</button></div></div>
       <div class="field" style="margin-top:14px">
         <div class="inrow">
           <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre de l'outil (facultatif)</label>
@@ -1493,7 +1496,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('sheet').hidden) closeTool(); });
 
   // liste
-  var fType = 'End Mill', fFl = 1, TYPES = [];
+  var fType = 'End Mill', fFl = 1, tDir = '', TYPES = [];
   TOOLS.forEach(function(t){ if (t.type && TYPES.indexOf(t.type) < 0) TYPES.push(t.type); });
   function renderTypes(){
     var box = $('types'), all = [['', 'Tous', TOOLS.length]].concat(TYPES.map(function(ty){ return [ty, ty, TOOLS.filter(function(t){ return t.type === ty; }).length]; }));
@@ -1502,7 +1505,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       var b = document.createElement('button'); b.type = 'button';
       b.setAttribute('aria-pressed', a[0] === fType); b.innerHTML = esc(a[1]) + '<span>' + a[2] + '</span>';
       b.addEventListener('click', function(){ fType = a[0]; renderTypes(); renderList(); });
-      $('flrow').hidden = fType !== 'End Mill';
+      $('flrow').hidden = fType !== 'End Mill'; $('dirrow').hidden = fType !== 'End Mill';
       box.appendChild(b);
     });
   }
@@ -1517,6 +1520,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var base = TOOLS.filter(function(t){
       if (fType && t.type !== fType) return false;
       if (fType === 'End Mill' && fFl && t.flutes !== fFl) return false;
+      if (fType === 'End Mill' && tDir && String(t.dir || '').toLowerCase().indexOf(tDir) < 0) return false;
       if (tth > 0 && !(typeof t.loc === 'number' && t.loc > tth + 0.0005)) return false;
       var h = hay(t); return words.every(function(w){ return h.indexOf(w) >= 0; });
     });
@@ -2474,6 +2478,12 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   $('flrow').hidden = fType !== 'End Mill';
   [].forEach.call($('flsel').children, function(b){
     b.addEventListener('click', function(){ fFl = +b.getAttribute('data-f'); [].forEach.call($('flsel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderList(); });
+  });
+
+  // filtre Upcut / Downcut (End Mill)
+  $('dirrow').hidden = fType !== 'End Mill';
+  [].forEach.call($('dirsel').children, function(b){
+    b.addEventListener('click', function(){ tDir = b.getAttribute('data-d'); [].forEach.call($('dirsel').children, function(x){ x.setAttribute('aria-pressed', x === b); }); renderList(); });
   });
 
   // curseurs RPM / chipload / avance visibles sur toutes les fiches
