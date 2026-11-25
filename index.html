@@ -909,6 +909,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
 .acr #kinds button{width:100%;min-height:36px;padding:3px 5px!important;font-size:.72rem!important;line-height:1.1;text-align:left}
 .acr #kinds button small,.acr #dirs button small{display:none!important}
 .acr #dirs{display:grid!important;grid-template-columns:1fr 1fr;gap:4px}
+.acr #dirs button[data-id=""]{grid-column:span 2}
 .acr #dirs button{min-height:34px;padding:2px!important;font-size:.68rem!important}
 .acr .thkfield .inrow{display:flex!important;flex-direction:column!important;align-items:stretch!important;gap:4px}
 .acr #thk{flex:none!important;width:100%!important;min-width:0!important;font-size:1rem!important;height:38px;padding:4px 8px!important}
@@ -1625,9 +1626,9 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     'Use downcut or compression endmills for tearout-free top surface finishes.':'Downcut ou compression : dessus propre.'
   };
   var OPS = [['single_pass','Une passe','Pleine profondeur'],['roughing','Ébauche','Enlever la matière'],['finishing','Finition','Passe finale']];
-  var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = 'upcut';
+  var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = '';
   var KINDS = [['profile','Détourage / profil','Fraises droites'],['pocket','Trous / poches','Fraises droites'],['chamfer','Chanfrein / V / gravure','V, chanfrein, countersink'],['ball','3D / bout rond','Ball nose']];
-  var DIRS = [['upcut','Upcut','Évacue les copeaux'],['downcut','Downcut','Dessus propre']];
+  var DIRS = [['upcut','Upcut','Évacue les copeaux'],['downcut','Downcut','Dessus propre'],['','Toutes','Sans filtre']];
   // genre d'outil d'après la direction et la note de ta liste
   function kindOf(t){
     var n = String(t.note || '').toLowerCase();
@@ -1637,7 +1638,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     return 'straight';
   }
   function needKind(){ return fKind === 'chamfer' ? 'chamfer' : fKind === 'ball' ? 'ball' : 'straight'; }
-  function dirOk(t){ return String(t.dir || '').toLowerCase().indexOf(fDir) >= 0; }
+  function dirOk(t){ return !fDir || String(t.dir || '').toLowerCase().indexOf(fDir) >= 0; }
   // Réglage atelier (tous matériaux) : 23 000 RPM sous Ø 1/2", 16 000 RPM à Ø 1/2" et plus ; chipload au haut de la plage Onsrud
   function idealRpm(series, dia){
     if (fKind === 'pocket') return {rpm:17000, why:'Réglage atelier', ons:17000, onsWhy:'Réglage atelier · trous / poches'};
@@ -1786,6 +1787,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       return {ir:ir, t:t, sr:sr, appOk:appOk, fl:fl, c:c, generic:generic, ratio:ratio, mult:mult, cmin:cmin, cmax:cmax, cmid:cmid, locOk:locOk, lv:lv, passes:passes, per:per, prod:prod};
     });
     if (aFl) rows = rows.filter(function(r){ return r.fl === aFl; });
+    if (fDir && needKind() === 'straight') rows = rows.filter(function(r){ return dirOk(r.t); });
     // passes à 1×D maximum : chaque outil va dans son nombre de passes (4 = 4 et plus)
     if (th > 0) rows = rows.filter(function(r){ return aPs < 4 ? r.passes === aPs : r.passes >= 4; });
     var main = rows.filter(function(r){ return r.sr || r.appOk; });
@@ -1887,7 +1889,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
         if (sortDL && (lastD2 === null || Math.abs(r.t.dia - lastD2) > 0.0005)) { lastD2 = r.t.dia; var hd = document.createElement('div'); hd.innerHTML = dgrpHead(r.t.dia, th); tl.appendChild(hd.firstChild); }
         tl.appendChild(gcard(g));
       });
-      $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '');
+      $('t3note').textContent = byLoc.length ? byLoc.length + ' outil' + (byLoc.length > 1 ? 's' : '') + ' de ce type. Ambre = pas prévu pour ce matériau, à vérifier.' : 'Aucune fraise' + (fDir && needKind() === 'straight' ? ' ' + (fDir === 'upcut' ? 'upcut' : 'downcut') : '') + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' n\'a une LOC assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + ((aFl || (fDir && needKind() === 'straight')) ? ' Essaie ' + (aFl && fDir && needKind() === 'straight' ? 'un autre nombre de flûtes ou une autre direction.' : aFl ? 'un autre nombre de flûtes.' : 'une autre direction.') : '');
       $('allBox').hidden = true; $('moreBox').hidden = true;
       renderManual();
       return;
@@ -1897,7 +1899,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     var gAll = groupRows(top.concat(main.filter(function(r){ return top.indexOf(r) < 0; }))), gTop = gAll.slice(0, Math.min(5, gAll.length)), gRest = gAll.slice(gTop.length);
     gTop.forEach(function(g,i){ tb.appendChild(gcard(g, i+1)); });
     top = []; gTop.forEach(function(g){ top = top.concat(g.mem); });
-    var t3 = th > 0 && !top.length ? 'Aucune fraise' + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + (aFl ? ' Essaie un autre nombre de flûtes.' : '') : '';
+    var t3 = th > 0 && !top.length ? 'Aucune fraise' + (fDir && needKind() === 'straight' ? ' ' + (fDir === 'upcut' ? 'upcut' : 'downcut') : '') + (aFl ? ' à ' + aFl + ' flûte' + (aFl > 1 ? 's' : '') : '') + ' assez longue pour ' + (fracAny(th) || fmt(th,4) + '"') + '.' + ((aFl || (fDir && needKind() === 'straight')) ? ' Essaie ' + (aFl && fDir && needKind() === 'straight' ? 'un autre nombre de flûtes ou une autre direction.' : aFl ? 'un autre nombre de flûtes.' : 'une autre direction.') : '') : '';
     if (th > 0 && top.length > nMain) t3 = 'Ambre = pas prévu pour ce matériau, à vérifier.';
     if (!(fSort !== 'best' && !(th > 0))) $('t3note').textContent = t3;
     main = main.filter(function(r){ return top.indexOf(r) < 0; });
