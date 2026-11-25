@@ -1213,7 +1213,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
       <input id="q" class="search kbf" type="search" inputmode="none" autocomplete="off" placeholder="N° outil, n° fabricant, emplacement, note…">
       <div class="filters" id="types" role="group" aria-label="Type d'outil"></div>
       <div class="flrow" id="flrow"><span class="lbl">Flûtes</span><div class="mode flsel" id="flsel" role="group" aria-label="Nombre de flûtes"><button type="button" data-f="1" aria-pressed="true">1</button><button type="button" data-f="2" aria-pressed="false">2</button><button type="button" data-f="3" aria-pressed="false">3</button><button type="button" data-f="4" aria-pressed="false">4</button><button type="button" data-f="0" aria-pressed="false">Toutes</button></div></div>
-      <div class="flrow" id="dirrow"><span class="lbl">Direction</span><div class="mode flsel" id="dirsel" role="group" aria-label="Direction de coupe"><button type="button" data-d="upcut" aria-pressed="false">Upcut</button><button type="button" data-d="downcut" aria-pressed="false">Downcut</button><button type="button" data-d="" aria-pressed="true">Toutes</button></div></div>
+      <div class="flrow" id="dirrow"><span class="lbl">Direction</span><div class="mode flsel" id="dirsel" role="group" aria-label="Direction de coupe"><button type="button" data-d="upcut" aria-pressed="true">Upcut</button><button type="button" data-d="downcut" aria-pressed="false">Downcut</button><button type="button" data-d="" aria-pressed="false">Toutes</button></div></div>
       <div class="field" style="margin-top:14px">
         <div class="inrow">
           <div style="flex:1 1 260px;min-width:0"><label class="lbl" for="t-dia">Diamètre de l'outil (facultatif)</label>
@@ -1497,7 +1497,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && !$('sheet').hidden) closeTool(); });
 
   // liste
-  var fType = 'End Mill', fFl = 1, tDir = '', TYPES = [];
+  var fType = 'End Mill', fFl = 1, tDir = 'upcut', TYPES = [];
   TOOLS.forEach(function(t){ if (t.type && TYPES.indexOf(t.type) < 0) TYPES.push(t.type); });
   function renderTypes(){
     var box = $('types'), all = [['', 'Tous', TOOLS.length]].concat(TYPES.map(function(ty){ return [ty, ty, TOOLS.filter(function(t){ return t.type === ty; }).length]; }));
@@ -1626,7 +1626,7 @@ body.kbopen{padding-bottom:calc(var(--kbh,260px) + 20px)!important}
     'Use downcut or compression endmills for tearout-free top surface finishes.':'Downcut ou compression : dessus propre.'
   };
   var OPS = [['single_pass','Une passe','Pleine profondeur'],['roughing','Ébauche','Enlever la matière'],['finishing','Finition','Passe finale']];
-  var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = '';
+  var fMat = 'poly', fOp = 'single_pass', tUnit = 'po', dMax = 1, fKind = 'profile', fDir = 'upcut';
   var KINDS = [['profile','Détourage / profil','Fraises droites'],['pocket','Trous / poches','Fraises droites'],['chamfer','Chanfrein / V / gravure','V, chanfrein, countersink'],['ball','3D / bout rond','Ball nose']];
   var DIRS = [['upcut','Upcut','Évacue les copeaux'],['downcut','Downcut','Dessus propre'],['','Toutes','Sans filtre']];
   // genre d'outil d'après la direction et la note de ta liste
